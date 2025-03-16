@@ -1,0 +1,35 @@
+{% macro render_nav_bar(active_page) %}
+<nav class="nav">
+  <ul class="nav__ul">
+    <li class="nav__li">
+      <a
+        class="nav__a {{ 'nav__a--active' if active_page == 'Miesiąc'}}"
+        href="/miesiac"
+        >Miesiąc</a
+      >
+    </li>
+    <li class="nav__li">
+      <a
+        class="nav__a {{ 'nav__a--active' if active_page == 'Tydzień'}}"
+        href="/tydzien"
+        >Tydzień</a
+      >
+    </li>
+    <li class="nav__li">
+      <a
+        class="nav__a {{ 'nav__a--active' if active_page == 'Harmonogram'}}"
+        href="/harmonogram"
+        >Harmonogram</a
+      >
+    </li>
+  </ul>
+  <ul class="nav__ul">
+    <li class="nav__li">
+      <a class="nav__a" href="/">Ustawienia</a>
+    </li>
+    <li class="nav__li">
+      <a class="nav__a" href="/">Wyloguj</a>
+    </li>
+  </ul>
+</nav>
+{% endmacro %}

@@ -6,13 +6,25 @@ app = Flask(__name__, template_folder = '../frontend')
 assets = Environment(app)
 app.static_folder = '../frontend/static'
 assets.url = app.static_url_path
-sass = Bundle('sass/home.sass', filters=['libsass'], output='all.css')
+sass = Bundle('sass/global.sass','sass/month.sass', 'sass/nav_bar.sass', filters=['libsass'], output='all.css')
 assets.register('sass_all', sass)
 
 @app.route('/', methods=['GET',"POST"])
-def hello():
+def home():
+    return app.redirect('/miesiac')
+    
+@app.route('/miesiac', methods=['GET',"POST"])
+def month():
     if request.method == 'GET':
-        return render_template('home.html')
+        test = ['test1', 'test2', 'test3']
+        return render_template('month.html', test=test)
+    
+@app.route('/tydzien', methods=['GET',"POST"])
+def week():
+    if request.method == 'GET':
+        test = ['test1', 'test2', 'test3']
+        return render_template('week.html', test=test)
+    
 
 if __name__ == '__main__':
     app.run(debug = True)
