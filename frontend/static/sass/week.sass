@@ -33,13 +33,15 @@
         user-select: none
         display: flex
         justify-content: center
+        padding: 0 64px
         height: 88px    
         margin: 0 auto
 
     &__day
         display: inline-block   
         min-width: 200px
-        width: 224px
+        max-width: 224px
+        flex-grow: 1
         text-align: center
         font-size: 24px
         height: 24px
@@ -82,6 +84,7 @@
         border-bottom: 2px solid black
 
     &__grid-hour-column
+        user-select: none
         padding-top: 32px
 
         &:last-of-type
