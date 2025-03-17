@@ -4,18 +4,83 @@
   box-sizing: border-box;
   font-family: Inter, sans-serif; }
 
-html {
-  background-color: #eee; }
+.month__main {
+  display: flex;
+  justify-content: center;
+  margin: 48px auto 0; }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: Inter, sans-serif; }
+.month__aside {
+  width: 400px;
+  margin-right: 32px; }
+
+.month__year {
+  width: 100%;
+  font-size: 96px;
+  text-align: center; }
+
+.month__change-month-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 27px 0 32px; }
+
+.month__month {
+  font-size: 48px;
+  font-weight: normal; }
+
+.month__change-month-button {
+  font-size: 48px;
+  border: none;
+  background-color: transparent;
+  cursor: pointer; }
+
+.month__main-calendar {
+  width: 1242px; }
+
+.month__main-calendar-week-days-wrapper {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr); }
+
+.month__main-calendar-week-day {
+  height: 36px;
+  display: flex;
+  width: 100%;
+  justify-content: flex-end;
+  align-items: flex-start;
+  border-right: 2px solid #0D1626; }
+
+.month__main-calendar-week-day-p {
+  font-size: 20px;
+  margin-right: 16px; }
+
+.month__main-calendar-days-wrapper {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr); }
+
+.month__main-calendar-day {
+  height: 118px;
+  border-right: 2px solid #0D1626;
+  padding-right: 16px; }
+
+.month__main-calendar-days-p {
+  font-size: 64px;
+  text-align: right;
+  cursor: pointer; }
+  .month__main-calendar-days-p--task {
+    color: #29A423; }
+  .month__main-calendar-days-p--past {
+    color: #B9B9B9; }
+  .month__main-calendar-days-p--future {
+    color: #F10000; }
+
+.month__main-calendar-days-task {
+  font-size: 12px;
+  text-align: right;
+  text-wrap: wrap; }
 
 .nav {
   width: 100%;
-  height: 100px;
+  height: 80px;
   background-color: #0D1626;
   display: flex;
   justify-content: space-between;
@@ -45,3 +110,36 @@ html {
     color: #619AFF; }
     .nav__a--active:hover {
       color: #619AFF; }
+
+.small-calendar {
+  width: 100%;
+  margin-bottom: 32px; }
+
+.small-calendar__month {
+  font-size: 32px;
+  font-weight: normal;
+  margin-bottom: 16px;
+  color: #B9B9B9; }
+
+.small-calendar__week-days-wrapper {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr); }
+
+.small-calendar__week-days {
+  display: block;
+  text-align: right;
+  font-size: 12px; }
+
+.small-calendar__days-wrapper {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr); }
+
+.small-calendar__days {
+  display: block;
+  width: 100%;
+  font-size: 16px;
+  text-align: right;
+  margin-top: 12px; }
+
+.small-calendar:last-of-type .small-calendar__month {
+  color: #F10000; }

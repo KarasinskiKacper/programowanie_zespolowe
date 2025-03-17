@@ -1,0 +1,93 @@
+{% macro render_small_calendar(date) %}
+<div class="small-calendar">
+  <script>
+    function create_calendar(offset = 0) {
+      function monday_first(day) {
+        return (day + 6) % 7;
+      }
+      var now = new Date('{{ date.strftime("%Y-%m-%dT%H:%M:%S") }}');
+      now.setMonth(now.getMonth() + x);
+      var calendar = [];
+      var week = [];
+
+      var my_date = new Date('{{ date.strftime("%Y-%m-%dT%H:%M:%S") }}');
+      my_date.setMonth(my_date.getMonth() + x);
+
+      my_date.setDate(1);
+      if (monday_first(my_date.getDay()) != 0) {
+        my_date.setDate(0);
+        my_date.setDate(my_date.getDate() - monday_first(my_date.getDay()));
+      }
+
+      while (
+        my_date.getMonth() <= now.getMonth() ||
+        (my_date.getMonth() == 11 && now.getMonth() == 0) ||
+        0 != week.length
+      ) {
+        week.push(my_date.getDate());
+        if (week.length == 7) {
+          calendar.push(week);
+          week = [];
+        }
+        my_date.setDate(my_date.getDate() + 1);
+      }
+      console.log(calendar);
+    }
+  </script>
+
+  <h1 class="small-calendar__month">Luty</h1>
+  <div class="small-calendar__week-days-wrapper">
+    <p class="small-calendar__week-days">PON</p>
+    <p class="small-calendar__week-days">WT</p>
+    <p class="small-calendar__week-days">ŚR</p>
+    <p class="small-calendar__week-days">CZ</p>
+    <p class="small-calendar__week-days">PT</p>
+    <p class="small-calendar__week-days">SOB</p>
+    <p class="small-calendar__week-days">NDZ</p>
+  </div>
+  <section class="small-calendar__days-wrapper">
+    <p class="small-calendar__days numeric-font">23</p>
+    <p class="small-calendar__days numeric-font">23</p>
+    <p class="small-calendar__days numeric-font">23</p>
+    <p class="small-calendar__days numeric-font">23</p>
+    <p class="small-calendar__days numeric-font">23</p>
+    <p class="small-calendar__days numeric-font">23</p>
+    <p class="small-calendar__days numeric-font">23</p>
+    <p class="small-calendar__days numeric-font">23</p>
+    <p class="small-calendar__days numeric-font">23</p>
+    <p class="small-calendar__days numeric-font">23</p>
+    <p class="small-calendar__days numeric-font">23</p>
+    <p class="small-calendar__days numeric-font">23</p>
+    <p class="small-calendar__days numeric-font">23</p>
+    <p class="small-calendar__days numeric-font">23</p>
+    <p class="small-calendar__days numeric-font">23</p>
+    <p class="small-calendar__days numeric-font">23</p>
+    <p class="small-calendar__days numeric-font">23</p>
+    <p class="small-calendar__days numeric-font">23</p>
+    <p class="small-calendar__days numeric-font">23</p>
+    <p class="small-calendar__days numeric-font">23</p>
+    <p class="small-calendar__days numeric-font">23</p>
+    <p class="small-calendar__days numeric-font">23</p>
+    <p class="small-calendar__days numeric-font">23</p>
+    <p class="small-calendar__days numeric-font">23</p>
+    <p class="small-calendar__days numeric-font">23</p>
+    <p class="small-calendar__days numeric-font">23</p>
+    <p class="small-calendar__days numeric-font">23</p>
+    <p class="small-calendar__days numeric-font">23</p>
+    <p class="small-calendar__days numeric-font">23</p>
+    <p class="small-calendar__days numeric-font">23</p>
+    <p class="small-calendar__days numeric-font">23</p>
+    <p class="small-calendar__days numeric-font">23</p>
+    <p class="small-calendar__days numeric-font">23</p>
+    <p class="small-calendar__days numeric-font">23</p>
+    <p class="small-calendar__days numeric-font">23</p>
+    <p class="small-calendar__days numeric-font">23</p>
+    <p class="small-calendar__days numeric-font">23</p>
+    <p class="small-calendar__days numeric-font">23</p>
+    <p class="small-calendar__days numeric-font">23</p>
+    <p class="small-calendar__days numeric-font">23</p>
+    <p class="small-calendar__days numeric-font">23</p>
+    <p class="small-calendar__days numeric-font">23</p>
+  </section>
+</div>
+{% endmacro %}
