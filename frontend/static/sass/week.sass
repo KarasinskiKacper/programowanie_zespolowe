@@ -1,0 +1,94 @@
+@import "global.sass"
+    
+.current-week 
+    user-select: none
+    display: flex
+    justify-content: center
+    align-items: center
+    height: 48px
+    gap: 16px
+    margin: 48px auto 32px
+
+    &__text
+        display: inline-block
+        font-size: 48px
+        font-weight: 400
+        width: 470px
+
+        &:first-of-type
+            text-align: right
+
+        &--separator
+            width: 20px 
+    
+    &__arrow
+        font-size: 48px
+        display: inline-block
+        cursor: pointer
+
+.week-layout
+    margin: 0 auto
+
+    &__days-container
+        user-select: none
+        display: flex
+        justify-content: center
+        height: 88px    
+        margin: 0 auto
+
+    &__day
+        display: inline-block   
+        min-width: 200px
+        width: 224px
+        text-align: center
+        font-size: 24px
+        height: 24px
+        text-transform: uppercase
+    
+        &--name
+            font-size: 1em
+            font-weight: 400
+            height: 24px
+        
+        &--date
+            font-size: 2em
+            margin-top: 16px
+            height: 48px
+            cursor: pointer
+            
+        &--current
+            color: $active
+
+    &__grid-wrapper
+        display: flex
+        justify-content: center
+        margin: 0 auto
+
+    &__grid
+        display: grid
+        max-width: 1568px
+        grid-template-rows: repeat(24, 1fr)
+        grid-auto-flow: column
+        flex-grow: 1
+        margin-top: 16px 
+        border-top: 2px solid black
+        border-right: 2px solid black
+
+    &__grid-cell
+        min-width: 200px
+        max-width: 224px
+        height: 24px
+        border-left: 2px solid black
+        border-bottom: 2px solid black
+
+    &__grid-hour-column
+        padding-top: 32px
+
+        &:last-of-type
+            text-align: right
+
+    &__grid-hour
+        height: 16px
+        width: 64px
+        margin-bottom: 8px
+        font-size: 16px

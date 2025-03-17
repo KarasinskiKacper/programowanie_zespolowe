@@ -11,11 +11,65 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@300&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
       rel="stylesheet"
     />
   </head>
   <body>
     {{ render_nav_bar("Tydzień") }}
+
+    <header class="current-week">
+      <div class="current-week__arrow"><-</div>
+
+      <h1 class="current-week__text">
+        <span class="numeric-font">09</span> Marzec
+        <span class="numeric-font">2025</span>
+      </h1>
+
+      <h1 class="current-week__text current-week__text--separator">-</h1>
+
+      <h1 class="current-week__text">
+        <span class="numeric-font">15</span> Październik
+        <span class="numeric-font">2025</span>
+      </h1>
+
+      <div class="current-week__arrow">-></div>
+    </header>
+
+    <main class="week-layout">
+      <section class="week-layout__days-container">
+        <div class="week-layout__day week-layout__day--current">
+          <h2 class="week-layout__day--name">Poniedziałek</h2>
+          <h1 class="week-layout__day--date numeric-font">9</h1>
+        </div>
+        <div class="week-layout__day">
+          <h2 class="week-layout__day--name">Wtorek</h2>
+          <h1 class="week-layout__day--date numeric-font">10</h1>
+        </div>
+        <div class="week-layout__day">
+          <h2 class="week-layout__day--name">Środa</h2>
+          <h1 class="week-layout__day--date numeric-font">11</h1>
+        </div>
+        <div class="week-layout__day">
+          <h2 class="week-layout__day--name">Czwartek</h2>
+          <h1 class="week-layout__day--date numeric-font">12</h1>
+        </div>
+        <div class="week-layout__day">
+          <h2 class="week-layout__day--name">Piątek</h2>
+          <h1 class="week-layout__day--date numeric-font">13</h1>
+        </div>
+        <div class="week-layout__day">
+          <h2 class="week-layout__day--name">Sobota</h2>
+          <h1 class="week-layout__day--date numeric-font">14</h1>
+        </div>
+        <div class="week-layout__day">
+          <h2 class="week-layout__day--name">Niedziela</h2>
+          <h1 class="week-layout__day--date numeric-font">15</h1>
+        </div>
+      </section>
+      <div class="week-layout__grid-wrapper">
+        <script src="./static/scripts/generate_table.js"></script>
+      </div>
+    </main>
   </body>
 </html>
