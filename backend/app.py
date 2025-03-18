@@ -9,7 +9,7 @@ app = Flask(__name__, template_folder = '../frontend')
 assets = Environment(app)
 app.static_folder = '../frontend/static'
 assets.url = app.static_url_path
-sass = Bundle('sass/global.sass','sass/month.sass', 'sass/nav_bar.sass', 'sass/small_calendar.sass', filters=['libsass'], output='all.css')
+sass = Bundle('sass/global.sass','sass/month.sass', 'sass/nav_bar.sass', 'sass/small_calendar.sass', 'sass/week.sass',  filters=['libsass'], output='all.css')
 assets.register('sass_all', sass)
 
 @app.route('/', methods=['GET',"POST"])
