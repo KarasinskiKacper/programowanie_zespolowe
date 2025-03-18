@@ -8,6 +8,7 @@ function updateDate() {
   h2_month.innerHTML = date.toLocaleString("pl-PL", {
     month: "long",
   });
+  create_small_calendar(-1);
 }
 
 function changeMonth(offset) {
