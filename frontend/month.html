@@ -20,18 +20,23 @@
     {{ render_nav_bar("Miesiąc") }}
     <main class="month__main">
       <aside class="month__aside">
-        <h1 class="month__year numeric-font">2025</h1>
+        <h1 class="month__year numeric-font"></h1>
 
         <div class="month__change-month-wrapper">
-          <button class="month__change-month-button"><-</button>
-          <h2 class="month__month">Marzec</h2>
-          <button class="month__change-month-button">-></button>
+          <button class="month__change-month-button" onclick="changeMonth(-1)">
+            <-
+          </button>
+          <h2 class="month__month"></h2>
+          <button class="month__change-month-button" onclick="changeMonth(1)">
+            ->
+          </button>
         </div>
+        <script src="./static/month_date_handler.js"></script>
 
         {{ render_small_calendar(date) }} {{ render_small_calendar(date) }}
 
         <!-- <button id="btn" onclick="myFunction()"></button> -->
-        <script>
+        <!-- <script>
           let x = parseInt("{{offset}}");
           document.getElementById("btn").innerHTML = x;
           create_calendar(x);
@@ -40,7 +45,7 @@
             create_calendar(x);
             document.getElementById("btn").innerHTML = x;
           }
-        </script>
+        </script> -->
       </aside>
 
       <section class="month__main-calendar">
