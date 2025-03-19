@@ -1,4 +1,4 @@
-export function create_small_calendar(date) {
+export function create_small_calendars(date) {
   function monday_first(day) {
     return (day + 6) % 7;
   }
@@ -6,7 +6,9 @@ export function create_small_calendar(date) {
   let small_calendar_base_date;
 
   function generate_calendar(offset) {
-    //
+    // stworzenie zmiennych przechowujących daty i zmiana daty o offset
+    // small_calendar_base_date - zmienna przechowująca miesiąc do którego generowany jest kalendarz
+    // small_calendar_date - zmienna pomocnicza do generowania struktury kalendarza
     small_calendar_base_date = new Date(date);
     let small_calendar_date = new Date(date);
     small_calendar_base_date.setMonth(
@@ -23,10 +25,21 @@ export function create_small_calendar(date) {
       );
     }
 
+    // ustawienie nazwy miesiaca
+    const small_calendar_month = document.getElementById(
+      `small-calendar__month-${offset == -1 ? "past" : "future"}`
+    );
+    small_calendar_month.innerHTML = small_calendar_base_date.toLocaleString(
+      "pl-PL",
+      {
+        month: "long",
+      }
+    );
+
+    // generowanie dat
     let is_past_month = true;
     let calendar = [];
     let week = [];
-
     while (
       small_calendar_date.getMonth() == small_calendar_base_date.getMonth() ||
       week.length != 0 ||
@@ -46,19 +59,10 @@ export function create_small_calendar(date) {
       }
     }
 
-    const small_calendar_month = document.getElementById(
-      `small-calendar__month-${offset == -1 ? "past" : "future"}`
-    );
+    // wygenerowanie html (dni kalendarza)
     const small_calendar__days_wrapper = document.getElementById(
       `small-calendar__days-wrapper-${offset == -1 ? "past" : "future"}`
     );
-    small_calendar_month.innerHTML = small_calendar_base_date.toLocaleString(
-      "pl-PL",
-      {
-        month: "long",
-      }
-    );
-
     let new_innerhtml = "";
     let counter = 1;
     calendar.forEach((week) => {
@@ -79,6 +83,8 @@ export function create_small_calendar(date) {
     small_calendar__days_wrapper.innerHTML = new_innerhtml;
   }
 
+  // wywołanie dla kalendarza z poprzedniego miesiąca
   generate_calendar(-1);
+  // wywołanie dla kalendarza z następnego miesiąca
   generate_calendar(1);
 }
