@@ -2,6 +2,7 @@ import { generate_calendar } from "./generate_calendar.js";
 export function generate_main_calendar(date) {
   const current_date = new Date(Date.now());
   const is_current_month = current_date.getMonth() === date.getMonth();
+
   const { calendar, month } = generate_calendar(date);
   const main_calendar = document.querySelector(
     ".month__main-calendar-days-wrapper"
