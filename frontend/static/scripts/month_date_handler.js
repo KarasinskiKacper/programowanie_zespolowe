@@ -1,4 +1,5 @@
-import { create_small_calendars } from "./small_calendar.js";
+import { generate_small_calendars } from "./generate_small_calendars.js";
+import { generate_main_calendar } from "./generate_main_calendar.js";
 
 const h1_year = document.querySelector(".month__year");
 const h2_month = document.querySelector(".month__month");
@@ -11,22 +12,23 @@ function updateDate() {
   h2_month.innerHTML = date.toLocaleString("pl-PL", {
     month: "long",
   });
-  create_small_calendars(date);
+  generate_small_calendars(date);
+  generate_main_calendar(date);
 }
-
-updateDate();
-create_small_calendars(date);
 
 // obsługa przycisków
 function changeMonth(offset) {
   date.setMonth(date.getMonth() + offset);
   updateDate(date);
 }
-
 const back_button = document.getElementById("month__change-month-button-back");
 const forward_button = document.getElementById(
   "month__change-month-button-forward"
 );
-
 back_button.addEventListener("click", () => changeMonth(-1));
 forward_button.addEventListener("click", () => changeMonth(1));
+
+// wywołanie funkcji przy generowaniu strony
+updateDate();
+generate_small_calendars(date);
+generate_main_calendar(date);
