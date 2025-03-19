@@ -23,30 +23,26 @@
         <h1 class="month__year numeric-font"></h1>
 
         <div class="month__change-month-wrapper">
-          <button class="month__change-month-button" onclick="changeMonth(-1)">
+          <button
+            id="month__change-month-button-back"
+            class="month__change-month-button"
+          >
             <-
           </button>
           <h2 class="month__month"></h2>
-          <button class="month__change-month-button" onclick="changeMonth(1)">
+          <button
+            id="month__change-month-button-forward"
+            class="month__change-month-button"
+          >
             ->
           </button>
         </div>
-        <script src="./static/month_date_handler.js"></script>
 
-        {{ render_small_calendar("past") }} {{ render_small_calendar("future")
-        }}
-
-        <!-- <button id="btn" onclick="myFunction()"></button> -->
-        <!-- <script>
-          let x = parseInt("{{offset}}");
-          document.getElementById("btn").innerHTML = x;
-          create_calendar(x);
-          function myFunction() {
-            x++;
-            create_calendar(x);
-            document.getElementById("btn").innerHTML = x;
-          }
-        </script> -->
+        {{ render_small_calendar("past") }} {{ render_small_calendar("future")}}
+        <script
+          src="./static/scripts/month_date_handler.js"
+          type="module"
+        ></script>
       </aside>
 
       <section class="month__main-calendar">
