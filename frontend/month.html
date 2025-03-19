@@ -23,276 +23,57 @@
         <h1 class="month__year numeric-font"></h1>
 
         <div class="month__change-month-wrapper">
-          <button class="month__change-month-button" onclick="changeMonth(-1)">
+          <button
+            id="month__change-month-button-back"
+            class="month__change-month-button"
+          >
             <-
           </button>
           <h2 class="month__month"></h2>
-          <button class="month__change-month-button" onclick="changeMonth(1)">
+          <button
+            id="month__change-month-button-forward"
+            class="month__change-month-button"
+          >
             ->
           </button>
         </div>
-        <script src="./static/month_date_handler.js"></script>
 
-        {{ render_small_calendar("past") }} {{ render_small_calendar("future")
-        }}
-
-        <!-- <button id="btn" onclick="myFunction()"></button> -->
-        <!-- <script>
-          let x = parseInt("{{offset}}");
-          document.getElementById("btn").innerHTML = x;
-          create_calendar(x);
-          function myFunction() {
-            x++;
-            create_calendar(x);
-            document.getElementById("btn").innerHTML = x;
-          }
-        </script> -->
+        {{ render_small_calendar("past") }} {{ render_small_calendar("future")}}
+        <script
+          src="./static/scripts/month_date_handler.js"
+          type="module"
+        ></script>
       </aside>
 
       <section class="month__main-calendar">
         <div class="month__main-calendar-week-days-wrapper">
           <div class="month__main-calendar-week-day">
-            <p class="month__main-calendar-week-day-p">PONIEDZIAŁEK</p>
+            <p class="month__main-calendar-week-day-text">PONIEDZIAŁEK</p>
           </div>
           <div class="month__main-calendar-week-day">
-            <p class="month__main-calendar-week-day-p">WTOREK</p>
+            <p class="month__main-calendar-week-day-text">WTOREK</p>
           </div>
           <div class="month__main-calendar-week-day">
-            <p class="month__main-calendar-week-day-p">ŚRODA</p>
+            <p class="month__main-calendar-week-day-text">ŚRODA</p>
           </div>
           <div class="month__main-calendar-week-day">
-            <p class="month__main-calendar-week-day-p">CZWARTEK</p>
+            <p class="month__main-calendar-week-day-text">CZWARTEK</p>
           </div>
           <div class="month__main-calendar-week-day">
-            <p class="month__main-calendar-week-day-p">PIĄTEK</p>
+            <p class="month__main-calendar-week-day-text">PIĄTEK</p>
           </div>
           <div class="month__main-calendar-week-day">
-            <p class="month__main-calendar-week-day-p">SOBOTA</p>
+            <p class="month__main-calendar-week-day-text">SOBOTA</p>
           </div>
           <div class="month__main-calendar-week-day">
-            <p class="month__main-calendar-week-day-p">NIEDZIELA</p>
+            <p class="month__main-calendar-week-day-text">NIEDZIELA</p>
           </div>
         </div>
-        <div class="month__main-calendar-days-wrapper">
-          <div class="month__main-calendar-day">
-            <p
-              class="month__main-calendar-days-p month__main-calendar-days-p--past"
-            >
-              23
-            </p>
-            <div class="month__main-calendar-days-task"></div>
-          </div>
-          <div class="month__main-calendar-day">
-            <p
-              class="month__main-calendar-days-p month__main-calendar-days-p--past"
-            >
-              23
-            </p>
-            <div class="month__main-calendar-days-task"></div>
-          </div>
-          <div class="month__main-calendar-day">
-            <p
-              class="month__main-calendar-days-p month__main-calendar-days-p--past"
-            >
-              23
-            </p>
-            <div class="month__main-calendar-days-task"></div>
-          </div>
-          <div class="month__main-calendar-day">
-            <p
-              class="month__main-calendar-days-p month__main-calendar-days-p--past"
-            >
-              23
-            </p>
-            <div class="month__main-calendar-days-task"></div>
-          </div>
-          <div class="month__main-calendar-day">
-            <p class="month__main-calendar-days-p">23</p>
-            <div class="month__main-calendar-days-task"></div>
-          </div>
-          <div class="month__main-calendar-day">
-            <p class="month__main-calendar-days-p">23</p>
-            <div class="month__main-calendar-days-task"></div>
-          </div>
-          <div class="month__main-calendar-day">
-            <p class="month__main-calendar-days-p">23</p>
-            <div class="month__main-calendar-days-task"></div>
-          </div>
-          <div class="month__main-calendar-day">
-            <p class="month__main-calendar-days-p">23</p>
-            <div class="month__main-calendar-days-task"></div>
-          </div>
-          <div class="month__main-calendar-day">
-            <p
-              class="month__main-calendar-days-p month__main-calendar-days-p--task"
-            >
-              23
-            </p>
-            <div class="month__main-calendar-days-task">task1</div>
-          </div>
-          <div class="month__main-calendar-day">
-            <p class="month__main-calendar-days-p">23</p>
-            <div class="month__main-calendar-days-task"></div>
-          </div>
-          <div class="month__main-calendar-day">
-            <p class="month__main-calendar-days-p">23</p>
-            <div class="month__main-calendar-days-task"></div>
-          </div>
-          <div class="month__main-calendar-day">
-            <p class="month__main-calendar-days-p">23</p>
-            <div class="month__main-calendar-days-task"></div>
-          </div>
-          <div class="month__main-calendar-day">
-            <p
-              class="month__main-calendar-days-p month__main-calendar-days-p--task"
-            >
-              23
-            </p>
-            <div class="month__main-calendar-days-task">task 3</div>
-          </div>
-          <div class="month__main-calendar-day">
-            <p class="month__main-calendar-days-p">23</p>
-            <div class="month__main-calendar-days-task"></div>
-          </div>
-          <div class="month__main-calendar-day">
-            <p class="month__main-calendar-days-p">23</p>
-            <div class="month__main-calendar-days-task"></div>
-          </div>
-          <div class="month__main-calendar-day">
-            <p
-              class="month__main-calendar-days-p month__main-calendar-days-p--task"
-            >
-              23
-            </p>
-            <div class="month__main-calendar-days-task">
-              task 5 asdsdjhfsdfhbdjfhbgdjf
-            </div>
-          </div>
-          <div class="month__main-calendar-day">
-            <p class="month__main-calendar-days-p">23</p>
-            <div class="month__main-calendar-days-task"></div>
-          </div>
-          <div class="month__main-calendar-day">
-            <p class="month__main-calendar-days-p">23</p>
-            <div class="month__main-calendar-days-task"></div>
-          </div>
-          <div class="month__main-calendar-day">
-            <p class="month__main-calendar-days-p">23</p>
-            <div class="month__main-calendar-days-task"></div>
-          </div>
-          <div class="month__main-calendar-day">
-            <p class="month__main-calendar-days-p">23</p>
-            <div class="month__main-calendar-days-task"></div>
-          </div>
-          <div class="month__main-calendar-day">
-            <p class="month__main-calendar-days-p">23</p>
-            <div class="month__main-calendar-days-task"></div>
-          </div>
-          <div class="month__main-calendar-day">
-            <p class="month__main-calendar-days-p">23</p>
-            <div class="month__main-calendar-days-task"></div>
-          </div>
-          <div class="month__main-calendar-day">
-            <p class="month__main-calendar-days-p">23</p>
-            <div class="month__main-calendar-days-task"></div>
-          </div>
-          <div class="month__main-calendar-day">
-            <p class="month__main-calendar-days-p">23</p>
-            <div class="month__main-calendar-days-task"></div>
-          </div>
-          <div class="month__main-calendar-day">
-            <p class="month__main-calendar-days-p">23</p>
-            <div class="month__main-calendar-days-task"></div>
-          </div>
-          <div class="month__main-calendar-day">
-            <p class="month__main-calendar-days-p">23</p>
-            <div class="month__main-calendar-days-task"></div>
-          </div>
-          <div class="month__main-calendar-day">
-            <p class="month__main-calendar-days-p">23</p>
-            <div class="month__main-calendar-days-task"></div>
-          </div>
-          <div class="month__main-calendar-day">
-            <p class="month__main-calendar-days-p">23</p>
-            <div class="month__main-calendar-days-task"></div>
-          </div>
-          <div class="month__main-calendar-day">
-            <p class="month__main-calendar-days-p">23</p>
-            <div class="month__main-calendar-days-task"></div>
-          </div>
-          <div class="month__main-calendar-day">
-            <p class="month__main-calendar-days-p">23</p>
-            <div class="month__main-calendar-days-task"></div>
-          </div>
-          <div class="month__main-calendar-day">
-            <p class="month__main-calendar-days-p">23</p>
-            <div class="month__main-calendar-days-task"></div>
-          </div>
-          <div class="month__main-calendar-day">
-            <p class="month__main-calendar-days-p">23</p>
-            <div class="month__main-calendar-days-task"></div>
-          </div>
-          <div class="month__main-calendar-day">
-            <p class="month__main-calendar-days-p">23</p>
-            <div class="month__main-calendar-days-task"></div>
-          </div>
-          <div class="month__main-calendar-day">
-            <p class="month__main-calendar-days-p">23</p>
-            <div class="month__main-calendar-days-task"></div>
-          </div>
-          <div class="month__main-calendar-day">
-            <p class="month__main-calendar-days-p">23</p>
-            <div class="month__main-calendar-days-task"></div>
-          </div>
-          <div class="month__main-calendar-day">
-            <p class="month__main-calendar-days-p">23</p>
-            <div class="month__main-calendar-days-task"></div>
-          </div>
-          <div class="month__main-calendar-day">
-            <p class="month__main-calendar-days-p">23</p>
-            <div class="month__main-calendar-days-task"></div>
-          </div>
-          <div class="month__main-calendar-day">
-            <p
-              class="month__main-calendar-days-p month__main-calendar-days-p--future"
-            >
-              23
-            </p>
-            <div class="month__main-calendar-days-task"></div>
-          </div>
-          <div class="month__main-calendar-day">
-            <p
-              class="month__main-calendar-days-p month__main-calendar-days-p--future"
-            >
-              23
-            </p>
-            <div class="month__main-calendar-days-task"></div>
-          </div>
-          <div class="month__main-calendar-day">
-            <p
-              class="month__main-calendar-days-p month__main-calendar-days-p--future"
-            >
-              23
-            </p>
-            <div class="month__main-calendar-days-task"></div>
-          </div>
-          <div class="month__main-calendar-day">
-            <p
-              class="month__main-calendar-days-p month__main-calendar-days-p--future"
-            >
-              23
-            </p>
-            <div class="month__main-calendar-days-task"></div>
-          </div>
-          <div class="month__main-calendar-day">
-            <p
-              class="month__main-calendar-days-p month__main-calendar-days-p--future"
-            >
-              23
-            </p>
-            <div class="month__main-calendar-days-task"></div>
-          </div>
-        </div>
+        <div class="month__main-calendar-days-wrapper"></div>
+        <script
+          type="module"
+          src="./static/scripts/generate_main_calendar.js"
+        ></script>
       </section>
     </main>
   </body>
