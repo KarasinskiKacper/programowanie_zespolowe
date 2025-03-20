@@ -1,7 +1,6 @@
 /**
  * Generowanie kolumny z godzinami.
  *
- * @function generateHourColumn
  * @returns {void}
  */
 function generateHourColumn() {
@@ -26,7 +25,6 @@ function generateHourColumn() {
 /**
  * Generowanie tabeli dla widoku tygodnia.
  *
- * @function generateTable
  * @returns {void}
  */
 function generateTable() {

@@ -1,7 +1,6 @@
+import { monday_first } from "./utils.js";
+
 export function generate_calendar(date, offset = 0) {
-  function monday_first(day) {
-    return (day + 6) % 7;
-  }
   // stworzenie zmiennych przechowujących daty i zmiana daty o offset
   // small_calendar_base_date - zmienna przechowująca miesiąc do którego generowany jest kalendarz
   // small_calendar_date - zmienna pomocnicza do generowania struktury kalendarza
