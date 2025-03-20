@@ -10,13 +10,13 @@ function generateHourColumn() {
     "week-layout__grid-hour-column"
   ).length;
 
-  let hourColumn = document.getElementsByClassName(
+  let hour_column = document.getElementsByClassName(
     "week-layout__grid-hour-column"
   )[indx - 1];
 
   // Generowanie godzin w kolumnie
   for (let i = 1; i < 24; i++) {
-    hourColumn.innerHTML += `
+    hour_column.innerHTML += `
           <p class=" week-layout__grid-hour numeric-font">
           ${i.toString().padStart(2, "0")}:00
           </p>`;
