@@ -4,7 +4,7 @@ import { monday_first } from "./utils.js";
 const ms_in_day = 86400000;
 const current_date = new Date(Date.now());
 
-// definicja date z domyślmy ustawieniem obecnej daty
+// definicja date z domyślnym ustawieniem obecnej daty
 let date = current_date;
 
 /**
