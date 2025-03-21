@@ -1,0 +1,49 @@
+{% from 'components/nav_bar.html' import render_nav_bar %} {% from
+'components/schedule_day.html' import render_schedule_day %}
+
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Harmonogram</title>
+    {% assets "sass_all" %} <link rel=stylesheet type=text/css href="{{
+    ASSET_URL }}"> {% endassets %}
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@300&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    {{ render_nav_bar("Harmonogram") }}
+
+    <main class="schedule__main">
+      {{ render_schedule_day("12.03.2025", "ŚRODA", [{'title': "Zadanie 1",
+      'description': "opis zadanie jedenopis zadanie jedenopis zadanie jedenopis
+      zadanie jedenopis zadanie jedenopis zadanie jedenopis zadanie jedenopis
+      zadanie jedenopis zadanie jeden", 'duration': "cały dzień" }, { 'title':
+      "Zadanie 2", 'description': "opis zadanie jedenopis zadanie jedenopis
+      zadanie jedenopis zadanie jedenopis zadanie jedenopis zadanie jedenopis
+      zadanie jedenopis zadanie jedenopis zadanie jeden", 'duration': "17:30"
+      }]) }}
+      <!--  -->
+      {{ render_schedule_day("13.03.2025", "CZWARTEK", [{'title': "Zadanie 3",
+      'description': "opis zadanie jedenopis zadanie jedenopis zadanie jedenopis
+      zadanie jedenopis zadanie jedenopis zadanie jedenopis zadanie jedenopis
+      zadanie jedenopis zadanie jeden", 'duration': "09:30 - 16:00" }, { title:
+      "Zadanie 4", 'description': "opis zadanie jedenopis zadanie jedenopis
+      zadanie jedenopis zadanie jedenopis zadanie jedenopis zadanie jedenopis
+      zadanie jedenopis zadanie jedenopis zadanie jeden", 'duration': "20:30 -
+      23:59 " }]) }}
+      <!--  -->
+      {{ render_schedule_day("14.03.2025", "PIĄTEK", [{ 'title': "Zadanie 4",
+      'description': "opis zadanie jedenopis zadanie jedenopis zadanie jedenopis
+      zadanie jedenopis zadanie jedenopis zadanie jedenopis zadanie jedenopis
+      zadanie jedenopis zadanie jeden", 'duration': "00:00 - 04:00" }]) }}
+    </main>
+
+    <button class="scedule__btn numeric-font">Dodaj nowe wydarzenie</button>
+  </body>
+</html>

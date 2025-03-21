@@ -12,7 +12,17 @@ app = Flask(__name__, template_folder = '../frontend')
 assets = Environment(app)
 app.static_folder = '../frontend/static'
 assets.url = app.static_url_path
-sass = Bundle('sass/global.sass','sass/month.sass', 'sass/nav_bar.sass', 'sass/small_calendar.sass', 'sass/week.sass',  filters=['libsass'], output='all.css')
+sass = Bundle(
+    'sass/global.sass',
+    'sass/month.sass', 
+    'sass/nav_bar.sass', 
+    'sass/small_calendar.sass', 
+    'sass/week.sass', 
+    'sass/schedule.sass', 
+    'sass/schedule_day.sass',  
+    filters=['libsass'], 
+    output='all.css'
+)
 assets.register('sass_all', sass)
 
 # Database initialization
@@ -38,6 +48,12 @@ def week():
     if request.method == 'GET':
         test = ['test1', 'test2', 'test3']
         return render_template('week.html', test=test)
+    
+@app.route('/harmonogram', methods=['GET',"POST"])
+def schedule():
+    if request.method == 'GET':        
+        date = datetime.now()
+        return render_template('schedule.html', date = date)
     
 with app.app_context():
     db.create_all()
