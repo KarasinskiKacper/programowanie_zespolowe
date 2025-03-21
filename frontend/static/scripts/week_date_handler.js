@@ -1,4 +1,5 @@
 import { monday_first } from "./utils.js";
+import { resetTable, populateTable } from "./table_utils.js";
 
 // stałe
 const ms_in_day = 86400000;
@@ -17,7 +18,10 @@ function changeWeek(offset = 0) {
   // ustawienie daty na podstawie offsetu
   let day_of_week = monday_first(date.getDay());
   let time = date.getTime();
-  date = new Date(time - day_of_week * ms_in_day + ms_in_day * 7 * offset);
+  const start_date = new Date(
+    time - day_of_week * ms_in_day + ms_in_day * 7 * offset
+  );
+  date = new Date(start_date);
 
   // ustawienie tekstu z datą początku tygodnia
   document.getElementById(
@@ -53,6 +57,8 @@ function changeWeek(offset = 0) {
 
   // ustawienie tekstu z datą końca tygodnia
   date.setTime(date.getTime() - ms_in_day);
+  const end_date = new Date(date);
+
   document.getElementById(
     "current-week__text--end"
   ).innerHTML = `<span class="numeric-font">${date
@@ -61,6 +67,13 @@ function changeWeek(offset = 0) {
     .padStart(2, "0")}</span> ${date.toLocaleString("pl-PL", {
     month: "long",
   })} <span class="numeric-font">${date.getFullYear()}</span>`;
+
+  // Wyczyszczenie tabeli ze starych zadań i wstawienie zadań z wybranego tygodnia
+  resetTable();
+  //TODO implementacja populateTable
+  // funkcji, która wstawia zadania z bazy danych występujące między start_date, end_date za pomocą funkcji
+  // insertTask(day_of_week, start_time, end_time, task_title, task_text, task_id, color)
+  populateTable(start_date, end_date);
 }
 
 // Wygenerowanie obecnego tygodnia
