@@ -1,11 +1,15 @@
 {% macro render_schedule_day(date, week_day, tasks) %}
 <div class="schedule-day">
-  <h1 class="schedule-day__date">{{date}} {{week_day}}</h1>
+  <h1 class="schedule-day__date">
+    <span class="numeric-font">{{date}} </span>{{week_day}}
+  </h1>
   {% for task in tasks %}
   <div class="schedule-day__task-wrapper">
     <div class="schedule-day__task-title-wrapper">
       <h2 class="schedule-day__task-title">{{task['title']}}</h2>
-      <p class="schedule-day__task-duration">{{task['duration']}}</p>
+      <p class="schedule-day__task-duration numeric-font">
+        {{task['duration']}}
+      </p>
     </div>
 
     <p class="schedule-day__task-description">{{task['description']}}</p>
