@@ -25,6 +25,7 @@ fetch(`/api/tasks/${date.getFullYear()}/${date.getMonth() + 1}`)
           }
           tasksByDay[task.day].push(task);
       });
+      
       // pętla generująca html dla głównego kalendarza z zadaniami
       let new_innerhtml = "";
       let counter = 1;
