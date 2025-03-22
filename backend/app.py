@@ -54,8 +54,8 @@ def add_test_task():
     # Dodaj zadanie
     test_task = Task(
         name='Spotkanie testowe',
-        start=datetime(2025, 4, 22, 10, 0),  # Zadanie na 23 marca 2025
-        end=datetime(2025, 4, 22, 12, 0),
+        start=datetime(2025, 4, 25, 10, 0),  # Zadanie na 23 marca 2025
+        end=datetime(2025, 4, 26, 12, 0),
         description='To jest testowe zadanie dodane na sztywno do bazy danych.',
         id_user=user.id_user,
         type=1
@@ -110,8 +110,9 @@ def week():
     
 with app.app_context():
     db.create_all()
-    add_test_user()
-    add_test_task()
+# odkomentuj aby dodać testowego użytkownika lub zadanie
+    # add_test_user()
+    # add_test_task()
     
 if __name__ == '__main__':
     app.run(debug = True)

@@ -13,82 +13,62 @@ export function generate_main_calendar(date) {
   let counter = 1;
   let is_past_month = true;
 
-  // pętla generująca html dla głównego kalendarza
-  calendar.forEach((week) => {
-    week.forEach((day) => {
-
-      if (day === counter) {
-      // Pobierz zadania z API
-        fetch(`/api/tasks/${date.getFullYear()}/${date.getMonth() + 1}`)
-          .then(response => response.json())
-          .then(tasks => {
-              // Grupuj zadania według dni
-              const tasksByDay = {};
-              tasks.forEach(task => {
-                  if (!tasksByDay[task.day]) {
-                      tasksByDay[task.day] = [];
-                  }
-                  tasksByDay[task.day].push(task);
-              });
-
-              // Generuj kalendarz z zadaniami
-              let new_innerhtml = "";
-              let counter = 1;
-              let is_past_month = true;
-
-              calendar.forEach((week) => {
-                  week.forEach((day) => {
-                      if (day === counter) {
-                          // Sprawdź, czy dla tego dnia są zadania
-                          const dayTasks = tasksByDay[day] || [];
-                          const tasksHtml = dayTasks.map(task => 
-                              `<p class="month__main-calendar-days-task">${task.name}</p>`
-                          ).join('');
-
-                          new_innerhtml += `<div class="month__main-calendar-day">
-                              <p
-                                class="month__main-calendar-days-text ${
-                                  is_current_month &&
-                                  day === current_date.getDate() &&
-                                  "month__main-calendar-days-text--today"
-                                } ${
-                                  dayTasks.length > 0 &&
-                                  "month__main-calendar-days-text--task"
-                                }"
-                              >
-                                ${day}
-                              </p>
-                              ${tasksHtml}
-                            </div>`;
-                          counter++;
-                          is_past_month = false;
-                      } else {
-                        new_innerhtml += `<div class="month__main-calendar-day">
-                        <p
-                          class="month__main-calendar-days-text month__main-calendar-days-text--${
-                            is_past_month ? "past" : "future"
-                          }"
-                        >
-                          ${day}
-                        </p>
-                        <p class="month__main-calendar-days-task"></p>
-                      </div>`;
-                  }
-                  });
-              });
-
-              main_calendar.innerHTML = new_innerhtml;
+// Pobierz zadania z API
+fetch(`/api/tasks/${date.getFullYear()}/${date.getMonth() + 1}`)
+  .then(response => response.json())
+  .then(tasks => {
+      // Grupuj zadania według dni
+      const tasksByDay = {};
+      tasks.forEach(task => {
+          if (!tasksByDay[task.day]) {
+              tasksByDay[task.day] = [];
+          }
+          tasksByDay[task.day].push(task);
+      });
+      // pętla generująca html dla głównego kalendarza z zadaniami
+      let new_innerhtml = "";
+      let counter = 1;
+      let is_past_month = true;
+      calendar.forEach((week) => {
+          week.forEach((day) => {
+              if (day === counter) {
+                  // Sprawdź, czy dla tego dnia są zadania
+                  const dayTasks = tasksByDay[day] || [];
+                  const tasksHtml = dayTasks.map(task => 
+                      `<p class="month__main-calendar-days-task">${task.name}</p>`
+                  ).join('');
+                  new_innerhtml += `<div class="month__main-calendar-day">
+                      <p
+                        class="month__main-calendar-days-text ${
+                          is_current_month &&
+                          day === current_date.getDate() &&
+                          "month__main-calendar-days-text--today"
+                        } ${
+                          dayTasks.length > 0 &&
+                          "month__main-calendar-days-text--task"
+                        }"
+                      >
+                        ${day}
+                      </p>
+                      ${tasksHtml}
+                    </div>`;
+                  counter++;
+                  is_past_month = false;
+              } else {
+                new_innerhtml += `<div class="month__main-calendar-day">
+                <p
+                  class="month__main-calendar-days-text month__main-calendar-days-text--${
+                    is_past_month ? "past" : "future"
+                  }"
+                >
+                  ${day}
+                </p>
+                <p class="month__main-calendar-days-task"></p>
+              </div>`;
+          }
           });
-      } else {
-        new_innerhtml += `
-            <div class="month__main-calendar-days-item month__main-calendar-days-item--${
-                is_past_month ? "past" : "future"
-            }-month">
-                ${day}
-            </div>`;
-      }
-    });
-    is_past_month = false;
+      });
+      main_calendar.innerHTML = new_innerhtml;
   });
   main_calendar.innerHTML = new_innerhtml;
 }
