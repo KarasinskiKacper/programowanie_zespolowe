@@ -132,11 +132,12 @@ function loadPreviousTasks(tasksToLoad) {
     );
   });
 
+  // zapisanie starej wysokości scrolla
+  const oldHeight = scheduleContainer.scrollHeight;
   // wstawienie danych o nowych zadaniach na początek kontenera
   scheduleContainer.innerHTML = newInnerHtml + scheduleContainer.innerHTML;
 
   // przesunięcie scrolla na poprawną wysokość
-  const oldHeight = scheduleContainer.scrollHeight;
   scheduleContainer.scroll(0, scheduleContainer.scrollHeight - oldHeight);
 }
 
