@@ -1,4 +1,5 @@
-{% from 'components/nav_bar.html' import render_nav_bar %}
+{% from 'components/nav_bar.html' import render_nav_bar %} {% from
+'components/add_task.html' import render_add_task %}
 
 <!DOCTYPE html>
 <html lang="pl">
@@ -19,8 +20,9 @@
     {{ render_nav_bar("Harmonogram") }}
 
     <main class="schedule__main"></main>
-    <script src="./static/scripts/generate_schedule_task.js"></script>
+    <script src="./static/scripts/generate_schedule.js"></script>
 
+    {{ render_add_task() }}
     <button class="scedule__btn numeric-font">Dodaj nowe wydarzenie</button>
   </body>
 </html>
