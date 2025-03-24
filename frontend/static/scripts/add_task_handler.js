@@ -14,11 +14,13 @@ const timeInput = document.querySelectorAll(".add-task__input-time");
 // listener ogólny
 addTaksWrapper.addEventListener("click", (e) => {
   if (e.target.className === "add-task__wrapper") {
-    if (customRepeatWrapper.classList.contains("add-task__custom-repeat-wrapper--hidden")) {
-      addTaksWrapper.classList.add("add-task__wrapper--hidden");
-    } else {
-      customRepeatWrapper.classList.add("add-task__custom-repeat-wrapper--hidden");
-    }
+    // TODO usunąć albo odkomentować
+    // if (customRepeatWrapper.classList.contains("add-task__custom-repeat-wrapper--hidden")) {
+    addTaksWrapper.classList.add("add-task__wrapper--hidden");
+    // TODO usunąć albo odkomentować
+    // } else {
+    //   customRepeatWrapper.classList.add("add-task__custom-repeat-wrapper--hidden");
+    // }
   }
 });
 // TODO usunąć albo odkomentować
