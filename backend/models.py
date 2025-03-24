@@ -21,7 +21,7 @@ class User(db.Model):
 class Task(db.Model):
     __tablename__ = 'Task'
     id_task: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    name: Mapped[str] = mapped_column(String(80), nullable=False) 
+    name: Mapped[str] = mapped_column(String(80), nullable=False)
     start: Mapped[str] = mapped_column(DateTime, nullable=False)
     end: Mapped[str] = mapped_column(DateTime, nullable=True)
     description: Mapped[str] = mapped_column(String(500), nullable=True)

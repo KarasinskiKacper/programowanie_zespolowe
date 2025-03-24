@@ -19,57 +19,51 @@
     {{ render_nav_bar("Tydzień") }}
 
     <header class="current-week">
-      <div class="current-week__arrow"><-</div>
-
-      <h1 class="current-week__text">
-        <span class="numeric-font">09</span> Marzec
-        <span class="numeric-font">2025</span>
-      </h1>
-
+      <div id="current-week__arrow--backward" class="current-week__arrow">
+        <-
+      </div>
+      <h1 id="current-week__text--start" class="current-week__text"></h1>
       <h1 class="current-week__text current-week__text--separator">-</h1>
-
-      <h1 class="current-week__text">
-        <span class="numeric-font">15</span> Październik
-        <span class="numeric-font">2025</span>
-      </h1>
-
-      <div class="current-week__arrow">-></div>
+      <h1 id="current-week__text--end" class="current-week__text"></h1>
+      <div id="current-week__arrow--forward" class="current-week__arrow">
+        ->
+      </div>
     </header>
 
     <main class="week-layout">
       <section class="week-layout__days-container">
-        <div class="week-layout__day week-layout__day--current">
+        <div class="week-layout__day week-layout__day">
           <h2 class="week-layout__day--name">Poniedziałek</h2>
-          <h1 class="week-layout__day--date numeric-font">9</h1>
+          <h1 class="week-layout__day--date numeric-font"></h1>
         </div>
         <div class="week-layout__day">
           <h2 class="week-layout__day--name">Wtorek</h2>
-          <h1 class="week-layout__day--date numeric-font">10</h1>
+          <h1 class="week-layout__day--date numeric-font"></h1>
         </div>
         <div class="week-layout__day">
           <h2 class="week-layout__day--name">Środa</h2>
-          <h1 class="week-layout__day--date numeric-font">11</h1>
+          <h1 class="week-layout__day--date numeric-font"></h1>
         </div>
         <div class="week-layout__day">
           <h2 class="week-layout__day--name">Czwartek</h2>
-          <h1 class="week-layout__day--date numeric-font">12</h1>
+          <h1 class="week-layout__day--date numeric-font"></h1>
         </div>
         <div class="week-layout__day">
           <h2 class="week-layout__day--name">Piątek</h2>
-          <h1 class="week-layout__day--date numeric-font">13</h1>
+          <h1 class="week-layout__day--date numeric-font"></h1>
         </div>
         <div class="week-layout__day">
           <h2 class="week-layout__day--name">Sobota</h2>
-          <h1 class="week-layout__day--date numeric-font">14</h1>
+          <h1 class="week-layout__day--date numeric-font"></h1>
         </div>
         <div class="week-layout__day">
           <h2 class="week-layout__day--name">Niedziela</h2>
-          <h1 class="week-layout__day--date numeric-font">15</h1>
+          <h1 class="week-layout__day--date numeric-font"></h1>
         </div>
       </section>
-      <div class="week-layout__grid-wrapper">
-        <script src="./static/scripts/generate_table.js"></script>
-      </div>
+      <div class="week-layout__grid-wrapper"></div>
     </main>
   </body>
+  <script type="module" src="./static/scripts/generate_table.js"></script>
+  <script type="module" src="./static/scripts/week_date_handler.js"></script>
 </html>
