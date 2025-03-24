@@ -2,10 +2,10 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-# Initialize SQLAlchemy (this will be used in app.py)
+# Inicjalizacja SQLAlchemy
 db = SQLAlchemy()
 
-# Define the Users table
+# Definicja tabeli User
 class User(db.Model):
     __tablename__ = 'User'
     id_user: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
@@ -17,7 +17,7 @@ class User(db.Model):
     def __repr__(self):
         return f'<User id: {self.id_user} nickname: {self.nickname}>'
 
-# Define the Tasks table
+# Definicja tabeli Task
 class Task(db.Model):
     __tablename__ = 'Task'
     id_task: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
@@ -25,38 +25,48 @@ class Task(db.Model):
     start: Mapped[str] = mapped_column(DateTime, nullable=False)
     end: Mapped[str] = mapped_column(DateTime, nullable=True)
     description: Mapped[str] = mapped_column(String(500), nullable=True)
-    id_user: Mapped[int] = mapped_column(Integer, ForeignKey('User.id_user'), nullable=False)  # Foreign key to Users table
+    completed: Mapped[int] = mapped_column(Integer, nullable=False)
+    id_user: Mapped[int] = mapped_column(Integer, ForeignKey('User.id_user'), nullable=False)
     type: Mapped[int] = mapped_column(Integer, nullable=False)
-
-    #user = db.relationship('User', backref=db.backref('Task', lazy=True))
-    
-
 
     def __repr__(self):
         return f'<Task id: {self.id_task} name: {self.name}>'
 
-# Define the TaskRepeatWeekly table
-class TaskRepeatWeekly(db.Model):
-    __tablename__ = 'TaskRepeatWeekly'
+# Definicja tabeli Weekly
+class Weekly(db.Model):
+    __tablename__ = 'Weekly'
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    id_task: Mapped[int] = mapped_column(Integer, ForeignKey('Task.id_task'), nullable=False)  # Foreign key to Tasks table
+    id_task: Mapped[int] = mapped_column(Integer, ForeignKey('Task.id_task'), nullable=False)
     weekday: Mapped[int] = mapped_column(Integer, nullable=False)
-
-    #task = db.relationship('Task', backref=db.backref('TaskRepeatWeekly', lazy=True))
+    date_start: Mapped[str] = mapped_column(DateTime, nullable=False)
+    date_end: Mapped[str] = mapped_column(DateTime, nullable=True)
 
     def __repr__(self):
         return f'<TaskRepeatWeekly TaskID {self.id_task} Weekday {self.weekday}>'
 
-# Define the TaskRepeatMonthly table
-class TaskRepeatMonthly(db.Model):
-    __tablename__ = 'TaskRepeatMonthly'
+# Definicja tabeli Monthly
+class Monthly(db.Model):
+    __tablename__ = 'Monthly'
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    id_task: Mapped[int] = mapped_column(Integer, ForeignKey('Task.id_task'), nullable=False)  # Foreign key to Tasks table
+    id_task: Mapped[int] = mapped_column(Integer, ForeignKey('Task.id_task'), nullable=False)
     day_of_month: Mapped[int] = mapped_column(Integer, nullable=True)
     week_of_month: Mapped[int] = mapped_column(Integer, nullable=True)
     weekday: Mapped[int] = mapped_column(Integer, nullable=True)
-
-    #task = db.relationship('Task', backref=db.backref('monthly_repeats', lazy=True))
+    date_start: Mapped[str] = mapped_column(DateTime, nullable=False)
+    date_end: Mapped[str] = mapped_column(DateTime, nullable=True)
 
     def __repr__(self):
         return f'<TaskRepeatMonthly TaskID {self.id_task} Day {self.day_of_month} Week {self.week_of_month} Weekday {self.weekday}>'
+
+# Definicja tabeli Yearly
+class Yearly(db.Model):
+    __tablename__ = 'Yearly'
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    id_task: Mapped[int] = mapped_column(Integer, ForeignKey('Task.id_task'), nullable=False)
+    month: Mapped[int] = mapped_column(Integer, nullable=False)
+    day: Mapped[int] = mapped_column(Integer, nullable=False)
+    date_start: Mapped[str] = mapped_column(DateTime, nullable=False)
+    date_end: Mapped[str] = mapped_column(DateTime, nullable=True)
+
+    def __repr__(self):
+        return f'<TaskRepeatYearly TaskID {self.id_task} Month {self.month} Day {self.day}>'
