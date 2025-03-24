@@ -2,7 +2,7 @@ from flask import Flask, request, render_template, jsonify
 from flask_assets import Environment, Bundle
 from datetime import datetime, timedelta
 
-from models import db, User, Task, TaskRepeatWeekly, TaskRepeatMonthly
+from models import db, User, Task, Yearly, Weekly, Monthly
 from sqlalchemy import exists
 import os
 
@@ -57,11 +57,12 @@ def add_test_task():
         start=datetime(2025, 3, 21, 10, 0),
         end=datetime(2025, 3, 21, 12, 0),
         description='To jest testowe zadanie dodane na sztywno do bazy danych.',
+        completed=False,
         id_user=user.id_user,
         type=1
     )
     
-    test_task_repeat = TaskRepeatWeekly(
+    test_task_repeat = Weekly(
         id_task=10,
         weekday = 4
     )
@@ -105,12 +106,12 @@ def get_tasks(year, month):
     
     for task in recurring_tasks:
         if task.type == 1:
-            weekly_repeats = TaskRepeatWeekly.query.filter_by(id_task=task.id_task).all()
+            weekly_repeats = Weekly.query.filter_by(id_task=task.id_task).all()
             
             for repeat in weekly_repeats:
                 current_date_iter = first_day
                 while current_date_iter <= last_day:
-                    if current_date_iter.weekday() == repeat.weekday and current_date_iter >= current_date:
+                    if current_date_iter.weekday() == repeat.weekday and current_date_iter >= current_date and (repeat.date_end is None or current_date_iter <= repeat.date_end):
                         tasks_json.append({
                             'id': task.id_task,
                             'name': task.name,
@@ -124,12 +125,12 @@ def get_tasks(year, month):
                     current_date_iter += timedelta(days=1)
     
         elif task.type == 2:
-            monthly_repeats = TaskRepeatMonthly.query.filter_by(id_task=task.id_task).all()
+            monthly_repeats = Monthly.query.filter_by(id_task=task.id_task).all()
             for repeat in monthly_repeats:
                 # Jeśli określony jest konkretny dzień miesiąca
                 if repeat.day_of_month:
                     last_day_of_month = last_day.day
-                    if repeat.day_of_month <= last_day_of_month:
+                    if repeat.day_of_month <= last_day_of_month and (repeat.date_end is None or task_date <= repeat.date_end):
                         task_date = datetime(year, month, repeat.day_of_month)
                         if task_date >= current_date:
                             tasks_json.append({
@@ -151,7 +152,7 @@ def get_tasks(year, month):
 
                     target_date = first_occurrence + timedelta(weeks=(repeat.week_of_month - 1))
 
-                    if target_date.month == month and target_date >= current_date:
+                    if target_date.month == month and target_date >= current_date and (repeat.date_end is None or target_date <= repeat.date_end):
                         tasks_json.append({
                             'id': task.id_task,
                             'name': task.name,
@@ -164,6 +165,25 @@ def get_tasks(year, month):
                             'weekday': repeat.weekday
                         })
                         current_date += timedelta(days=1)
+                
+                elif task.type == 3:
+                    yearly_repeats = Yearly.query.filter_by(id_task=task.id_task).all()
+                    for repeat in yearly_repeats:
+                        # Sprawdź czy zadanie przypada w wybranym miesiącu i roku
+                        if repeat.month == month:
+                            task_date = datetime(year, month, repeat.day)
+                            # Sprawdź czy data zadania mieści się w zakresie powtarzania
+                            if task_date >= current_date and (repeat.date_end is None or task_date <= repeat.date_end):
+                                tasks_json.append({
+                                    'id': task.id_task,
+                                    'name': task.name,
+                                    'start': task.start.strftime('%Y-%m-%d %H:%M:%S'),
+                                    'end': task.end.strftime('%Y-%m-%d %H:%M:%S') if task.end else None,
+                                    'description': task.description,
+                                    'type': task.type,
+                                    'day': repeat.day,
+                                    'month': repeat.month
+                                })
     
     return jsonify(tasks_json)
 
