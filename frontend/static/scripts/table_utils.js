@@ -70,5 +70,21 @@ function insertTask(
  * @returns {void}
  */
 export function populateTable(start_date, end_date) {
-  return;
+    const start_date_iso = start_date.toISOString();
+    const end_date_iso = end_date.toISOString();
+    fetch(`/tasks?start_date=${start_date_iso}&end_date=${end_date_iso}`)
+        .then((response) => response.json())  // Parsowanie odpowiedzi jako JSON
+        .then((tasks) => {
+            // Wstawienie zadań do tabeli
+            tasks.forEach((task) => {
+                const { day_of_week, start_time, end_time, task_title, task_text, task_id, color } = task;
+
+                // Wstawianie zadania do odpowiedniej komórki
+                insertTask(day_of_week, start_time, end_time, task_title, task_text, task_id, color);
+            });
+        })
+        .catch((error) => {
+            console.error("Błąd pobierania zadań:", error);
+        });
 }
+
