@@ -1,6 +1,70 @@
 {% macro render_add_task() %}
-<div class="add-taks__wrapper">
-  <form action="" method="post" class="add-Task__form">aaa</form>
+<div class="add-task__wrapper add-task__wrapper--hidden">
+  <form action="/" method="post" class="add-Task__form">
+    <div class="add-task__title-wrapper">
+      <input
+        class="add-Task__title"
+        type="text"
+        name="title"
+        placeholder="Wstaw tytuł"
+      />
+    </div>
+
+    <div class="add-task__check-wrapper">
+      <label class="add-task__label" for="all_day_check">Cały dzień</label>
+      <input
+        class="add-task__all_day_check"
+        type="checkbox"
+        name="all_day_check"
+      />
+    </div>
+
+    <label class="add-task__label" for="start_date">Start</label>
+    <div class="add-task__time_wrapper">
+      <!-- <input
+        class="add-task__input-date"
+        type="text"
+        placeholder="aaaa"
+        onfocus="(this.type='date')"
+        onblur="(this.type='date')"
+        name="start_date"
+      /> -->
+      <input class="add-task__input-date" type="date" name="start_date" />
+      -
+      <input class="add-task__input-time" type="time" name="start_hour" />
+    </div>
+
+    <label class="add-task__label" for="start_date">Koniec</label>
+    <div class="add-task__time_wrapper">
+      <input class="add-task__input-date" type="date" name="end_date" />
+      -
+      <input class="add-task__input-time" type="time" name="end_hour" />
+    </div>
+
+    <label class="add-task__label" for="start_date">Powtarzanie</label>
+    <select name="repeat" class="add-task__repeat-select">
+      <option class="add-task__repeat-option" value="none">Nie</option>
+      <option class="add-task__repeat-option" value="daily">Codziennie</option>
+      <option class="add-task__repeat-option" value="weekly">Tygodniowo</option>
+      <option class="add-task__repeat-option" value="monthly">
+        Miesięcznie
+      </option>
+      <option class="add-task__repeat-option" value="yearly">Rocznie</option>
+      <option class="add-task__repeat-option" value="custom">
+        Niestandardowe
+      </option>
+    </select>
+
+    <label class="add-task__label" for="description">Opis</label>
+    <textarea
+      class="add-task__description"
+      name="description"
+      cols="30"
+    ></textarea>
+    <!-- <input class="add-task__description" type="text" name="description" /> -->
+
+    <input class="add-task__submit numeric-font" type="submit" value="Dodaj" />
+  </form>
   <script src="../static/scripts/add_task_handler.js"></script>
 </div>
 {% endmacro %}

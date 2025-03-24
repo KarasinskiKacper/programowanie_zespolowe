@@ -1,7 +1,7 @@
-const addTaksWrapper = document.querySelector(".add-taks__wrapper");
+const addTaksWrapper = document.querySelector(".add-task__wrapper");
 
 addTaksWrapper.addEventListener("click", (e) => {
-  if (e.target.className === "add-taks__wrapper") {
-    addTaksWrapper.className = "add-taks__wrapper--hidden";
+  if (e.target.className === "add-task__wrapper") {
+    addTaksWrapper.classList.add("add-task__wrapper--hidden");
   }
 });
