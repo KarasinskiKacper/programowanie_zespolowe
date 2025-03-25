@@ -45,6 +45,7 @@ allDayCheckbox.addEventListener("change", () => {
 });
 
 // ustawienie domyślych wartości dla dat i godzin
+
 let timeDate = new Date();
 let timeDateValues = timeDate.toISOString().split("T");
 
@@ -81,6 +82,17 @@ dateInput[1].addEventListener("change", () => {
     timeInput[1].min = timeInput[0].value;
   }
 });
+
+/**
+ * Ustawienie domyślnych dat dla popupa
+ *
+ * @param {Date} date - data do ustawienia.
+ * @returns {void}
+ */
+export function setDefaultDates(date) {
+  dateInput[0].value = date.toISOString().split("T")[0];
+  dateInput[1].value = date.toISOString().split("T")[0];
+}
 
 // TODO usunąć albo odkomentować
 // listener włączający popup niestandardowego powtarzania po wybraniu opcji "Niestandardowe"
