@@ -48,16 +48,19 @@ function insertTask(
   table_cells[day_of_week + start_hour * 7].innerHTML = `
   <div  style='
               transform: translateY(${-1 + start_minutes * 0.4}px);
-              height: ${
-                ((end_hour - start_hour) * 60 + (end_minutes - start_minutes)) *
-                0.4
-              }px;
+              height: ${((end_hour - start_hour) * 60 + (end_minutes - start_minutes)) * 0.4}px;
               background-color: #${color}' 
         id='week-layout__grid-task-${task_id}' 
         class='week-layout__grid-task'>
     <h1 class='week-layout__grid-task-title'>${task_title}</h1>
     <p class='week-layout__grid-task-text'>${task_text}</p>
   </div>`;
+
+  // dodanie listenera zmieniającego stronę na /harmonogram dla zadań
+  table_cells[day_of_week + start_hour * 7].children[0].addEventListener("click", () => {
+    // TODO dodać informację o klikniętym dniu
+    document.location.href = "/harmonogram";
+  });
 }
 
 //TODO implementacja populateTable
@@ -70,21 +73,20 @@ function insertTask(
  * @returns {void}
  */
 export function populateTable(start_date, end_date) {
-    const start_date_iso = start_date.toISOString();
-    const end_date_iso = end_date.toISOString();
-    fetch(`/tasks?start_date=${start_date_iso}&end_date=${end_date_iso}`)
-        .then((response) => response.json())  // Parsowanie odpowiedzi jako JSON
-        .then((tasks) => {
-            // Wstawienie zadań do tabeli
-            tasks.forEach((task) => {
-                const { day_of_week, start_time, end_time, task_title, task_text, task_id, color } = task;
+  const start_date_iso = start_date.toISOString();
+  const end_date_iso = end_date.toISOString();
+  fetch(`/tasks?start_date=${start_date_iso}&end_date=${end_date_iso}`)
+    .then((response) => response.json()) // Parsowanie odpowiedzi jako JSON
+    .then((tasks) => {
+      // Wstawienie zadań do tabeli
+      tasks.forEach((task) => {
+        const { day_of_week, start_time, end_time, task_title, task_text, task_id, color } = task;
 
-                // Wstawianie zadania do odpowiedniej komórki
-                insertTask(day_of_week, start_time, end_time, task_title, task_text, task_id, color);
-            });
-        })
-        .catch((error) => {
-            console.error("Błąd pobierania zadań:", error);
-        });
+        // Wstawianie zadania do odpowiedniej komórki
+        insertTask(day_of_week, start_time, end_time, task_title, task_text, task_id, color);
+      });
+    })
+    .catch((error) => {
+      console.error("Błąd pobierania zadań:", error);
+    });
 }
-
