@@ -1,0 +1,88 @@
+{% macro render_edit_task() %}
+<section class="edit-task__wrapper edit-task__wrapper--hidden">
+  <form action="/" method="post" class="edit-task__form">
+    <div class="edit-task__title-wrapper">
+      <input class="edit-task__title" type="text" name="title" placeholder="Wstaw tytuł" />
+    </div>
+
+    <div class="edit-task__check-wrapper">
+      <label class="edit-task__label" for="all_day_check">Cały dzień</label>
+      <input class="edit-task__all_day_check" type="checkbox" name="all_day_check" />
+    </div>
+
+    <label class="edit-task__label" for="start_date">Start</label>
+    <div class="edit-task__time_wrapper">
+      <input class="edit-task__input-date" type="date" name="start_date" />
+      <span class="edit-task__input-date-dash">-</span>
+      <input
+        class="edit-task__input-time edit-task__input--disableable"
+        type="time"
+        name="start_hour"
+      />
+    </div>
+
+    <label class="edit-task__label" for="end_date">Koniec</label>
+    <div class="edit-task__time_wrapper">
+      <input
+        class="edit-task__input-date edit-task__input--disableable"
+        type="date"
+        name="end_date"
+      />
+      <span class="edit-task__input-date-dash">-</span>
+      <input
+        class="edit-task__input-time edit-task__input--disableable"
+        type="time"
+        name="end_hour"
+      />
+    </div>
+
+    <label class="edit-task__label" for="repeat_type">Powtarzanie</label>
+    <select name="repeat_type" class="edit-task__repeat-select">
+      <option class="edit-task__repeat-option" value="none">Nie</option>
+      <option class="edit-task__repeat-option" value="daily">Codziennie</option>
+      <option class="edit-task__repeat-option" value="weekly">Tygodniowo</option>
+      <option class="edit-task__repeat-option" value="monthly">Miesięcznie</option>
+      <option class="edit-task__repeat-option" value="yearly">Rocznie</option>
+      <!-- TODO usunąć albo odkomentować -->
+      <!-- <option class="edit-task__repeat-option" value="custom">
+        Niestandardowe
+      </option> -->
+    </select>
+
+    <!-- TODO usunąć albo odkomentować -->
+    <!-- <section class="edit-task__custom-repeat-wrapper edit-task__custom-repeat-wrapper--hidden">
+      <div class="edit-task__custom-repeat">
+        <h1 class="edit-task__custom-repeat-header">
+          Powtarzanie niestandardowe
+        </h1>
+
+        <label for="repeat_custom_length" class="edit-task__small-label">Powtarzaj co</label>
+        <input type="number" name="repeat_custom_length" class="edit-task__custom-repeat-input-number">
+        <select name="repeat_custom_length_type" id="">
+          <option value="days">Dni</option>
+          <option value="weeks">tygodni</option>
+          <option value="months">miesiący</option>
+        </select>
+        
+        <label for="repeat_custom_start" class="edit-task__small-label">Rozpoczyna się</label>
+
+        <label for="repeat_custom_end" class="edit-task__small-label">Kończy się</label>
+      </div>
+    </section> -->
+
+    <label class="edit-task__label" for="color">Kolor</label>
+    <input class="edit-task__input-color" type="color" name="color" value="#29A423" />
+
+    <label class="edit-task__label" for="description">Opis</label>
+    <textarea class="edit-task__description" name="description" cols="30"></textarea>
+
+    <!-- <input class="edit-task__submit numeric-font" type="submit" value="Dodaj" /> -->
+    <div class="edit-task__submit-wrapper">
+      <input class="edit-task__remove numeric-font" name="remove" type="submit" value="Usuń" />
+      <input class="edit-task__submit numeric-font" name="submit" type="submit" value="Edytuj" />
+    </div>
+  </form>
+</section>
+
+<script src="../static/scripts/edit_task_handler.js"></script>
+{% endmacro %}

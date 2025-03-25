@@ -24,6 +24,7 @@ sass = Bundle(
     'sass/week.sass', 
     'sass/schedule.sass', 
     'sass/add_task.sass', 
+    'sass/edit_task.sass', 
     filters=['libsass'], 
     output='all.css'
 )
