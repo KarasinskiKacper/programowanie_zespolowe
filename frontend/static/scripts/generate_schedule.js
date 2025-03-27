@@ -1,6 +1,23 @@
 // przypisanie kontenera do zmiennej
 const scheduleContainer = document.querySelector(".schedule__main");
 
+function fetchData() {
+  const res = fetch(`/api/tasks/schedule/2025/3/25/8`)
+  .then((response) => response.json())
+  .then((tasks) => {
+    // Grupuj zadania według dni
+    const tasksByDay = {};
+    tasks.forEach((task) => {
+      if (!tasksByDay[task.day]) {
+        tasksByDay[task.day] = [];
+      }
+      tasksByDay[task.day].push(task);
+    });
+  });
+
+  return res
+}
+
 // TODO zmienna dla przykładowych zadań, usunąć po podpięciu bazy danych
 const tmpTasks = [
   {
@@ -58,7 +75,21 @@ const tmpTasks = [
  * @param {Array.<{date: String, weekDay: String, dayTask: Array.<{title: String, description: String, duration: String}>}>} tasksToLoad Dane taksków do załadowania
  * @returns {void}
  */
-function loadNextTasks(tasksToLoad) {
+function loadNextTasks() {
+  const tasksToLoad = fetch(`/api/tasks/schedule/2025/3/25/8`)
+  .then((response) => response.json())
+  .then((tasks) => {
+    // Grupuj zadania według dni
+    const tasksByDay = {};
+    tasks.forEach((task) => {
+      if (!tasksByDay[task.day]) {
+        tasksByDay[task.day] = [];
+      }
+      tasksByDay[task.day].push(task);
+    });
+  });
+  console.log(tasksToLoad);
+  
   // pętla wykonująca się po wszystkich dniach
   tasksToLoad.forEach((task) => {
     // stworzenie nowego elementu html dla dnia i przypisanie mu klasy
@@ -142,6 +173,8 @@ function loadPreviousTasks(tasksToLoad) {
 }
 
 // TODO przekazać dane zadań, które mają się załadować odrazu przy renderowaniu strony
+
+
 // pierwsze załadowanie zadań
 loadNextTasks(tmpTasks);
 

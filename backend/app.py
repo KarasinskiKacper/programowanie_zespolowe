@@ -56,6 +56,84 @@ def add_test_user():
         print("Użytkownik już istnieje")
 # ----------------------------------------------------------------
 
+@app.route('/api/tasks/schedule/<int:year>/<int:month>/<int:day>/<int:future>', methods=['GET'])
+def get_tasks_schedule(year, month, day, future=None):
+    print(year, month,day, future)
+    start_date = datetime(year, month, day)
+    tasks_json = []
+    
+    if future:
+        tasks = Task.query.filter(Task.start >= start_date).order_by(Task.start.desc()).limit(5)
+    else:
+        tasks = Task.query.filter(Task.start <= start_date).order_by(Task.start.asc()).limit(5)
+    
+    for task in tasks:
+        if task.type == 0:
+            tasks_json.append({
+                'id': task.id_task,
+                'name': task.name,
+                'start': task.start.strftime('%Y-%m-%d %H:%M:%S'),
+                'end': task.end.strftime('%Y-%m-%d %H:%M:%S') if task.end else None,
+                'description': task.description,
+                'type': task.type,
+                'day': task.start.day
+            })
+            
+        if task.type == 1:
+            weekly_repeats = Weekly.query.filter_by(id_task=task.id_task).all()
+            
+            max_date_query = tasks.limit(1)
+            for date in max_date_query:
+                max_date = date.start
+            min_date_query = tasks.limit(1)
+            for date in min_date_query:
+                min_date = date.start
+        
+            
+            for repeat in weekly_repeats:
+                current_date_iter = start_date
+                if future:
+                    while current_date_iter <= max_date:
+                        if current_date_iter.weekday() == repeat.weekday and (repeat.date_start <= current_date_iter and (repeat.date_end is None or current_date_iter <= repeat.date_end)):
+                            tasks_json.append({
+                                'id': task.id_task,
+                                'name': task.name,
+                                'start': task.start.strftime('%Y-%m-%d %H:%M:%S'),
+                                'end': task.end.strftime('%Y-%m-%d %H:%M:%S') if task.end else None,
+                                'description': task.description,
+                                'type': task.type,
+                                'day': current_date_iter.day,
+                                'weekday': repeat.weekday
+                            })
+                        current_date_iter += timedelta(days=1)
+                        
+                else:
+                    while current_date_iter >= min_date:
+                        if current_date_iter.weekday() == repeat.weekday and (repeat.date_start <= current_date_iter and (repeat.date_end is None or current_date_iter <= repeat.date_end)):
+                            tasks_json.append({
+                                'id': task.id_task,
+                                'name': task.name,
+                                'start': task.start.strftime('%Y-%m-%d %H:%M:%S'),
+                                'end': task.end.strftime('%Y-%m-%d %H:%M:%S') if task.end else None,
+                                'description': task.description,
+                                'type': task.type,
+                                'day': current_date_iter.day,
+                                'weekday': repeat.weekday
+                            })
+                        current_date_iter -= timedelta(days=1)
+    
+    def create_date(date_time):
+        date, time = date_time.split(" ")
+        year, month, day = date.split("-")
+        hour, minutes, sec = time.split(":")
+    
+        return datetime(int(year), int(month), int(day), int(hour), int(minutes), int(sec))
+    
+    tasks_json.sort(key = lambda x: create_date(x["start"]), reverse = not future)                    
+            
+    return jsonify(tasks_json)    
+
+        
 
 @app.route('/tasks', methods=['GET'])
 def get_tasks_week():
@@ -360,8 +438,10 @@ def schedule():
     
 with app.app_context():
     db.create_all()
+    # get_tasks_schedule(2025,3,25)
 # odkomentuj aby dodać testowego użytkownika lub zadanie
     # add_test_user()
     # add_test_task()
 if __name__ == '__main__':
     app.run(debug = True)
+    
