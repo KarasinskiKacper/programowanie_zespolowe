@@ -42,7 +42,7 @@ class Weekly(db.Model):
     date_end: Mapped[str] = mapped_column(DateTime, nullable=True)
 
     def __repr__(self):
-        return f'<TaskRepeatWeekly TaskID {self.id_task} Weekday {self.weekday}>'
+        return f'<Weekly TaskID {self.id_task} Weekday {self.weekday}>'
 
 # Definicja tabeli Monthly
 class Monthly(db.Model):
@@ -56,7 +56,7 @@ class Monthly(db.Model):
     date_end: Mapped[str] = mapped_column(DateTime, nullable=True)
 
     def __repr__(self):
-        return f'<TaskRepeatMonthly TaskID {self.id_task} Day {self.day_of_month} Week {self.week_of_month} Weekday {self.weekday}>'
+        return f'<Monthly TaskID {self.id_task} Day {self.day_of_month} Week {self.week_of_month} Weekday {self.weekday}>'
 
 # Definicja tabeli Yearly
 class Yearly(db.Model):
@@ -69,4 +69,4 @@ class Yearly(db.Model):
     date_end: Mapped[str] = mapped_column(DateTime, nullable=True)
 
     def __repr__(self):
-        return f'<TaskRepeatYearly TaskID {self.id_task} Month {self.month} Day {self.day}>'
+        return f'<Yearly TaskID {self.id_task} Month {self.month} Day {self.day}>'

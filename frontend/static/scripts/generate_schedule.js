@@ -76,7 +76,7 @@ const tmpTasks = [
  * @returns {void}
  */
 async function loadNextTasks() {
-  const tasksToLoad = await fetch(`/api/tasks/schedule/2025/3/25/8`)
+  const tasksToLoad = await fetch(`/api/tasks/schedule/2025/3/22/8`)
     .then((response) => response.json())
     .then((tasks) => {
       // Grupuj zadania według dni
@@ -155,9 +155,49 @@ async function loadNextTasks() {
  * @param {Array.<{date: String, weekDay: String, dayTask: Array.<{title: String, description: String, duration: String}>}>} tasksToLoad Dane taksków do załadowania
  * @returns {void}
  */
-function loadPreviousTasks(tasksToLoad) {
+async function loadPreviousTasks() {
   // zmienna przechowująca dane do wstawienia na początek kontenera
   let newInnerHtml = "";
+  const tasksToLoad = await fetch(`/api/tasks/schedule/2025/3/22/0`)
+    .then((response) => response.json())
+    .then((tasks) => {
+      // Grupuj zadania według dni
+      const tasksByDay = [];
+      let lastDay = null;
+      tasks.forEach((task) => {
+        let dateStart = task.start.split(" ")[0];
+        let weekDay = new Date(dateStart);
+        weekDay = weekDay.toLocaleString("pl-PL", {
+          weekday: "long",
+        });
+        let durationStart = task.start.split(" ")[1].split(":");
+        durationStart = durationStart[0] + ":" + durationStart[1];
+        let durationEnd = task.end.split(" ")[1].split(":");
+        durationEnd = durationEnd[0] + ":" + durationEnd[1];
+
+        if (dateStart !== lastDay) {
+          tasksByDay.push({
+            date: dateStart,
+            weekDay: weekDay,
+            dayTasks: [
+              {
+                title: task.name,
+                description: task.description,
+                duration: durationStart + " - " + durationEnd,
+              },
+            ],
+          });
+        } else {
+          tasksByDay[tasksByDay.length - 1].dayTasks.push({
+            title: task.name,
+            description: task.description,
+            duration: durationStart + " - " + durationEnd,
+          });
+        }
+        lastDay = dateStart;
+      });
+      return tasksByDay;
+    });
 
   // pętla wykonująca się po wszystkich dniach
   tasksToLoad.forEach((task) => {

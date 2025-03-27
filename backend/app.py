@@ -58,7 +58,8 @@ def add_test_user():
 
 @app.route('/api/tasks/schedule/<int:year>/<int:month>/<int:day>/<int:future>', methods=['GET'])
 def get_tasks_schedule(year, month, day, future=None):
-    print(year, month,day, future)
+    if future == 0:
+        future = None
     start_date = datetime(year, month, day)
     tasks_json = []
     
@@ -66,6 +67,14 @@ def get_tasks_schedule(year, month, day, future=None):
         tasks = Task.query.filter(Task.start >= start_date).order_by(Task.start.desc()).limit(5)
     else:
         tasks = Task.query.filter(Task.start <= start_date).order_by(Task.start.asc()).limit(5)
+    
+        
+    max_date_query = Task.query.filter(Task.start >= start_date).order_by(Task.start.desc()).limit(1)
+    for date in max_date_query:
+        max_date = date.start
+    min_date_query = Task.query.filter(Task.start <= start_date).order_by(Task.start.asc()).limit(1)
+    for date in min_date_query:
+        min_date = date.start
     
     for task in tasks:
         if task.type == 0:
@@ -79,17 +88,11 @@ def get_tasks_schedule(year, month, day, future=None):
                 'day': task.start.day
             })
             
+    recurring_tasks = Task.query.filter(Task.type.in_([1, 2, 3])).all()
+    
+    for task in recurring_tasks:
         if task.type == 1:
             weekly_repeats = Weekly.query.filter_by(id_task=task.id_task).all()
-            
-            max_date_query = tasks.limit(1)
-            for date in max_date_query:
-                max_date = date.start
-            min_date_query = tasks.limit(1)
-            for date in min_date_query:
-                min_date = date.start
-        
-            
             for repeat in weekly_repeats:
                 current_date_iter = start_date
                 if future:
@@ -114,13 +117,78 @@ def get_tasks_schedule(year, month, day, future=None):
                                 'id': task.id_task,
                                 'name': task.name,
                                 'start': task.start.strftime('%Y-%m-%d %H:%M:%S'),
-                                'end': task.end.strftime('%Y-%m-%d %H:%M:%S') if task.end else None,
+                                'end': repeat.date_end.strftime('%Y-%m-%d %H:%M:%S') if task.end else None,
                                 'description': task.description,
                                 'type': task.type,
                                 'day': current_date_iter.day,
                                 'weekday': repeat.weekday
                             })
                         current_date_iter -= timedelta(days=1)
+        elif task.type == 2:
+            monthly_repeats = Monthly.query.filter_by(id_task=task.id_task).all()
+            
+            for repeat in monthly_repeats:
+                # Jeśli określony jest konkretny dzień miesiąca
+                if repeat.day_of_month:
+                    task_date = datetime(year, month, repeat.day_of_month)
+                    if task_date >= min_date:
+                        pass
+
+                    if task_date >= min_date and task_date <= max_date and (repeat.date_end is None or task_date <= repeat.date_end):
+                        tasks_json.append({
+                            'id': task.id_task,
+                            'name': task.name,
+                            'start': task.start.strftime('%Y-%m-%d %H:%M:%S'),
+                            'end': repeat.date_end.strftime('%Y-%m-%d %H:%M:%S') if task.end else None,
+                            'description': task.description,
+                            'type': task.type,
+                            'day': repeat.day_of_month,
+                            'day_of_month': repeat.day_of_month
+                        })
+
+                # Jeśli określony jest tydzień miesiąca i dzień tygodnia
+                elif repeat.week_of_month and repeat.weekday is not None:
+                    first_occurrence = start_date
+                    if future:
+                        while first_occurrence.weekday() != repeat.weekday:
+                            first_occurrence += timedelta(days=1)
+                    else:
+                        while first_occurrence.weekday() != repeat.weekday:
+                            first_occurrence -= timedelta(days=1)
+
+                    target_date = first_occurrence + timedelta(weeks=(repeat.week_of_month))
+
+                    if target_date >= min_date and target_date <= max_date and (repeat.date_end is None or target_date <= repeat.date_end):
+                        tasks_json.append({
+                            'id': task.id_task,
+                            'name': task.name,
+                            'start': target_date.strftime('%Y-%m-%d %H:%M:%S'),
+                            'end': repeat.date_end.strftime('%Y-%m-%d %H:%M:%S') if task.end else None,
+                            'description': task.description,
+                            'type': task.type,
+                            'day': target_date.day,
+                            'week_of_month': repeat.week_of_month,
+                            'weekday': repeat.weekday
+                        })
+        elif task.type == 3:
+            yearly_repeats = Yearly.query.filter_by(id_task=task.id_task).all()
+            for repeat in yearly_repeats:
+                task_date = datetime(year, repeat.month , repeat.day)
+                print(task_date)
+                # Sprawdź czy data zadania mieści się w zakresie powtarzania
+                if task_date >= min_date and task_date <= max_date and (repeat.date_end is None or task_date <= repeat.date_end):
+                    tasks_json.append({
+                        'id': task.id_task,
+                        'name': task.name,
+                        'start': task_date.strftime('%Y-%m-%d %H:%M:%S'),
+                        'end': repeat.date_end.strftime('%Y-%m-%d %H:%M:%S') if task.end else None,
+                        'description': task.description,
+                        'type': task.type,
+                        'day': repeat.day,
+                        'month': repeat.month
+                    })
+                            
+                        
     
     def create_date(date_time):
         date, time = date_time.split(" ")
@@ -310,7 +378,7 @@ def get_tasks(year, month):
         ((Task.end >= first_day) & (Task.end <= last_day))
     ).all()
     
-    recurring_tasks = Task.query.filter(Task.type.in_([1, 2])).all()
+    recurring_tasks = Task.query.filter(Task.type.in_([1, 2, 3])).all()
     
     tasks_json = []
     
@@ -333,7 +401,7 @@ def get_tasks(year, month):
             for repeat in weekly_repeats:
                 current_date_iter = first_day
                 while current_date_iter <= last_day:
-                    if current_date_iter.weekday() == repeat.weekday and current_date_iter >= current_date and (repeat.date_end is None or current_date_iter <= repeat.date_end):
+                    if current_date_iter.weekday() == repeat.weekday and current_date_iter >= repeat.date_start-timedelta(days=1) and (repeat.date_end is None or current_date_iter <= repeat.date_end):
                         tasks_json.append({
                             'id': task.id_task,
                             'name': task.name,
@@ -352,8 +420,8 @@ def get_tasks(year, month):
                 # Jeśli określony jest konkretny dzień miesiąca
                 if repeat.day_of_month:
                     last_day_of_month = last_day.day
+                    task_date = datetime(year, month, repeat.day_of_month)
                     if repeat.day_of_month <= last_day_of_month and (repeat.date_end is None or task_date <= repeat.date_end):
-                        task_date = datetime(year, month, repeat.day_of_month)
                         if task_date >= current_date:
                             tasks_json.append({
                                 'id': task.id_task,
@@ -388,24 +456,25 @@ def get_tasks(year, month):
                         })
                         current_date += timedelta(days=1)
                 
-                elif task.type == 3:
-                    yearly_repeats = Yearly.query.filter_by(id_task=task.id_task).all()
-                    for repeat in yearly_repeats:
-                        # Sprawdź czy zadanie przypada w wybranym miesiącu i roku
-                        if repeat.month == month:
-                            task_date = datetime(year, month, repeat.day)
-                            # Sprawdź czy data zadania mieści się w zakresie powtarzania
-                            if task_date >= current_date and (repeat.date_end is None or task_date <= repeat.date_end):
-                                tasks_json.append({
-                                    'id': task.id_task,
-                                    'name': task.name,
-                                    'start': task.start.strftime('%Y-%m-%d %H:%M:%S'),
-                                    'end': task.end.strftime('%Y-%m-%d %H:%M:%S') if task.end else None,
-                                    'description': task.description,
-                                    'type': task.type,
-                                    'day': repeat.day,
-                                    'month': repeat.month
-                                })
+        elif task.type == 3:
+            yearly_repeats = Yearly.query.filter_by(id_task=task.id_task).all()
+            for repeat in yearly_repeats:
+                # Sprawdź czy zadanie przypada w wybranym miesiącu i roku
+                if repeat.month == month:
+                    task_date = datetime(year, repeat.month, repeat.day)
+                    print(task_date)
+                    # Sprawdź czy data zadania mieści się w zakresie powtarzania
+                    if (repeat.date_end is None or task_date <= repeat.date_end):
+                        tasks_json.append({
+                            'id': task.id_task,
+                            'name': task.name,
+                            'start': task.start.strftime('%Y-%m-%d %H:%M:%S'),
+                            'end': task.end.strftime('%Y-%m-%d %H:%M:%S') if task.end else None,
+                            'description': task.description,
+                            'type': task.type,
+                            'day': repeat.day,
+                            'month': repeat.month
+                        })
     
     return jsonify(tasks_json)
 
