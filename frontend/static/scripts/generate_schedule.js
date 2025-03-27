@@ -3,19 +3,19 @@ const scheduleContainer = document.querySelector(".schedule__main");
 
 function fetchData() {
   const res = fetch(`/api/tasks/schedule/2025/3/25/8`)
-  .then((response) => response.json())
-  .then((tasks) => {
-    // Grupuj zadania według dni
-    const tasksByDay = {};
-    tasks.forEach((task) => {
-      if (!tasksByDay[task.day]) {
-        tasksByDay[task.day] = [];
-      }
-      tasksByDay[task.day].push(task);
+    .then((response) => response.json())
+    .then((tasks) => {
+      // Grupuj zadania według dni
+      const tasksByDay = {};
+      tasks.forEach((task) => {
+        if (!tasksByDay[task.day]) {
+          tasksByDay[task.day] = [];
+        }
+        tasksByDay[task.day].push(task);
+      });
     });
-  });
 
-  return res
+  return res;
 }
 
 // TODO zmienna dla przykładowych zadań, usunąć po podpięciu bazy danych
@@ -75,21 +75,48 @@ const tmpTasks = [
  * @param {Array.<{date: String, weekDay: String, dayTask: Array.<{title: String, description: String, duration: String}>}>} tasksToLoad Dane taksków do załadowania
  * @returns {void}
  */
-function loadNextTasks() {
-  const tasksToLoad = fetch(`/api/tasks/schedule/2025/3/25/8`)
-  .then((response) => response.json())
-  .then((tasks) => {
-    // Grupuj zadania według dni
-    const tasksByDay = {};
-    tasks.forEach((task) => {
-      if (!tasksByDay[task.day]) {
-        tasksByDay[task.day] = [];
-      }
-      tasksByDay[task.day].push(task);
+async function loadNextTasks() {
+  const tasksToLoad = await fetch(`/api/tasks/schedule/2025/3/25/8`)
+    .then((response) => response.json())
+    .then((tasks) => {
+      // Grupuj zadania według dni
+      const tasksByDay = [];
+      let lastDay = null;
+      tasks.forEach((task) => {
+        let dateStart = task.start.split(" ")[0];
+        let weekDay = new Date(dateStart);
+        weekDay = weekDay.toLocaleString("pl-PL", {
+          weekday: "long",
+        });
+        let durationStart = task.start.split(" ")[1].split(":");
+        durationStart = durationStart[0] + ":" + durationStart[1];
+        let durationEnd = task.end.split(" ")[1].split(":");
+        durationEnd = durationEnd[0] + ":" + durationEnd[1];
+
+        if (dateStart !== lastDay) {
+          tasksByDay.push({
+            date: dateStart,
+            weekDay: weekDay,
+            dayTasks: [
+              {
+                title: task.name,
+                description: task.description,
+                duration: durationStart + " - " + durationEnd,
+              },
+            ],
+          });
+        } else {
+          tasksByDay[tasksByDay.length - 1].dayTasks.push({
+            title: task.name,
+            description: task.description,
+            duration: durationStart + " - " + durationEnd,
+          });
+        }
+        lastDay = dateStart;
+      });
+      return tasksByDay;
     });
-  });
-  console.log(tasksToLoad);
-  
+
   // pętla wykonująca się po wszystkich dniach
   tasksToLoad.forEach((task) => {
     // stworzenie nowego elementu html dla dnia i przypisanie mu klasy
@@ -174,12 +201,13 @@ function loadPreviousTasks(tasksToLoad) {
 
 // TODO przekazać dane zadań, które mają się załadować odrazu przy renderowaniu strony
 
-
 // pierwsze załadowanie zadań
-loadNextTasks(tmpTasks);
-
 // przestawienie scrolla o 1px w dół alby umożliwić wykrycie scrollowania w górę
-scheduleContainer.scroll(0, 1);
+async function firstLoadTasks() {
+  await loadNextTasks();
+  scheduleContainer.scroll(0, 1);
+}
+firstLoadTasks();
 
 // wykrywanie scrollowania
 scheduleContainer.addEventListener("scroll", () => {

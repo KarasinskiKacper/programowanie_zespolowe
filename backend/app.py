@@ -98,7 +98,7 @@ def get_tasks_schedule(year, month, day, future=None):
                             tasks_json.append({
                                 'id': task.id_task,
                                 'name': task.name,
-                                'start': task.start.strftime('%Y-%m-%d %H:%M:%S'),
+                                'start': current_date_iter.strftime('%Y-%m-%d %H:%M:%S'),
                                 'end': task.end.strftime('%Y-%m-%d %H:%M:%S') if task.end else None,
                                 'description': task.description,
                                 'type': task.type,
