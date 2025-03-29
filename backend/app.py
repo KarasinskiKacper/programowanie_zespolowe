@@ -170,23 +170,24 @@ def get_tasks_schedule(year, month, day, future=None):
                             'week_of_month': repeat.week_of_month,
                             'weekday': repeat.weekday
                         })
-        elif task.type == 3:
-            yearly_repeats = Yearly.query.filter_by(id_task=task.id_task).all()
-            for repeat in yearly_repeats:
-                task_date = datetime(year, repeat.month , repeat.day)
-                print(task_date)
-                # Sprawdź czy data zadania mieści się w zakresie powtarzania
-                if task_date >= min_date and task_date <= max_date and (repeat.date_end is None or task_date <= repeat.date_end):
-                    tasks_json.append({
-                        'id': task.id_task,
-                        'name': task.name,
-                        'start': task_date.strftime('%Y-%m-%d %H:%M:%S'),
-                        'end': repeat.date_end.strftime('%Y-%m-%d %H:%M:%S') if task.end else None,
-                        'description': task.description,
-                        'type': task.type,
-                        'day': repeat.day,
-                        'month': repeat.month
-                    })
+        # TODO naprawić błąd 
+        # elif task.type == 3:
+        #     yearly_repeats = Yearly.query.filter_by(id_task=task.id_task).all()
+        #     for repeat in yearly_repeats:
+        #         task_date = datetime(year, repeat.month , repeat.day)
+        #         print(task_date)
+        #         # Sprawdź czy data zadania mieści się w zakresie powtarzania
+        #         if task_date >= min_date and task_date <= max_date and (repeat.date_end is None or task_date <= repeat.date_end):
+        #             tasks_json.append({
+        #                 'id': task.id_task,
+        #                 'name': task.name,
+        #                 'start': task_date.strftime('%Y-%m-%d %H:%M:%S'),
+        #                 'end': repeat.date_end.strftime('%Y-%m-%d %H:%M:%S') if task.end else None,
+        #                 'description': task.description,
+        #                 'type': task.type,
+        #                 'day': repeat.day,
+        #                 'month': repeat.month
+        #             })
                             
                         
     

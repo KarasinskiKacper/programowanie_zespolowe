@@ -18,57 +18,36 @@ function fetchData() {
   return res;
 }
 
-// TODO zmienna dla przykładowych zadań, usunąć po podpięciu bazy danych
-const tmpTasks = [
-  {
-    date: "12.03.2025",
-    weekDay: "ŚRODA",
-    dayTasks: [
-      {
-        title: "Zadanie 1",
-        description:
-          "opis zadanie jedenopis zadanie jedenopis zadanie jedenopis zadanie jedenopis zadanie jedenopis zadanie jedenopis zadanie jedenopiszadanie jedenopis zadanie jeden",
-        duration: "cały dzień",
-      },
-      {
-        title: "Zadanie 2",
-        description:
-          "opis zadanie jedenopis zadanie jedenopis  zadanie jedenopis zadanie jedenopis zadanie jedenopis zadanie jedenopis  zadanie jedenopis zadanie jedenopis zadanie jedenopis zadanie jedenopis  zadanie jedenopis zadanie jedenopis zadanie jedeno pis zadanie jedenopis  zadanie jedenopis zadanie jedenopis zadanie jedenopis zadanie jedenopis  zadanie jedenopis zadanie jedenopis zadanie jedenopis zadanie jedenopis  zadanie jedenopis zadanie jedenopis zadanie jedenopis zadanie jedenopis  zadanie jedenopis zadanie jedenopis zadanie jedenopis zadanie jedenopis  zadanie jedenopis zadanie jedenopis zadanie jedenopis zadanie jedenopis  zadanie jedenopis zadanie jedenopis zadanie jedenopis zadanie jedenopis  zadanie jedenopis zadanie jedenopis zadanie jedenopis zadanie jedenopis  zadanie jedenopis zadanie jedenopis zadanie jeden opis zadanie jedenopis  zadanie jedenopis zadanie jedenopis zadanie jedenopis zadanie jedenopis  zadanie jedenopis zadanie jedenopis zadanie jede nopis zadanie jedenopis  zadanie jedenopis zadanie jedenopis zadanie jedenopis zadanie jedenopis  zadanie jedenopis zadanie jedenopis zadanie jedenopis zadanie jedenopis  zadanie jeden",
-        duration: "17:30",
-      },
-    ],
-  },
-  {
-    date: "13.03.2025",
-    weekDay: "CZWARTEK",
-    dayTasks: [
-      {
-        title: "Zadanie 1",
-        description:
-          "opis zadanie jedenopis zadanie jedenopis zadanie jedenopis zadanie jedenopis zadanie jedenopis zadanie jedenopis zadanie jedenopiszadanie jedenopis zadanie jeden",
-        duration: "cały dzień",
-      },
-      {
-        title: "Zadanie 2",
-        description:
-          "opis zadanie jedenopis zadanie jedenopis  zadanie jedenopis zadanie jedenopis zadanie jedenopis zadanie jedenopis  zadanie jedenopis zadanie jedenopis zadanie jedenopis zadanie jedenopis  zadanie jedenopis zadanie jedenopis zadanie jedeno pis zadanie jedenopis  zadanie jedenopis zadanie jedenopis zadanie jedenopis zadanie jedenopis  zadanie jedenopis zadanie jedenopis zadanie jedenopis zadanie jedenopis  zadanie jedenopis zadanie jedenopis zadanie jedenopis zadanie jedenopis  zadanie jedenopis zadanie jedenopis zadanie jedenopis zadanie jedenopis  zadanie jedenopis zadanie jedenopis zadanie jedenopis zadanie jedenopis  zadanie jedenopis zadanie jedenopis zadanie jedenopis zadanie jedenopis  zadanie jedenopis zadanie jedenopis zadanie jedenopis zadanie jedenopis  zadanie jedenopis zadanie jedenopis zadanie jeden opis zadanie jedenopis  zadanie jedenopis zadanie jedenopis zadanie jedenopis zadanie jedenopis  zadanie jedenopis zadanie jedenopis zadanie jede nopis zadanie jedenopis  zadanie jedenopis zadanie jedenopis zadanie jedenopis zadanie jedenopis  zadanie jedenopis zadanie jedenopis zadanie jedenopis zadanie jedenopis  zadanie jeden",
-        duration: "20:30 - 23:59",
-      },
-    ],
-  },
-  {
-    date: "14.03.2025",
-    weekDay: "PIĄTEK",
-    dayTasks: [
-      {
-        title: "Zadanie 1",
-        description:
-          "opis zadanie jedenopis zadanie jedenopis zadanie jedenopis zadanie jedenopis zadanie jedenopis zadanie jedenopis zadanie jedenopiszadanie jedenopis zadanie jeden",
-        duration: "00:00 - 04:00",
-      },
-    ],
-  },
-];
+// TODO dodać automatyczne ustawianie powtarzania i koloru
+function showEditTaskPopup(dateStart, dateEnd, title, duration, description) {
+  // przypisanie do zmiennych elementów popupa edycja zadania
+  const wrapper = document.querySelector(".edit-task__wrapper");
+  const titleInput = document.querySelector(".edit-task__title");
+  const checkbox = document.querySelector(".edit-task__all_day_check");
+  const dateInput = document.querySelectorAll(".edit-task__input-date");
+  const timeInput = document.querySelectorAll(".edit-task__input-time");
+  const disableableInputs = document.querySelectorAll(
+    ".edit-task__input--disableable"
+  );
+  const descriptionInput = document.querySelector(".edit-task__description");
+
+  // pokazanie popupa i przekazanie mu danych o zadaniu
+  wrapper.classList.remove("edit-task__wrapper--hidden");
+  titleInput.value = title;
+  dateInput[0].value = dateStart;
+  if (duration === "cały dzień") {
+    checkbox.checked = true;
+    disableableInputs.forEach((input) => (input.disabled = true));
+    timeInput[0].value = "00:00";
+    timeInput[1].value = "23:59";
+    dateInput[1].value = dateInput[0].value;
+  } else {
+    dateInput[1].value = dateEnd;
+    timeInput[0].value = duration.split(" - ")[0];
+    timeInput[1].value = duration.split(" - ")[1];
+  }
+  descriptionInput.value = description;
+}
 
 /**
  * Załadowanie nowych zadań na koniec aktualnie wyświetlanych zadań. Funcja może przyjąć dowolną (również zerową) ilość dni i zadań wewnątrz dni do załadowania.
@@ -90,12 +69,16 @@ async function loadNextTasks() {
         });
         let durationStart = task.start.split(" ")[1].split(":");
         durationStart = durationStart[0] + ":" + durationStart[1];
-        let durationEnd = task.end.split(" ")[1].split(":");
-        durationEnd = durationEnd[0] + ":" + durationEnd[1];
+        let durationEnd = task.end ? task.end.split(" ")[1].split(":") : null;
+        if (durationEnd) {
+          durationEnd = durationEnd[0] + ":" + durationEnd[1];
+        }
+        const dateEnd = task.end ? task.end.split(" ")[0] : null;
 
         if (dateStart !== lastDay) {
           tasksByDay.push({
             date: dateStart,
+            dateEnd: dateEnd,
             weekDay: weekDay,
             dayTasks: [
               {
@@ -109,7 +92,10 @@ async function loadNextTasks() {
           tasksByDay[tasksByDay.length - 1].dayTasks.push({
             title: task.name,
             description: task.description,
-            duration: durationStart + " - " + durationEnd,
+            duration:
+              durationStart === "00:00" && durationEnd === "23:59"
+                ? "cały dzień"
+                : durationStart + " - " + durationEnd,
           });
         }
         lastDay = dateStart;
@@ -134,7 +120,10 @@ async function loadNextTasks() {
     task.dayTasks.forEach(
       (dayTask) =>
         // wygenerowanie treści dla zadań w dniu
-        (dayWrapper.innerHTML += `<div class="schedule-day__task-wrapper">
+        // onclick powoduje wykoczenie popupu edycji zadania
+        (dayWrapper.innerHTML += `<div class="schedule-day__task-wrapper" 
+          onclick="showEditTaskPopup('${task.date}','${task.dateEnd}','${dayTask.title}','${dayTask.duration}','${dayTask.description}')" 
+          >
           <div class="schedule-day__task-title-wrapper">
               <h2 class="schedule-day__task-title">${dayTask.title}</h2>
               <p class="schedule-day__task-duration numeric-font">
@@ -158,7 +147,7 @@ async function loadNextTasks() {
 async function loadPreviousTasks() {
   // zmienna przechowująca dane do wstawienia na początek kontenera
   let newInnerHtml = "";
-  const tasksToLoad = await fetch(`/api/tasks/schedule/2025/3/22/0`)
+  const tasksToLoad = await fetch(`/api/tasks/schedule/2025/3/26/0`)
     .then((response) => response.json())
     .then((tasks) => {
       // Grupuj zadania według dni
@@ -172,12 +161,16 @@ async function loadPreviousTasks() {
         });
         let durationStart = task.start.split(" ")[1].split(":");
         durationStart = durationStart[0] + ":" + durationStart[1];
-        let durationEnd = task.end.split(" ")[1].split(":");
-        durationEnd = durationEnd[0] + ":" + durationEnd[1];
+        let durationEnd = task.end ? task.end.split(" ")[1].split(":") : null;
+        if (durationEnd) {
+          durationEnd = durationEnd[0] + ":" + durationEnd[1];
+        }
+        const dateEnd = task.end ? task.end.split(" ")[0] : null;
 
         if (dateStart !== lastDay) {
           tasksByDay.push({
             date: dateStart,
+            dateEnd: dateEnd,
             weekDay: weekDay,
             dayTasks: [
               {
@@ -191,7 +184,10 @@ async function loadPreviousTasks() {
           tasksByDay[tasksByDay.length - 1].dayTasks.push({
             title: task.name,
             description: task.description,
-            duration: durationStart + " - " + durationEnd,
+            duration:
+              durationStart === "00:00" && durationEnd === "23:59"
+                ? "cały dzień"
+                : durationStart + " - " + durationEnd,
           });
         }
         lastDay = dateStart;
@@ -217,7 +213,7 @@ async function loadPreviousTasks() {
       (dayTask) =>
         // wygenerowanie treści dla zadań w dniu
         (newInnerHtml += `
-      <div class="schedule-day__task-wrapper">
+      <div class="schedule-day__task-wrapper" onclick="showEditTaskPopup('${task.date}','${task.dateEnd}','${dayTask.title}','${dayTask.duration}','${dayTask.description}')" >
           <div class="schedule-day__task-title-wrapper">
               <h2 class="schedule-day__task-title">${dayTask.title}</h2>
               <p class="schedule-day__task-duration numeric-font">
@@ -256,9 +252,9 @@ scheduleContainer.addEventListener("scroll", () => {
     scheduleContainer.scrollHeight
   ) {
     // TODO przekazać dane zadań które mają się załadować gdy użytkownik dotarł do końca aktualnie wyświetlanych zadań (zadania z przyszłości)
-    loadNextTasks(tmpTasks);
+    loadNextTasks();
   } else if (scheduleContainer.scrollTop === 0) {
     // TODO przekazać dane zadań które mają się załadować gdy użytkownik dotarł do początku aktualnie wyświetlanych zadań (zadania z przeszłości)
-    loadPreviousTasks(tmpTasks);
+    loadPreviousTasks();
   }
 });
