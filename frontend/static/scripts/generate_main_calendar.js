@@ -6,7 +6,9 @@ export function generate_main_calendar(date) {
   const is_current_month = current_date.getMonth() === date.getMonth();
 
   const { calendar, month } = generate_calendar(date);
-  const main_calendar = document.querySelector(".month__main-calendar-days-wrapper");
+  const main_calendar = document.querySelector(
+    ".month__main-calendar-days-wrapper"
+  );
 
   let new_innerhtml = "";
   let counter = 1;
@@ -35,7 +37,10 @@ export function generate_main_calendar(date) {
             // Sprawdź, czy dla tego dnia są zadania
             const dayTasks = tasksByDay[day] || [];
             const tasksHtml = dayTasks
-              .map((task) => `<p class="month__main-calendar-days-task">${task.name}</p>`)
+              .map(
+                (task) =>
+                  `<p class="month__main-calendar-days-task">${task.name}</p>`
+              )
               .join("");
             new_innerhtml += `<div class="month__main-calendar-day">
                       <p
@@ -43,7 +48,9 @@ export function generate_main_calendar(date) {
                           is_current_month &&
                           day === current_date.getDate() &&
                           "month__main-calendar-days-text--today"
-                        } ${dayTasks.length > 0 && "month__main-calendar-days-text--task"}"
+                        } ${
+              dayTasks.length > 0 && "month__main-calendar-days-text--task"
+            }"
                       >
                         ${day}
                       </p>
@@ -78,8 +85,11 @@ export function generate_main_calendar(date) {
         // dodanie listenera zmieniającego stronę na /harmonogram dla zadań
         if (day.children.length > 1 && day.children[1].innerText) {
           day.children[1].addEventListener("click", (e) => {
-            // TODO dodać informację o klikniętym dniu
-            document.location.href = "/harmonogram";
+            let tmpDate = new Date(date);
+            tmpDate.setDate(day.children[0].innerHTML.trim());
+            tmpDate = tmpDate.toISOString().split("T")[0];
+
+            document.location.href = `/harmonogram?date=${tmpDate}`;
           });
         }
       });

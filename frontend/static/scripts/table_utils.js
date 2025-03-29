@@ -20,6 +20,7 @@ export function resetTable() {
  * @param {string} task_title Tytuł zadania
  * @param {string} task_text Treść tekstowa zadania
  * @param {number} task_id Unikalne id zadania
+ * @param {Date} start_date date początku tygodnia
  * @param {string} color Kolor zadania (wartość szesnastkowa)
  * @returns {void}
  */
@@ -30,14 +31,17 @@ function insertTask(
   task_title,
   task_text,
   task_id,
+  start_date,
   color = "29A423"
 ) {
+  console.log("2", start_date);
+
   // Konwersja godzin do liczbowych wartości
   let [start_hour, start_minutes] = start_time.split(":");
   start_hour = parseInt(start_hour);
   start_minutes = parseInt(start_minutes);
 
-  let [end_hour, end_minutes] = end_time.split(":");
+  let [end_hour, end_minutes] = end_time ? end_time.split(":") : null;
   end_hour = parseInt(end_hour);
   end_minutes = parseInt(end_minutes);
 
@@ -48,7 +52,10 @@ function insertTask(
   table_cells[day_of_week + start_hour * 7].innerHTML = `
   <div  style='
               transform: translateY(${-1 + start_minutes * 0.4}px);
-              height: ${((end_hour - start_hour) * 60 + (end_minutes - start_minutes)) * 0.4}px;
+              height: ${
+                ((end_hour - start_hour) * 60 + (end_minutes - start_minutes)) *
+                0.4
+              }px;
               background-color: #${color}' 
         id='week-layout__grid-task-${task_id}' 
         class='week-layout__grid-task'>
@@ -57,10 +64,15 @@ function insertTask(
   </div>`;
 
   // dodanie listenera zmieniającego stronę na /harmonogram dla zadań
-  table_cells[day_of_week + start_hour * 7].children[0].addEventListener("click", () => {
-    // TODO dodać informację o klikniętym dniu
-    document.location.href = "/harmonogram";
-  });
+  table_cells[day_of_week + start_hour * 7].children[0].addEventListener(
+    "click",
+    () => {
+      let tmpDate = new Date(start_date);
+      // tmpDate.setDate(tmpDate.getDate() + day_of_week);
+      tmpDate = tmpDate.toISOString().split("T")[0];
+      document.location.href = `/harmonogram?date=${tmpDate}`;
+    }
+  );
 }
 
 //TODO implementacja populateTable
@@ -80,10 +92,28 @@ export function populateTable(start_date, end_date) {
     .then((tasks) => {
       // Wstawienie zadań do tabeli
       tasks.forEach((task) => {
-        const { day_of_week, start_time, end_time, task_title, task_text, task_id, color } = task;
+        const {
+          day_of_week,
+          start_time,
+          end_time,
+          task_title,
+          task_text,
+          task_id,
+          color,
+        } = task;
+        console.log("1", start_date);
 
         // Wstawianie zadania do odpowiedniej komórki
-        insertTask(day_of_week, start_time, end_time, task_title, task_text, task_id, color);
+        insertTask(
+          day_of_week,
+          start_time,
+          end_time,
+          task_title,
+          task_text,
+          task_id,
+          color,
+          start_date
+        );
       });
     })
     .catch((error) => {
