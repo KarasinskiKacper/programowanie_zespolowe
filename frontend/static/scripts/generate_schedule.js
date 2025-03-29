@@ -18,6 +18,35 @@ function fetchData() {
   return res;
 }
 
+// pobranie daty z url
+function parseURLParams(url) {
+  var queryStart = url.indexOf("?") + 1,
+    queryEnd = url.indexOf("#") + 1 || url.length + 1,
+    query = url.slice(queryStart, queryEnd - 1),
+    pairs = query.replace(/\+/g, " ").split("&"),
+    parms = {},
+    i,
+    n,
+    v,
+    nv;
+
+  if (query === url || query === "") return;
+
+  for (i = 0; i < pairs.length; i++) {
+    nv = pairs[i].split("=", 2);
+    n = decodeURIComponent(nv[0]);
+    v = decodeURIComponent(nv[1]);
+
+    if (!parms.hasOwnProperty(n)) parms[n] = [];
+    parms[n].push(nv.length === 2 ? v : null);
+  }
+  return parms;
+}
+let scheduleDateStart = parseURLParams(window.location.href)?.date
+  ? parseURLParams(window.location.href).date[0].split("-").join("/")
+  : new Date(Date.now()).toISOString().split("T")[0].split("-").join("/");
+let scheduleDateEnd = scheduleDateStart;
+
 // TODO dodać automatyczne ustawianie powtarzania i koloru
 function showEditTaskPopup(dateStart, dateEnd, title, duration, description) {
   // przypisanie do zmiennych elementów popupa edycja zadania
@@ -40,12 +69,11 @@ function showEditTaskPopup(dateStart, dateEnd, title, duration, description) {
     disableableInputs.forEach((input) => (input.disabled = true));
     timeInput[0].value = "00:00";
     timeInput[1].value = "23:59";
-    dateInput[1].value = dateInput[0].value;
   } else {
-    dateInput[1].value = dateEnd;
     timeInput[0].value = duration.split(" - ")[0];
     timeInput[1].value = duration.split(" - ")[1];
   }
+  dateInput[1].value = dateEnd;
   descriptionInput.value = description;
 }
 
@@ -55,7 +83,7 @@ function showEditTaskPopup(dateStart, dateEnd, title, duration, description) {
  * @returns {void}
  */
 async function loadNextTasks() {
-  const tasksToLoad = await fetch(`/api/tasks/schedule/2025/3/22/8`)
+  const tasksToLoad = await fetch(`/api/tasks/schedule/${scheduleDateEnd}/8`)
     .then((response) => response.json())
     .then((tasks) => {
       // Grupuj zadania według dni
@@ -100,6 +128,12 @@ async function loadNextTasks() {
         }
         lastDay = dateStart;
       });
+
+      let tmpDate = new Date(tasksByDay[tasksByDay.length - 1].date);
+      tmpDate.setDate(tmpDate.getDate() + 1);
+      tmpDate = tmpDate.toISOString().split("T")[0].split("-").join("/");
+      scheduleDateEnd = tmpDate;
+
       return tasksByDay;
     });
 
@@ -147,7 +181,7 @@ async function loadNextTasks() {
 async function loadPreviousTasks() {
   // zmienna przechowująca dane do wstawienia na początek kontenera
   let newInnerHtml = "";
-  const tasksToLoad = await fetch(`/api/tasks/schedule/2025/3/26/0`)
+  const tasksToLoad = await fetch(`/api/tasks/schedule/${scheduleDateStart}/0`)
     .then((response) => response.json())
     .then((tasks) => {
       // Grupuj zadania według dni
@@ -192,6 +226,10 @@ async function loadPreviousTasks() {
         }
         lastDay = dateStart;
       });
+      let tmpDate = new Date(tasksByDay[0].date);
+      tmpDate.setDate(tmpDate.getDate() - 1);
+      tmpDate = tmpDate.toISOString().split("T")[0].split("-").join("/");
+      scheduleDateStart = tmpDate;
       return tasksByDay;
     });
 

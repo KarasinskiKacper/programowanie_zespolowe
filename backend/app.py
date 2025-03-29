@@ -198,7 +198,7 @@ def get_tasks_schedule(year, month, day, future=None):
     
         return datetime(int(year), int(month), int(day), int(hour), int(minutes), int(sec))
     
-    tasks_json.sort(key = lambda x: create_date(x["start"]), reverse = not future)                    
+    tasks_json.sort(key = lambda x: create_date(x["start"]), reverse = False)                    
     # print(tasks_json.__len__())  
     print(tasks_json)       
     return jsonify(tasks_json)    
@@ -305,7 +305,7 @@ def get_tasks_week():
                         tasks_data.append({
                             'day_of_week': current_date.weekday(),
                             'start_time': task.start.strftime('%H:%M'),
-                            'end_time': task.end.strftime('%H:%M'),
+                            'end_time': task.end.strftime('%H:%M') if task.end else None,
                             'task_title': f"{task.name}",
                             'task_text': task.description,
                             'task_id': f"repeat-yearly-{repeat.id}-",

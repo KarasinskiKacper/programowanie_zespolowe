@@ -37,7 +37,7 @@ function insertTask(
   start_hour = parseInt(start_hour);
   start_minutes = parseInt(start_minutes);
 
-  let [end_hour, end_minutes] = end_time.split(":");
+  let [end_hour, end_minutes] = end_time ? end_time.split(":") : null;
   end_hour = parseInt(end_hour);
   end_minutes = parseInt(end_minutes);
 
@@ -48,7 +48,10 @@ function insertTask(
   table_cells[day_of_week + start_hour * 7].innerHTML = `
   <div  style='
               transform: translateY(${-1 + start_minutes * 0.4}px);
-              height: ${((end_hour - start_hour) * 60 + (end_minutes - start_minutes)) * 0.4}px;
+              height: ${
+                ((end_hour - start_hour) * 60 + (end_minutes - start_minutes)) *
+                0.4
+              }px;
               background-color: #${color}' 
         id='week-layout__grid-task-${task_id}' 
         class='week-layout__grid-task'>
@@ -57,10 +60,13 @@ function insertTask(
   </div>`;
 
   // dodanie listenera zmieniającego stronę na /harmonogram dla zadań
-  table_cells[day_of_week + start_hour * 7].children[0].addEventListener("click", () => {
-    // TODO dodać informację o klikniętym dniu
-    document.location.href = "/harmonogram";
-  });
+  table_cells[day_of_week + start_hour * 7].children[0].addEventListener(
+    "click",
+    () => {
+      // TODO dodać informację o klikniętym dniu
+      document.location.href = "/harmonogram";
+    }
+  );
 }
 
 //TODO implementacja populateTable
@@ -80,10 +86,26 @@ export function populateTable(start_date, end_date) {
     .then((tasks) => {
       // Wstawienie zadań do tabeli
       tasks.forEach((task) => {
-        const { day_of_week, start_time, end_time, task_title, task_text, task_id, color } = task;
+        const {
+          day_of_week,
+          start_time,
+          end_time,
+          task_title,
+          task_text,
+          task_id,
+          color,
+        } = task;
 
         // Wstawianie zadania do odpowiedniej komórki
-        insertTask(day_of_week, start_time, end_time, task_title, task_text, task_id, color);
+        insertTask(
+          day_of_week,
+          start_time,
+          end_time,
+          task_title,
+          task_text,
+          task_id,
+          color
+        );
       });
     })
     .catch((error) => {
