@@ -1,0 +1,82 @@
+{% from 'components/nav_bar.html' import render_nav_bar %}
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    {% assets "sass_all" %} <link rel=stylesheet type=text/css href="{{
+    ASSET_URL }}"> {% endassets %}
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@300&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    {{ render_nav_bar("Login", false) }}
+
+    <div class="login">
+      <section class="login__login-register-choise">
+        <p
+          class="login__login-register-choise-text login__login-register-choise-text--active"
+        >
+          Logowanie
+        </p>
+        <p class="login__login-register-choise-text">Rejestracja</p>
+      </section>
+
+      <main class="login__main">
+        <div class="login__main-wrapper">
+          <form method="post" action="/" class="login__login">
+            <label for="username" class="login__label">Nazwa użytkownika</label>
+            <input type="text" class="login__input" name="username" required />
+            <label for="password" class="login__label">Hasło</label>
+            <input
+              type="password"
+              class="login__input"
+              name="password"
+              required
+            />
+
+            <input
+              type="submit"
+              value="Zaloguj"
+              class="login__submit numeric-font"
+            />
+          </form>
+
+          <form class="login__register">
+            <label for="email" class="login__label">Email</label>
+            <input type="email" class="login__input" name="email" required />
+
+            <label for="phone" class="login__label"
+              >Numer telefonu (opcjonalny)</label
+            >
+            <input type="tel" class="login__input" name="phone" />
+
+            <label for="username" class="login__label">Nazwa użytkownika</label>
+            <input type="text" class="login__input" name="username" required />
+
+            <label for="password" class="login__label">Hasło</label>
+            <input
+              type="password"
+              class="login__input"
+              name="password"
+              required
+            />
+
+            <input
+              type="submit"
+              value="Zarejestruj"
+              class="login__submit numeric-font"
+            />
+          </form>
+        </div>
+      </main>
+
+      <script src="./static/scripts/login_handler.js"></script>
+    </div>
+  </body>
+</html>

@@ -1,4 +1,4 @@
-{% macro render_nav_bar(active_page) %}
+{% macro render_nav_bar(active_page, is_logged) %}
 <nav class="nav">
   <ul class="nav__ul">
     <li class="nav__li">
@@ -28,7 +28,9 @@
       <a class="nav__a" href="/">Ustawienia</a>
     </li>
     <li class="nav__li">
-      <a class="nav__a" href="/">Wyloguj</a>
+      <a class="nav__a" href="/login">
+        {{"Wyloguj" if is_logged else "Zaloguj" }}
+      </a>
     </li>
   </ul>
 </nav>
