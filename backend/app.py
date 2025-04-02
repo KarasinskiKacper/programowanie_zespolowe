@@ -68,16 +68,18 @@ def get_tasks_schedule(year, month, day, future=None):
     
     if future:
         tasks = Task.query.filter(Task.start >= start_date).order_by(Task.start.desc()).limit(5)
+        max_date_query = Task.query.filter(Task.start >= start_date).order_by(Task.start.desc()).limit(1)
+        for date in max_date_query:
+            max_date = date.start
+        min_date = start_date
     else:
         tasks = Task.query.filter(Task.start <= start_date).order_by(Task.start.asc()).limit(5)
-    
-    max_date_query = Task.query.filter(Task.start >= start_date).order_by(Task.start.desc()).limit(1)
-    for date in max_date_query:
-        max_date = date.start
+        max_date = start_date
+        min_date_query = Task.query.filter(Task.start <= start_date).order_by(Task.start.asc()).limit(1)
+        for date in min_date_query:
+            min_date = date.start
         
-    min_date_query = Task.query.filter(Task.start <= start_date).order_by(Task.start.asc()).limit(1)
-    for date in min_date_query:
-        min_date = date.start
+    
     
     for task in tasks:
         if task.type == 0:
