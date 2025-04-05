@@ -102,6 +102,16 @@ async function loadNextTasks() {
           durationEnd = durationEnd[0] + ":" + durationEnd[1];
         }
         const dateEnd = task.end ? task.end.split(" ")[0] : null;
+        let duration;
+        if (durationEnd) {
+          if (durationStart === "00:00" && durationEnd === "23:59") {
+            duration = "cały dzień";
+          } else {
+            duration = durationStart + " - " + durationEnd;
+          }
+        } else {
+          duration = durationStart;
+        }
 
         if (dateStart !== lastDay) {
           tasksByDay.push({
@@ -112,7 +122,7 @@ async function loadNextTasks() {
               {
                 title: task.name,
                 description: task.description,
-                duration: durationStart + " - " + durationEnd,
+                duration: duration,
               },
             ],
           });
@@ -123,7 +133,7 @@ async function loadNextTasks() {
             duration:
               durationStart === "00:00" && durationEnd === "23:59"
                 ? "cały dzień"
-                : durationStart + " - " + durationEnd,
+                : duration,
           });
         }
         lastDay = dateStart;
@@ -200,6 +210,16 @@ async function loadPreviousTasks() {
           durationEnd = durationEnd[0] + ":" + durationEnd[1];
         }
         const dateEnd = task.end ? task.end.split(" ")[0] : null;
+        let duration;
+        if (durationEnd) {
+          if (durationStart === "00:00" && durationEnd === "23:59") {
+            duration = "cały dzień";
+          } else {
+            duration = durationStart + " - " + durationEnd;
+          }
+        } else {
+          duration = durationStart;
+        }
 
         if (dateStart !== lastDay) {
           tasksByDay.push({
@@ -210,7 +230,7 @@ async function loadPreviousTasks() {
               {
                 title: task.name,
                 description: task.description,
-                duration: durationStart + " - " + durationEnd,
+                duration: duration,
               },
             ],
           });
@@ -221,7 +241,7 @@ async function loadPreviousTasks() {
             duration:
               durationStart === "00:00" && durationEnd === "23:59"
                 ? "cały dzień"
-                : durationStart + " - " + durationEnd,
+                : duration,
           });
         }
         lastDay = dateStart;
