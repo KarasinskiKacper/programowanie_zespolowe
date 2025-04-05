@@ -69,16 +69,18 @@ def get_tasks_schedule(year, month, day, future=None):
     
     if future:
         tasks = Task.query.filter(Task.start >= start_date).order_by(Task.start.desc()).limit(5)
+        max_date_query = Task.query.filter(Task.start >= start_date).order_by(Task.start.desc()).limit(1)
+        for date in max_date_query:
+            max_date = date.start
+        min_date = start_date
     else:
         tasks = Task.query.filter(Task.start <= start_date).order_by(Task.start.asc()).limit(5)
-    
-    max_date_query = Task.query.filter(Task.start >= start_date).order_by(Task.start.desc()).limit(1)
-    for date in max_date_query:
-        max_date = date.start
+        max_date = start_date
+        min_date_query = Task.query.filter(Task.start <= start_date).order_by(Task.start.asc()).limit(1)
+        for date in min_date_query:
+            min_date = date.start
         
-    min_date_query = Task.query.filter(Task.start <= start_date).order_by(Task.start.asc()).limit(1)
-    for date in min_date_query:
-        min_date = date.start
+    
     
     for task in tasks:
         if task.type == 0:
@@ -141,8 +143,8 @@ def get_tasks_schedule(year, month, day, future=None):
                         tasks_json.append({
                             'id': task.id_task,
                             'name': task.name,
-                            'start': current_date_iter.strftime('%Y-%m-%d ') + task.start.strftime('%H:%M:%S'),
-                            'end': current_date_iter.strftime('%Y-%m-%d ') + task.end.strftime('%H:%M:%S') if task.end else None,
+                            'start': task_date.strftime('%Y-%m-%d ') + task.start.strftime('%H:%M:%S'),
+                            'end': task_date.strftime('%Y-%m-%d ') + task.end.strftime('%H:%M:%S') if task.end else None,
                             'description': task.description,
                             'type': task.type,
                             'day': repeat.day_of_month,
@@ -150,29 +152,29 @@ def get_tasks_schedule(year, month, day, future=None):
                         })
 
                 # Jeśli określony jest tydzień miesiąca i dzień tygodnia
-                elif repeat.week_of_month and repeat.weekday is not None:                    
-                    first_occurrence = start_date
-                    if future:
-                        while first_occurrence.weekday() != repeat.weekday:
-                            first_occurrence += timedelta(days=1)
-                    else:
-                        while first_occurrence.weekday() != repeat.weekday:
-                            first_occurrence -= timedelta(days=1)
+                # elif repeat.week_of_month and repeat.weekday is not None:
+                #     first_occurrence = datetime(year, month, start_date.day)
+                #     if future:
+                #         while first_occurrence.weekday() != repeat.weekday:
+                #             first_occurrence += timedelta(days=1)
+                #     else:
+                #         while first_occurrence.weekday() != repeat.weekday:
+                #             first_occurrence -= timedelta(days=1)
 
-                    target_date = first_occurrence + timedelta(weeks=(repeat.week_of_month))
+                #     target_date = first_occurrence + timedelta(weeks=(repeat.week_of_month))
 
-                    if target_date >= min_date and target_date <= max_date and (repeat.date_end is None or target_date <= repeat.date_end):
-                        tasks_json.append({
-                            'id': task.id_task,
-                            'name': task.name,
-                            'start': target_date.strftime('%Y-%m-%d ') + task.start.strftime('%H:%M:%S'),
-                            'end': target_date.strftime('%Y-%m-%d ') + task.end.strftime('%H:%M:%S') if task.end else None,
-                            'description': task.description,
-                            'type': task.type,
-                            'day': target_date.day,
-                            'week_of_month': repeat.week_of_month,
-                            'weekday': repeat.weekday
-                        })
+                #     if target_date >= min_date and target_date <= max_date and (repeat.date_end is None or target_date <= repeat.date_end):
+                #         tasks_json.append({
+                #             'id': task.id_task,
+                #             'name': task.name,
+                #             'start': target_date.strftime('%Y-%m-%d ') + task.start.strftime('%H:%M:%S'),
+                #             'end': target_date.strftime('%Y-%m-%d ') + task.end.strftime('%H:%M:%S') if task.end else None,
+                #             'description': task.description,
+                #             'type': task.type,
+                #             'day': target_date.day,
+                #             'week_of_month': repeat.week_of_month,
+                #             'weekday': repeat.weekday
+                #         })
         elif task.type == 3:
             yearly_repeats = Yearly.query.filter_by(id_task=task.id_task).all()
             for repeat in yearly_repeats:
@@ -201,7 +203,7 @@ def get_tasks_schedule(year, month, day, future=None):
     
     tasks_json.sort(key = lambda x: create_date(x["start"]), reverse = False)                    
     # print(tasks_json.__len__())  
-    print(tasks_json)       
+    # print(tasks_json)       
     return jsonify(tasks_json)    
 
         
