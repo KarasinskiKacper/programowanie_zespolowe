@@ -123,3 +123,37 @@ export function setDefaultDates(date) {
 //     isCustom = false;
 //   }
 // });
+
+document.addEventListener("DOMContentLoaded", () => {
+  const taskForm = document.querySelector(".add-Task__form");
+
+  taskForm.addEventListener("submit", async (e) => {
+    e.preventDefault(); // Zapobiega przeładowaniu strony
+
+    const formData = {
+      title: document.querySelector(".add-Task__title").value,
+      all_day: document.querySelector(".add-task__all_day_check").checked,
+      start_date: document.querySelector("[name='start_date']").value,
+      start_hour: document.querySelector("[name='start_hour']").value,
+      end_date: document.querySelector("[name='end_date']").value,
+      end_hour: document.querySelector("[name='end_hour']").value,
+      repeat_type: document.querySelector(".add-task__repeat-select").value,
+      color: document.querySelector(".add-task__input-color").value,
+      description: document.querySelector(".add-task__description").value,
+    };
+
+    try {
+      const response = await fetch("/add-task", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+    if (response.ok) {
+        console.log("Zadanie dodane!");
+        taskForm.reset();
+        }
+    } catch (error) {
+      console.error("Błąd połączenia z serwerem:", error);
+    }
+  });
+});

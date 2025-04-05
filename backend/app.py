@@ -69,16 +69,18 @@ def get_tasks_schedule(year, month, day, future=None):
     
     if future:
         tasks = Task.query.filter(Task.start >= start_date).order_by(Task.start.desc()).limit(5)
+        max_date_query = Task.query.filter(Task.start >= start_date).order_by(Task.start.desc()).limit(1)
+        for date in max_date_query:
+            max_date = date.start
+        min_date = start_date
     else:
         tasks = Task.query.filter(Task.start <= start_date).order_by(Task.start.asc()).limit(5)
-    
-    max_date_query = Task.query.filter(Task.start >= start_date).order_by(Task.start.desc()).limit(1)
-    for date in max_date_query:
-        max_date = date.start
+        max_date = start_date
+        min_date_query = Task.query.filter(Task.start <= start_date).order_by(Task.start.asc()).limit(1)
+        for date in min_date_query:
+            min_date = date.start
         
-    min_date_query = Task.query.filter(Task.start <= start_date).order_by(Task.start.asc()).limit(1)
-    for date in min_date_query:
-        min_date = date.start
+    
     
     for task in tasks:
         if task.type == 0:
@@ -141,8 +143,8 @@ def get_tasks_schedule(year, month, day, future=None):
                         tasks_json.append({
                             'id': task.id_task,
                             'name': task.name,
-                            'start': current_date_iter.strftime('%Y-%m-%d ') + task.start.strftime('%H:%M:%S'),
-                            'end': current_date_iter.strftime('%Y-%m-%d ') + task.end.strftime('%H:%M:%S') if task.end else None,
+                            'start': task_date.strftime('%Y-%m-%d ') + task.start.strftime('%H:%M:%S'),
+                            'end': task_date.strftime('%Y-%m-%d ') + task.end.strftime('%H:%M:%S') if task.end else None,
                             'description': task.description,
                             'type': task.type,
                             'day': repeat.day_of_month,
@@ -150,29 +152,29 @@ def get_tasks_schedule(year, month, day, future=None):
                         })
 
                 # Jeśli określony jest tydzień miesiąca i dzień tygodnia
-                elif repeat.week_of_month and repeat.weekday is not None:                    
-                    first_occurrence = start_date
-                    if future:
-                        while first_occurrence.weekday() != repeat.weekday:
-                            first_occurrence += timedelta(days=1)
-                    else:
-                        while first_occurrence.weekday() != repeat.weekday:
-                            first_occurrence -= timedelta(days=1)
+                # elif repeat.week_of_month and repeat.weekday is not None:
+                #     first_occurrence = datetime(year, month, start_date.day)
+                #     if future:
+                #         while first_occurrence.weekday() != repeat.weekday:
+                #             first_occurrence += timedelta(days=1)
+                #     else:
+                #         while first_occurrence.weekday() != repeat.weekday:
+                #             first_occurrence -= timedelta(days=1)
 
-                    target_date = first_occurrence + timedelta(weeks=(repeat.week_of_month))
+                #     target_date = first_occurrence + timedelta(weeks=(repeat.week_of_month))
 
-                    if target_date >= min_date and target_date <= max_date and (repeat.date_end is None or target_date <= repeat.date_end):
-                        tasks_json.append({
-                            'id': task.id_task,
-                            'name': task.name,
-                            'start': target_date.strftime('%Y-%m-%d ') + task.start.strftime('%H:%M:%S'),
-                            'end': target_date.strftime('%Y-%m-%d ') + task.end.strftime('%H:%M:%S') if task.end else None,
-                            'description': task.description,
-                            'type': task.type,
-                            'day': target_date.day,
-                            'week_of_month': repeat.week_of_month,
-                            'weekday': repeat.weekday
-                        })
+                #     if target_date >= min_date and target_date <= max_date and (repeat.date_end is None or target_date <= repeat.date_end):
+                #         tasks_json.append({
+                #             'id': task.id_task,
+                #             'name': task.name,
+                #             'start': target_date.strftime('%Y-%m-%d ') + task.start.strftime('%H:%M:%S'),
+                #             'end': target_date.strftime('%Y-%m-%d ') + task.end.strftime('%H:%M:%S') if task.end else None,
+                #             'description': task.description,
+                #             'type': task.type,
+                #             'day': target_date.day,
+                #             'week_of_month': repeat.week_of_month,
+                #             'weekday': repeat.weekday
+                #         })
         elif task.type == 3:
             yearly_repeats = Yearly.query.filter_by(id_task=task.id_task).all()
             for repeat in yearly_repeats:
@@ -201,7 +203,7 @@ def get_tasks_schedule(year, month, day, future=None):
     
     tasks_json.sort(key = lambda x: create_date(x["start"]), reverse = False)                    
     # print(tasks_json.__len__())  
-    print(tasks_json)       
+    # print(tasks_json)       
     return jsonify(tasks_json)    
 
         
@@ -210,12 +212,15 @@ def get_tasks_schedule(year, month, day, future=None):
 def get_tasks_week():
     # Pobranie i sparsowanie dat z query params
     start_date = datetime.fromisoformat(request.args.get('start_date'))
-    end_date = datetime.fromisoformat(request.args.get('end_date'))
+    end_date = datetime.fromisoformat(request.args.get('end_date')).replace(hour=23, minute=59, second=59)
+
 
     # Zadania jednorazowe w przedziale
     tasks = Task.query.filter(Task.start >= start_date, Task.end <= end_date).all()
     tasks_data = []
+    i = 0
     for task in tasks:
+        i += 1
         tasks_data.append({
             'day_of_week': task.start.weekday(),  # 0 - poniedziałek, 6 - niedziela
             'start_time': task.start.strftime('%H:%M'),
@@ -224,7 +229,7 @@ def get_tasks_week():
             'task_text': task.description,
             'task_id': task.id_task,
         })
-
+    #print(i)
     # weekly
     weekly_repeats = Weekly.query.all()
     for repeat in weekly_repeats:
@@ -343,7 +348,6 @@ def add_test_task():
     
     # Pobierz ID użytkownika
     user = db.session.query(User).filter_by(email='test@example.com').first()
-    
     # Dodaj zadanie
     test_task = Task(
         name='Spotkanie testowe',
@@ -481,6 +485,98 @@ def get_tasks(year, month):
     
     return jsonify(tasks_json)
 
+@app.route("/add-task", methods=["POST"])
+def add_task():
+    task_type ={
+    "none": 0,
+    "daily": 1,
+    "weekly": 1,
+    "monthly": 2,
+    "yearly": 3
+    }
+    data = request.json # Pobranie JSON-a z formularza
+    name = data.get('title')
+    description = data.get('description')
+    #data startu
+    start_date = data.get('start_date')
+    start_hour = data.get('start_hour')
+    start = start_hour + " " + start_date
+    #data końca
+    end_date = data.get('end_date')
+    end_hour = data.get('end_hour')
+    end = end_hour + " " + end_date
+    end_task = end_hour + " " + start_date
+    type_task = task_type[data.get('repeat_type')]
+    daily = True if data.get('repeat_type') == "daily" else False
+    id_user = 1
+
+    test_task = Task(
+        name=name,
+        start=datetime.strptime(start, '%H:%M %Y-%m-%d'),
+        end=datetime.strptime(end_task, '%H:%M %Y-%m-%d'),
+        description=description,
+        completed=False,
+        id_user=id_user,
+        type= int(type_task)
+    )
+
+    db.session.add(test_task)
+    db.session.commit()
+    id_task = test_task.id_task
+
+
+    if type_task == 1 and daily:
+        weekday = datetime.strptime(start, '%H:%M %Y-%m-%d').weekday()
+        i = 0
+        number_of_day = datetime.strptime(end_date, '%Y-%m-%d').date() - datetime.strptime(start_date, '%Y-%m-%d').date()
+        if number_of_day.days <= 5:
+            number_of_day = number_of_day.days
+        else:
+            number_of_day = 6
+        while i <= number_of_day:
+            daily_task = Weekly(
+                id_task=id_task,
+                weekday = (weekday+i)%7,
+                date_start = datetime.strptime(start, '%H:%M %Y-%m-%d'),
+                date_end = datetime.strptime(end, '%H:%M %Y-%m-%d')
+            )
+            db.session.add(daily_task)
+            i += 1
+        db.session.commit()
+    elif type_task == 1 and daily == False:
+        weekday = datetime.strptime(start, '%H:%M %Y-%m-%d').weekday()
+        weekly_task = Weekly(
+                id_task=id_task,
+                weekday = weekday,
+                date_start = datetime.strptime(start, '%H:%M %Y-%m-%d'),
+                date_end = datetime.strptime(end, '%H:%M %Y-%m-%d')
+            )
+        db.session.add(weekly_task)
+        db.session.commit()
+    elif type_task == 2:
+        day_of_month = datetime.strptime(start, '%H:%M %Y-%m-%d').day
+        monthly_task = Monthly(
+                id_task=id_task,
+                day_of_month=day_of_month,
+                date_start = datetime.strptime(start, '%H:%M %Y-%m-%d'),
+                date_end = datetime.strptime(end, '%H:%M %Y-%m-%d')
+            )
+        db.session.add(monthly_task)
+        db.session.commit()
+    elif type_task == 3:
+        day = datetime.strptime(start, '%H:%M %Y-%m-%d').day
+        month = datetime.strptime(start, '%H:%M %Y-%m-%d').month
+        yearly_task = Yearly(
+                id_task=id_task,
+                day=day,
+                month=month,
+                date_start = datetime.strptime(start, '%H:%M %Y-%m-%d'),
+                date_end = datetime.strptime(end, '%H:%M %Y-%m-%d')
+            )
+        db.session.add(yearly_task)
+        db.session.commit()
+
+    return jsonify(status="OK"), 200
 
 @app.route('/', methods=['GET',"POST"])
 def home():
