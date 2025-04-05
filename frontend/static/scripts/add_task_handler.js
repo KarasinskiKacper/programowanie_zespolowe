@@ -58,16 +58,17 @@ repeatSelect.addEventListener("change", () => {
 });
 
 // ustawienie domyślych wartości dla dat i godzin
-
-let timeDate = new Date();
-let timeDateValues = timeDate.toISOString().split("T");
+let timeDate = new Date(Date.now());
+let tzoffset = new Date().getTimezoneOffset() * 60000; //offset in milliseconds
+let timeDateValues = new Date(timeDate - tzoffset).toISOString().split("T");
 
 dateInput[0].value = timeDateValues[0];
 timeInput[0].value =
   timeDateValues[1].split(":")[0] + ":" + timeDateValues[1].split(":")[1];
 
 timeDate.setHours(timeDate.getHours() + 1);
-timeDateValues = timeDate.toISOString().split("T");
+tzoffset = timeDate.getTimezoneOffset() * 60000; //offset in milliseconds
+timeDateValues = new Date(timeDate - tzoffset).toISOString().split("T");
 
 dateInput[1].value = timeDateValues[0];
 timeInput[1].value =

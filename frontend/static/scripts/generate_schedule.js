@@ -90,6 +90,7 @@ async function loadNextTasks() {
       const tasksByDay = [];
       let lastDay = null;
       tasks.forEach((task) => {
+        console.log(task);
         let dateStart = task.start.split(" ")[0];
         let weekDay = new Date(dateStart);
         weekDay = weekDay.toLocaleString("pl-PL", {
