@@ -1,7 +1,9 @@
 // przypisanie elementów do zmiennych
 const addTaksWrapper = document.querySelector(".add-task__wrapper");
 const allDayCheckbox = document.querySelector(".add-task__all_day_check");
-const disableableInputs = document.querySelectorAll(".add-task__input--disableable");
+const disableableInputs = document.querySelectorAll(
+  ".add-task__input--disableable"
+);
 const repeatSelect = document.querySelector(".add-task__repeat-select");
 const dateInput = document.querySelectorAll(".add-task__input-date");
 const timeInput = document.querySelectorAll(".add-task__input-time");
@@ -39,8 +41,19 @@ allDayCheckbox.addEventListener("change", () => {
     disableableInputs.forEach((input) => (input.disabled = true));
     timeInput[0].value = "00:00";
     timeInput[1].value = "23:59";
+    if (repeatSelect.value !== "none") {
+      dateInput[1].disabled = false;
+    }
   } else {
     disableableInputs.forEach((input) => (input.disabled = false));
+  }
+});
+// wyłączenie disabled dla daty końcowej po ustawieniu zadania na powtarzające się
+repeatSelect.addEventListener("change", () => {
+  if (repeatSelect.value !== "none") {
+    dateInput[1].disabled = false;
+  } else if (allDayCheckbox.checked) {
+    dateInput[1].disabled = true;
   }
 });
 
@@ -50,13 +63,15 @@ let timeDate = new Date();
 let timeDateValues = timeDate.toISOString().split("T");
 
 dateInput[0].value = timeDateValues[0];
-timeInput[0].value = timeDateValues[1].split(":")[0] + ":" + timeDateValues[1].split(":")[1];
+timeInput[0].value =
+  timeDateValues[1].split(":")[0] + ":" + timeDateValues[1].split(":")[1];
 
 timeDate.setHours(timeDate.getHours() + 1);
 timeDateValues = timeDate.toISOString().split("T");
 
 dateInput[1].value = timeDateValues[0];
-timeInput[1].value = timeDateValues[1].split(":")[0] + ":" + timeDateValues[1].split(":")[1];
+timeInput[1].value =
+  timeDateValues[1].split(":")[0] + ":" + timeDateValues[1].split(":")[1];
 
 // zabezpieczenie przed ustawieniem daty końcowej wcześniejszej niż początkowej dla dat
 dateInput[1].min = dateInput[0].value;
