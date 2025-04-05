@@ -1,6 +1,6 @@
 {% macro render_edit_task() %}
 <section class="edit-task__wrapper edit-task__wrapper--hidden">
-  <form action="{{ url_for('delete_task', task_id=task.id_task) }}" method="post" class="edit-task__form">
+  <form action="/harmonogram" method="post" class="edit-task__form">
     <div class="edit-task__title-wrapper">
       <input
         class="edit-task__title"
