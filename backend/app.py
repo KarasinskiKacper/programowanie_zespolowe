@@ -317,57 +317,29 @@ def get_tasks_week():
 
     return jsonify(tasks_data)
 
-#----------------------------------------------------------------
-def user_exists(email):
-    return db.session.query(exists().where(User.email == email)).scalar()
 
-# Funkcja dodająca testowego użytkownika
-def add_test_user():
-    # Sprawdź czy użytkownik już istnieje
-    if not user_exists('test@example.com'):
-        test_user = User(
-            nickname='testuser',
-            email='test@example.com',
-            password='haslo123',
-            phone_number=123456789
-        )
-        db.session.add(test_user)
-        db.session.commit()
-        print(f"Dodano użytkownika: {test_user.nickname}")
-    else:
-        print("Użytkownik już istnieje")
-
-# Funkcja dodająca testowe zadanie
-def add_test_task():
-    # Sprawdź czy użytkownik istnieje
-    if not db.session.query(User).filter_by(email='test@example.com').first():
-        add_test_user()
+@app.route('/api/tasks/<int:task_id>/delete', methods=['POST'])
+def delete_task(task_id):
+    # Znajdź zadanie
+    task = Task.query.get(task_id)
     
-    # Pobierz ID użytkownika
-    user = db.session.query(User).filter_by(email='test@example.com').first()
+    if not task:
+        return jsonify({"error": "Zadanie nie zostało znalezione"}), 404
     
-    # Dodaj zadanie
-    test_task = Task(
-        name='Spotkanie testowe',
-        start=datetime(2025, 3, 21, 10, 0),
-        end=datetime(2025, 3, 21, 12, 0),
-        description='To jest testowe zadanie dodane na sztywno do bazy danych.',
-        completed=False,
-        id_user=user.id_user,
-        type=1
-    )
+    # Sprawdź typ zadania i usuń powiązane rekordy
+    if task.type == 1:  # Zadanie tygodniowe
+        Weekly.query.filter_by(id_task=task_id).delete()
+    elif task.type == 2:  # Zadanie miesięczne
+        Monthly.query.filter_by(id_task=task_id).delete()
+    elif task.type == 3:  # Zadanie roczne
+        Yearly.query.filter_by(id_task=task_id).delete()
     
-    test_task_repeat = Weekly(
-        id_task=10,
-        weekday = 4
-    )
-    
-    db.session.add(test_task)
-    # db.session.add(test_task_repeat)
+    # Usuń zadanie
+    db.session.delete(task)
     db.session.commit()
-    print(f"Dodano zadanie: {test_task.name}")
-#----------------------------------------------------------------
-
+    
+    return jsonify(status="OK"), 200
+    
 
 @app.route('/api/tasks/<int:year>/<int:month>', methods=['GET'])
 def get_tasks(year, month):
