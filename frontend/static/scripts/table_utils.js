@@ -34,8 +34,6 @@ function insertTask(
   start_date,
   color = "29A423"
 ) {
-  console.log("2", start_date);
-
   // Konwersja godzin do liczbowych wartości
   let [start_hour, start_minutes] = start_time.split(":");
   start_hour = parseInt(start_hour);
@@ -68,7 +66,7 @@ function insertTask(
     "click",
     () => {
       let tmpDate = new Date(start_date);
-      // tmpDate.setDate(tmpDate.getDate() + day_of_week);
+      tmpDate.setDate(tmpDate.getDate() + day_of_week);
       tmpDate = tmpDate.toISOString().split("T")[0];
       document.location.href = `/harmonogram?date=${tmpDate}`;
     }
@@ -101,7 +99,6 @@ export function populateTable(start_date, end_date) {
           task_id,
           color,
         } = task;
-        console.log("1", start_date);
 
         // Wstawianie zadania do odpowiedniej komórki
         insertTask(
@@ -111,8 +108,8 @@ export function populateTable(start_date, end_date) {
           task_title,
           task_text,
           task_id,
-          color,
-          start_date
+          start_date,
+          color
         );
       });
     })
