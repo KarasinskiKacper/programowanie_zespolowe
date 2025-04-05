@@ -252,7 +252,6 @@ async function loadPreviousTasks() {
         }
         lastDay = dateStart;
       });
-      console.log(tasksByDay[0].date, tasksByDay[0]);
 
       let tmpDate = new Date(tasksByDay[0].date);
       tmpDate.setDate(tmpDate.getDate() - 1);
