@@ -142,8 +142,8 @@ def get_tasks_schedule(year, month, day, future=None):
                         tasks_json.append({
                             'id': task.id_task,
                             'name': task.name,
-                            'start': current_date_iter.strftime('%Y-%m-%d ') + task.start.strftime('%H:%M:%S'),
-                            'end': current_date_iter.strftime('%Y-%m-%d ') + task.end.strftime('%H:%M:%S') if task.end else None,
+                            'start': task_date.strftime('%Y-%m-%d ') + task.start.strftime('%H:%M:%S'),
+                            'end': task_date.strftime('%Y-%m-%d ') + task.end.strftime('%H:%M:%S') if task.end else None,
                             'description': task.description,
                             'type': task.type,
                             'day': repeat.day_of_month,
@@ -151,8 +151,8 @@ def get_tasks_schedule(year, month, day, future=None):
                         })
 
                 # Jeśli określony jest tydzień miesiąca i dzień tygodnia
-                elif repeat.week_of_month and repeat.weekday is not None:                    
-                    first_occurrence = start_date
+                elif repeat.week_of_month and repeat.weekday is not None:
+                    first_occurrence = datetime(year, month, start_date.day)
                     if future:
                         while first_occurrence.weekday() != repeat.weekday:
                             first_occurrence += timedelta(days=1)
@@ -202,7 +202,7 @@ def get_tasks_schedule(year, month, day, future=None):
     
     tasks_json.sort(key = lambda x: create_date(x["start"]), reverse = False)                    
     # print(tasks_json.__len__())  
-    print(tasks_json)       
+    # print(tasks_json)       
     return jsonify(tasks_json)    
 
         
