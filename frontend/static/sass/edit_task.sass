@@ -10,9 +10,9 @@
     text-align: center
     line-height: 12px
     outline: none
-    
+
 @mixin removeInputIcon()
-    &::-webkit-calendar-picker-indicator 
+    &::-webkit-calendar-picker-indicator
         background: transparent
         bottom: 0
         color: transparent
@@ -44,7 +44,6 @@
     background-color: $formBgc
     border: 2px solid $nav_bar
     border-radius: 10px
-    
 
 .edit-task__wrapper
     @include popupWrapper(1)
@@ -82,7 +81,6 @@
     font-size: 16px
     margin: 16px 0 8px
     line-height: 16px
-    
 
 .edit-task__all_day_check
     display: block
@@ -101,8 +99,6 @@
     width: 190px
     @include inputBase()
     @include removeInputIcon()
-    
-
 
 .edit-task__input-time
     width: 50px
@@ -120,12 +116,12 @@
     height: 16px
     border: 1px solid #000
     border-radius: 50%
-    &::-moz-color-swatch 
+    &::-moz-color-swatch
         border: none
-    &::-webkit-color-swatch-wrapper 
+    &::-webkit-color-swatch-wrapper
         padding: 0
         border-radius: 0
-    &::-webkit-color-swatch 
+    &::-webkit-color-swatch
         border: none
 
 .edit-task__description
@@ -152,14 +148,13 @@
     border-radius: 25px
     cursor: pointer
 .edit-task__remove
-    background-color: #E20000
+    background-color: $deleteBtn
 
 .edit-task__input-date-dash
     margin-top: -1px
 
 .edit-task__custom-repeat-wrapper
     @include popupWrapper(3)
-    
 
 .edit-task__custom-repeat
     @include popupMain(4)

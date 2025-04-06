@@ -25,7 +25,11 @@
   </ul>
   <ul class="nav__ul">
     <li class="nav__li">
-      <a class="nav__a" href="/">Ustawienia</a>
+      <a
+        class="nav__a {{ 'nav__a--active' if active_page == 'Ustawienia'}}"
+        href="/ustawienia"
+        >Ustawienia</a
+      >
     </li>
     <li class="nav__li">
       <a class="nav__a" href="/login">

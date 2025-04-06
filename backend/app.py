@@ -26,6 +26,7 @@ sass = Bundle(
     'sass/add_task.sass', 
     'sass/edit_task.sass', 
     'sass/login.sass', 
+    'sass/settings.sass', 
     filters=['libsass'], 
     output='all.css'
 )
@@ -562,6 +563,11 @@ def home():
 def login():
     if request.method == 'GET':
         return render_template('login.html')
+    
+@app.route('/ustawienia', methods=['GET',"POST"])
+def settings():
+    if request.method == 'GET':
+        return render_template('settings.html')
 
 @app.route('/miesiac', methods=['GET',"POST"])
 def month():

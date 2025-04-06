@@ -1,0 +1,74 @@
+{% from 'components/nav_bar.html' import render_nav_bar %} {% from
+'components/small_calendar.html' import render_small_calendar %} {% from
+'components/add_task.html' import render_add_task %}
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ustawienia</title>
+    {% assets "sass_all" %} <link rel=stylesheet type=text/css href="{{
+    ASSET_URL }}"> {% endassets %}
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@300&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    {{ render_nav_bar("Ustawienia", true) }}
+    <main class="settings__main">
+      <div class="settings__wrapper">
+        <h1 class="settings__title">Email</h1>
+        <div class="settings__text-wrapper">
+          <p class="settings__text">username@email.com</p>
+        </div>
+      </div>
+
+      <div class="settings__wrapper">
+        <h1 class="settings__title">Nazwa użytkownika</h1>
+        <div class="settings__text-wrapper">
+          <p class="settings__text">username</p>
+          <button class="settings__button numeric-font">Zmień</button>
+        </div>
+      </div>
+
+      <div class="settings__wrapper">
+        <h1 class="settings__title">Hasło</h1>
+        <div class="settings__text-wrapper">
+          <p class="settings__text">ostatnio zmienione 02.04.2025</p>
+          <button class="settings__button numeric-font">Zmień</button>
+        </div>
+      </div>
+
+      <div class="settings__wrapper">
+        <h1 class="settings__title">Motyw</h1>
+        <div class="settings__text-wrapper">
+          <select name="motyw" class="settings__select">
+            <option value="light">Jasny</option>
+            <option class="settings__option-dark" value="dark">Ciemny</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="settings__wrapper">
+        <h1 class="settings__title">Usunięcie wszystkich zadań</h1>
+        <div class="settings__text-wrapper">
+          <button class="settings__button settings__delete-button numeric-font">
+            Usuń
+          </button>
+        </div>
+      </div>
+
+      <div class="settings__wrapper">
+        <h1 class="settings__title">Usunięcie konta</h1>
+        <div class="settings__text-wrapper">
+          <button class="settings__button settings__delete-button numeric-font">
+            Usuń
+          </button>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>
