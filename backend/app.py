@@ -213,8 +213,8 @@ def get_tasks_week():
             'task_title': task.name,
             'task_text': task.description,
             'task_id': task.id_task,
+            'color': str(task.color[1:]),
         })
-    #print(i)
     # weekly
     weekly_repeats = Weekly.query.all()
     for repeat in weekly_repeats:
@@ -232,8 +232,10 @@ def get_tasks_week():
                             'task_title': f"{task.name}",
                             'task_text': task.description,
                             'task_id': f"repeat-weekly-{repeat.id}-",
-                            'color': 'FF5733',
+                            'color': str(task.color[1:]),
                         })
+
+
     monthly_repeats = Monthly.query.all()
     for repeat in monthly_repeats:
         for i in range((end_date - start_date).days + 1):
@@ -258,7 +260,7 @@ def get_tasks_week():
                     'task_title': f"{task.name}",
                     'task_text': task.description,
                     'task_id': f"repeat-monthly-{repeat.id}-",
-                    'color': 'FF5733',
+                    'color': str(task.color[1:]),
                 })
 
             # Sprawdzenie powtarzania na podstawie tygodnia miesiąca i dnia tygodnia
@@ -279,7 +281,7 @@ def get_tasks_week():
                         'task_title': f"{task.name}",
                         'task_text': task.description,
                         'task_id': f"repeat-monthly-{repeat.id}-",
-                        'color': 'FF5733',
+                        'color': str(task.color[1:]),
                     })
     # Yearly
     yearly_repeats = Yearly.query.all()
@@ -304,8 +306,6 @@ def get_tasks_week():
                         })
 
     return jsonify(tasks_data)
-
-
 
 @app.route('/api/tasks/delete', methods=['POST'])
 def delete_task():
@@ -335,9 +335,9 @@ def delete_task():
 def edit_task():
     task_id = request.json['task_id']
     task = Task.query.get(task_id)
-    
     if not task:
         return jsonify({"error": "Zadanie nie zostało znalezione"}), 404
+    old_task_type = task.type
     
     task_type ={
     "none": 0,
@@ -366,25 +366,44 @@ def edit_task():
     
     type_task = task_type[data.get('repeat_type')]
     daily = True if data.get('repeat_type') == "daily" else False
+    color = data.get('color')
     id_user = 1
     print(name, description, start, end, type_task, daily, id_user)
     db.session.query(Task).filter(Task.id_task == task_id).update({
         Task.name: name,
         Task.description: description,
-        #Task.start: datetime.strptime(start, '%H:%M %Y-%m-%d'),
-        #Task.end: datetime.strptime(end_task, '%H:%M %Y-%m-%d')
         Task.start: start,
-        Task.end: end_task
+        Task.end: end_task,
+        Task.type: type_task,
+        Task.color: color,
     })
-    
-    if type_task == task.type:
-        
-        if type_task == 1:
+    if type_task == 1 and daily == True:
+        Weekly.query.filter_by(id_task=task_id).delete()
+        weekday = start.weekday()
+        i = 0
+        number_of_day = datetime.strptime(end_date, '%Y-%m-%d').date() - datetime.strptime(start_date,'%Y-%m-%d').date()
+        if number_of_day.days <= 5:
+            number_of_day = number_of_day.days
+        else:
+            number_of_day = 6
+        while i <= number_of_day:
+            daily_task = Weekly(
+                id_task=task_id,
+                weekday=(weekday + i) % 7,
+                date_start=start,
+                date_end=end
+            )
+            db.session.add(daily_task)
+            i += 1
+        db.session.commit()
+    if type_task == old_task_type:
+        if type_task == 1 and daily == False:
             db.session.query(Weekly).filter(Weekly.id_task == task_id).update({
                 Weekly.weekday: start.weekday(),
                 Weekly.date_start: start,
                 Weekly.date_end: end
             })
+
         elif type_task == 2:
             db.session.query(Monthly).filter(Monthly.id_task == task_id).update({
                 Monthly.day_of_month: start.day,
@@ -399,17 +418,14 @@ def edit_task():
                 Yearly.date_end: end
             })
     else:
-        if task.type == 1:  # Zadanie tygodniowe
+        if task.type == 1 and daily == False:  # Zadanie tygodniowe
             Weekly.query.filter_by(id_task=task_id).delete()
-            # db.session.commit()
         elif task.type == 2:  # Zadanie miesięczne
             Monthly.query.filter_by(id_task=task_id).delete()
-            # db.session.commit()
         elif task.type == 3:  # Zadanie roczne
             Yearly.query.filter_by(id_task=task_id).delete()
-            # db.session.commit()
         
-        if type_task == 1:
+        if type_task == 1 and daily == False:
             db.session.add(
                 Weekly(
                 id_task=task_id, 
@@ -421,9 +437,9 @@ def edit_task():
             db.session.add(
                 Monthly(
                 id_task=task_id, 
-                day=start.day, 
+                day_of_month=start.day,
                 date_start=datetime.strptime(start_date, '%Y-%m-%d'), 
-                date_end=datetime.strptime(end, '%Y-%m-%d')
+                date_end=end
                 ))
         elif type_task == 3:
             db.session.add(
@@ -432,12 +448,9 @@ def edit_task():
                 day=start.day, 
                 month=start.month, 
                 date_start=datetime.strptime(start_date, '%Y-%m-%d'), 
-                date_end=datetime.strptime(end, '%Y-%m-%d')
+                date_end=end
                 ))
-            
-        db.session.query(Task).filter(Task.id_task == task_id).update({
-            Task.type: type_task
-        })
+
     db.session.commit()
     
     return jsonify(status="OK"), 200
@@ -580,6 +593,7 @@ def add_task():
     end_task = end_hour + " " + start_date
     type_task = task_type[data.get('repeat_type')]
     daily = True if data.get('repeat_type') == "daily" else False
+    color = data.get('color')
     id_user = 1
 
     test_task = Task(
@@ -589,7 +603,8 @@ def add_task():
         description=description,
         completed=False,
         id_user=id_user,
-        type= int(type_task)
+        type= int(type_task),
+        color=color
     )
 
     db.session.add(test_task)

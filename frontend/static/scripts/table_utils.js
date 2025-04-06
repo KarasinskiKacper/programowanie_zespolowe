@@ -32,7 +32,7 @@ function insertTask(
   task_text,
   task_id,
   start_date,
-  color = "29A423"
+  color
 ) {
   // Konwersja godzin do liczbowych wartości
   let [start_hour, start_minutes] = start_time.split(":");
