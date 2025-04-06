@@ -328,3 +328,30 @@ scheduleContainer.addEventListener("scroll", () => {
     loadPreviousTasks();
   }
 });
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  const taskForm = document.querySelector(".edit-task__form");
+
+  taskForm.addEventListener("submit", async (e) => {
+    e.preventDefault(); // Zapobiega przeładowaniu strony
+
+    const formData = {
+      task_id: curentTaskId
+    };
+
+    try {
+      const response = await fetch("/api/tasks/delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+    if (response.ok) {
+        console.log("Zadanie usunięte!");
+        taskForm.reset();
+        }
+    } catch (error) {
+      console.error("Błąd połączenia z serwerem:", error);
+    }
+  });
+});

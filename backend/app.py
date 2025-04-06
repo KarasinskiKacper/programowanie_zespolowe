@@ -322,9 +322,10 @@ def get_tasks_week():
 
 
 
-@app.route('/api/tasks/<int:task_id>/delete', methods=['POST'])
-def delete_task(task_id):
+@app.route('/api/tasks/delete', methods=['POST'])
+def delete_task():
     # Znajdź zadanie
+    task_id = request.json['task_id']
     task = Task.query.get(task_id)
     
     if not task:
@@ -339,7 +340,7 @@ def delete_task(task_id):
     elif task.type == 3:  # Zadanie roczne
         Yearly.query.filter_by(id_task=task_id).delete()
     
-    # Usuń zadanie
+    
     db.session.delete(task)
     db.session.commit()
     
