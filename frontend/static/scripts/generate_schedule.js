@@ -1,7 +1,7 @@
 // przypisanie kontenera do zmiennej
 const scheduleContainer = document.querySelector(".schedule__main");
 // zmienna przechowująca id klikniętego zadania
-let curentTaskId = null;
+let currentTaskId = null;
 
 function fetchData() {
   const res = fetch(`/api/tasks/schedule/2025/3/25/8`)
@@ -58,7 +58,7 @@ function showEditTaskPopup(
   duration,
   description
 ) {
-  curentTaskId = id;
+  currentTaskId = id;
   // przypisanie do zmiennych elementów popupa edycja zadania
   const wrapper = document.querySelector(".edit-task__wrapper");
   const titleInput = document.querySelector(".edit-task__title");
@@ -340,7 +340,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.submitter.name === "remove"){
 
     const formData = {
-      task_id: curentTaskId
+      task_id: currentTaskId
     };
 
     try {
@@ -357,6 +357,58 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Błąd połączenia z serwerem:", error);
     }
   }
-  });
-  
+  }); 
+});
+
+// Edycja zadań
+document.addEventListener("DOMContentLoaded", () => {
+  const taskForm = document.querySelector(".edit-task__form");
+
+  taskForm.addEventListener("submit", async (e) => {
+    e.preventDefault(); // Zapobiega przeładowaniu strony
+
+    if (e.submitter.name === "edit"){
+
+    // const formData = {
+    //   task_id: currentTaskId,
+    //   title: document.querySelector(".edit-task__title").value,
+    //   all_day: document.querySelector(".edit-task__all_day_check").checked,
+    //   start_date: document.querySelector("[name='start_date']").value,
+    //   start_hour: document.querySelector("[name='start_hour']").value,
+    //   end_date: document.querySelector("[name='end_date']").value,
+    //   end_hour: document.querySelector("[name='end_hour']").value,
+    //   repeat_type: document.querySelector(".edit-task__repeat-select").value,
+    //   color: document.querySelector(".edit-task__input-color").value,
+    //   description: document.querySelector(".edit-task__description").value,
+    // };
+
+    const formData = {
+      task_id: currentTaskId,
+      title: document.querySelector(".edit-task__title").value,
+      all_day: document.querySelector(".edit-task__all_day_check").checked,
+      start_date: document.getElementsByClassName("edit-task__input-date")[0].value,
+      start_hour: document.getElementsByClassName("edit-task__input-time")[0].value,
+      end_date: document.getElementsByClassName("edit-task__input-date")[1].value,
+      end_hour: document.getElementsByClassName("edit-task__input-time")[1].value,
+      repeat_type: document.querySelector(".edit-task__repeat-select").value,
+      color: document.querySelector(".edit-task__input-color").value,
+      description: document.querySelector(".edit-task__description").value
+    }
+
+
+    try {
+      const response = await fetch("/api/tasks/edit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+    if (response.ok) {
+        console.log("Zadanie zmienione!");
+        taskForm.reset();
+        }
+    } catch (error) {
+      console.error("Błąd połączenia z serwerem:", error);
+    }
+  }
+  }); 
 });

@@ -36,26 +36,6 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, os.pardir, 'db', 'database.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
-#----------------------------------------------------------------
-def user_exists(email):
-    return db.session.query(exists().where(User.email == email)).scalar()
-
-# Funkcja dodająca testowego użytkownika
-def add_test_user():
-    # Sprawdź czy użytkownik już istnieje
-    if not user_exists('test@example.com'):
-        test_user = User(
-            nickname='testuser',
-            email='test@example.com',
-            password='haslo123',
-            phone_number=123456789
-        )
-        db.session.add(test_user)
-        db.session.commit()
-        print(f"Dodano użytkownika: {test_user.nickname}")
-    else:
-        print("Użytkownik już istnieje")
-# ----------------------------------------------------------------
 
 @app.route('/api/tasks/schedule/<int:year>/<int:month>/<int:day>/<int:future>', methods=['GET'])
 def get_tasks_schedule(year, month, day, future=None):
@@ -88,7 +68,8 @@ def get_tasks_schedule(year, month, day, future=None):
                 'id': task.id_task,
                 'name': task.name,
                 'start': task.start.strftime('%Y-%m-%d %H:%M:%S'),
-                'end': task.end.strftime('%Y-%m-%d %H:%M:%S') if task.end else None,
+                'end': task.end.strftime('%Y-%m-%d %H:%M:%S') if task.end else None, # koniec zadania w dniu
+                'end_date': task.end.strftime('%Y-%m-%d %H:%M:%S') if task.end else None, # koniec cyklicznego powtarzania
                 'description': task.description,
                 'type': task.type,
                 'day': task.start.day
@@ -109,7 +90,8 @@ def get_tasks_schedule(year, month, day, future=None):
                                 'id': task.id_task,
                                 'name': task.name,
                                 'start': current_date_iter.strftime('%Y-%m-%d ') + task.start.strftime('%H:%M:%S'),
-                                'end': current_date_iter.strftime('%Y-%m-%d ') + task.end.strftime('%H:%M:%S') if task.end else None,
+                                'end': current_date_iter.strftime('%Y-%m-%d ') + task.end.strftime('%H:%M:%S') if task.end else None, # koniec zadania w dniu
+                                'end_date': task.end.strftime('%Y-%m-%d %H:%M:%S') if task.end else None, # koniec cyklicznego powtarzania
                                 'description': task.description,
                                 'type': task.type,
                                 'day': current_date_iter.day,
@@ -124,7 +106,8 @@ def get_tasks_schedule(year, month, day, future=None):
                                 'id': task.id_task,
                                 'name': task.name,
                                 'start': current_date_iter.strftime('%Y-%m-%d ') + task.start.strftime('%H:%M:%S'),
-                                'end': current_date_iter.strftime('%Y-%m-%d ') + task.end.strftime('%H:%M:%S') if task.end else None,
+                                'end': current_date_iter.strftime('%Y-%m-%d ') + task.end.strftime('%H:%M:%S') if task.end else None, # koniec zadania w dniu
+                                'end_date': task.end.strftime('%Y-%m-%d %H:%M:%S') if task.end else None, # koniec cyklicznego powtarzania
                                 'description': task.description,
                                 'type': task.type,
                                 'day': current_date_iter.day,
@@ -144,7 +127,8 @@ def get_tasks_schedule(year, month, day, future=None):
                             'id': task.id_task,
                             'name': task.name,
                             'start': task_date.strftime('%Y-%m-%d ') + task.start.strftime('%H:%M:%S'),
-                            'end': task_date.strftime('%Y-%m-%d ') + task.end.strftime('%H:%M:%S') if task.end else None,
+                            'end': task_date.strftime('%Y-%m-%d ') + task.end.strftime('%H:%M:%S') if task.end else None, # koniec zadania w dniu
+                            'end_date': task.end.strftime('%Y-%m-%d %H:%M:%S') if task.end else None, # koniec cyklicznego powtarzania
                             'description': task.description,
                             'type': task.type,
                             'day': repeat.day_of_month,
@@ -185,7 +169,8 @@ def get_tasks_schedule(year, month, day, future=None):
                         'id': task.id_task,
                         'name': task.name,
                         'start': task_date.strftime('%Y-%m-%d ') + task.start.strftime('%H:%M:%S'),
-                        'end': task_date.strftime('%Y-%m-%d ') + task.end.strftime('%H:%M:%S') if task.end else None,
+                        'end': task_date.strftime('%Y-%m-%d ') + task.end.strftime('%H:%M:%S') if task.end else None, # koniec zadania w dniu
+                        'end_date': task.end.strftime('%Y-%m-%d %H:%M:%S') if task.end else None, # koniec cyklicznego powtarzania
                         'description': task.description,
                         'type': task.type,
                         'day': repeat.day,
@@ -342,6 +327,117 @@ def delete_task():
     
     
     db.session.delete(task)
+    db.session.commit()
+    
+    return jsonify(status="OK"), 200
+
+@app.route('/api/tasks/edit', methods=['POST'])
+def edit_task():
+    task_id = request.json['task_id']
+    task = Task.query.get(task_id)
+    
+    if not task:
+        return jsonify({"error": "Zadanie nie zostało znalezione"}), 404
+    
+    task_type ={
+    "none": 0,
+    "daily": 1,
+    "weekly": 1,
+    "monthly": 2,
+    "yearly": 3
+    }
+    data = request.json # Pobranie JSON-a z formularza
+    name = data.get('title')
+    description = data.get('description')
+    #data startu
+    start_date = data.get('start_date')
+    start_hour = data.get('start_hour')
+    start = start_hour + " " + start_date
+    start = datetime.strptime(start, '%H:%M %Y-%m-%d')
+    #data końca
+    end_date = data.get('end_date')
+    end_hour = data.get('end_hour')
+    
+    end = end_hour + " " + end_date
+    end = datetime.strptime(end, '%H:%M %Y-%m-%d')
+    
+    end_task = end_hour + " " + start_date
+    end_task = datetime.strptime(end_task, '%H:%M %Y-%m-%d')
+    
+    type_task = task_type[data.get('repeat_type')]
+    daily = True if data.get('repeat_type') == "daily" else False
+    id_user = 1
+    print(name, description, start, end, type_task, daily, id_user)
+    db.session.query(Task).filter(Task.id_task == task_id).update({
+        Task.name: name,
+        Task.description: description,
+        #Task.start: datetime.strptime(start, '%H:%M %Y-%m-%d'),
+        #Task.end: datetime.strptime(end_task, '%H:%M %Y-%m-%d')
+        Task.start: start,
+        Task.end: end_task
+    })
+    
+    if type_task == task.type:
+        
+        if type_task == 1:
+            db.session.query(Weekly).filter(Weekly.id_task == task_id).update({
+                Weekly.weekday: start.weekday(),
+                Weekly.date_start: start,
+                Weekly.date_end: end
+            })
+        elif type_task == 2:
+            db.session.query(Monthly).filter(Monthly.id_task == task_id).update({
+                Monthly.day_of_month: start.day,
+                Monthly.date_start: start,
+                Monthly.date_end: end
+            })
+        elif type_task == 3:
+            db.session.query(Yearly).filter(Yearly.id_task == task_id).update({
+                Yearly.day: start.day,
+                Yearly.month: start.month,
+                Yearly.date_start: start,
+                Yearly.date_end: end
+            })
+    else:
+        if task.type == 1:  # Zadanie tygodniowe
+            Weekly.query.filter_by(id_task=task_id).delete()
+            # db.session.commit()
+        elif task.type == 2:  # Zadanie miesięczne
+            Monthly.query.filter_by(id_task=task_id).delete()
+            # db.session.commit()
+        elif task.type == 3:  # Zadanie roczne
+            Yearly.query.filter_by(id_task=task_id).delete()
+            # db.session.commit()
+        
+        if type_task == 1:
+            db.session.add(
+                Weekly(
+                id_task=task_id, 
+                weekday=start.weekday(), 
+                date_start=datetime.strptime(start_date, '%Y-%m-%d'), 
+                date_end=end
+                ))
+        elif type_task == 2:
+            db.session.add(
+                Monthly(
+                id_task=task_id, 
+                day=start.day, 
+                date_start=datetime.strptime(start_date, '%Y-%m-%d'), 
+                date_end=datetime.strptime(end, '%Y-%m-%d')
+                ))
+        elif type_task == 3:
+            db.session.add(
+                Yearly(
+                id_task=task_id, 
+                day=start.day, 
+                month=start.month, 
+                date_start=datetime.strptime(start_date, '%Y-%m-%d'), 
+                date_end=datetime.strptime(end, '%Y-%m-%d')
+                ))
+            
+        db.session.query(Task).filter(Task.id_task == task_id).update({
+            Task.type: type_task
+        })
     db.session.commit()
     
     return jsonify(status="OK"), 200
