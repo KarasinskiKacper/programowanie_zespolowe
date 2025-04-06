@@ -330,11 +330,14 @@ scheduleContainer.addEventListener("scroll", () => {
 });
 
 
+// Usuwanie zadań
 document.addEventListener("DOMContentLoaded", () => {
   const taskForm = document.querySelector(".edit-task__form");
 
   taskForm.addEventListener("submit", async (e) => {
     e.preventDefault(); // Zapobiega przeładowaniu strony
+
+    if (e.submitter.name === "remove"){
 
     const formData = {
       task_id: curentTaskId
@@ -353,5 +356,7 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (error) {
       console.error("Błąd połączenia z serwerem:", error);
     }
+  }
   });
+  
 });
