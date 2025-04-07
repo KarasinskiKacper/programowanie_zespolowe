@@ -28,6 +28,7 @@ class Task(db.Model):
     completed: Mapped[int] = mapped_column(Integer, nullable=False)
     id_user: Mapped[int] = mapped_column(Integer, ForeignKey('User.id_user'), nullable=False)
     type: Mapped[int] = mapped_column(Integer, nullable=False)
+    color: Mapped[str] = mapped_column(String(6), nullable=True)
 
     def __repr__(self):
         return f'<Task id: {self.id_task} name: {self.name}>'

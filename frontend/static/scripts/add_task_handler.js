@@ -1,9 +1,7 @@
 // przypisanie elementów do zmiennych
 const addTaksWrapper = document.querySelector(".add-task__wrapper");
 const allDayCheckbox = document.querySelector(".add-task__all_day_check");
-const disableableInputs = document.querySelectorAll(
-  ".add-task__input--disableable"
-);
+const disableableInputs = document.querySelectorAll(".add-task__input--disableable");
 const repeatSelect = document.querySelector(".add-task__repeat-select");
 const dateInput = document.querySelectorAll(".add-task__input-date");
 const timeInput = document.querySelectorAll(".add-task__input-time");
@@ -63,16 +61,14 @@ let tzoffset = new Date().getTimezoneOffset() * 60000; //offset in milliseconds
 let timeDateValues = new Date(timeDate - tzoffset).toISOString().split("T");
 
 dateInput[0].value = timeDateValues[0];
-timeInput[0].value =
-  timeDateValues[1].split(":")[0] + ":" + timeDateValues[1].split(":")[1];
+timeInput[0].value = timeDateValues[1].split(":")[0] + ":" + timeDateValues[1].split(":")[1];
 
 timeDate.setHours(timeDate.getHours() + 1);
 tzoffset = timeDate.getTimezoneOffset() * 60000; //offset in milliseconds
 timeDateValues = new Date(timeDate - tzoffset).toISOString().split("T");
 
 dateInput[1].value = timeDateValues[0];
-timeInput[1].value =
-  timeDateValues[1].split(":")[0] + ":" + timeDateValues[1].split(":")[1];
+timeInput[1].value = timeDateValues[1].split(":")[0] + ":" + timeDateValues[1].split(":")[1];
 
 // zabezpieczenie przed ustawieniem daty końcowej wcześniejszej niż początkowej dla dat
 dateInput[1].min = dateInput[0].value;
@@ -148,12 +144,13 @@ document.addEventListener("DOMContentLoaded", () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-    if (response.ok) {
+      if (response.ok) {
         console.log("Zadanie dodane!");
         taskForm.reset();
-        }
+      }
     } catch (error) {
       console.error("Błąd połączenia z serwerem:", error);
     }
+    window.location.reload();
   });
 });
