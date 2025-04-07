@@ -50,7 +50,7 @@ let scheduleDateStart = parseURLParams(window.location.href)?.date
 let scheduleDateEnd = scheduleDateStart;
 
 // TODO dodać automatyczne ustawianie powtarzania i koloru
-function showEditTaskPopup(id, dateStart, dateEnd, title, duration, description) {
+function showEditTaskPopup(id, dateStart, dateEnd, title, duration, description, taskType) {
   currentTaskId = id;
   // przypisanie do zmiennych elementów popupa edycja zadania
   const wrapper = document.querySelector(".edit-task__wrapper");
@@ -60,6 +60,7 @@ function showEditTaskPopup(id, dateStart, dateEnd, title, duration, description)
   const timeInput = document.querySelectorAll(".edit-task__input-time");
   const disableableInputs = document.querySelectorAll(".edit-task__input--disableable");
   const descriptionInput = document.querySelector(".edit-task__description");
+  const repeatSelect = document.querySelector(".edit-task__repeat-select");
 
   // pokazanie popupa i przekazanie mu danych o zadaniu
   wrapper.classList.remove("edit-task__wrapper--hidden");
@@ -76,6 +77,17 @@ function showEditTaskPopup(id, dateStart, dateEnd, title, duration, description)
   }
   dateInput[1].value = dateEnd;
   descriptionInput.value = description;
+
+  // ustawienie automatyczne powtarzania zadan
+  if (taskType === "0") {
+    repeatSelect.value = "none";
+  } else if (taskType === "1") {
+    repeatSelect.value = "weekly";
+  } else if (taskType === "2") {
+    repeatSelect.value = "monthly";
+  } else if (taskType === "3") {
+    repeatSelect.value = "yearly";
+  }
 }
 
 /**
@@ -125,6 +137,7 @@ async function loadNextTasks() {
                 title: task.name,
                 description: task.description,
                 duration: duration,
+                type: task.type,
               },
             ],
           });
@@ -165,7 +178,7 @@ async function loadNextTasks() {
         // wygenerowanie treści dla zadań w dniu
         // onclick powoduje wykoczenie popupu edycji zadania
         (dayWrapper.innerHTML += `<div class="schedule-day__task-wrapper" 
-          onclick="showEditTaskPopup('${dayTask.id}','${task.date}','${task.dateEnd}','${dayTask.title}','${dayTask.duration}','${dayTask.description}')" 
+          onclick="showEditTaskPopup('${dayTask.id}','${task.date}','${task.dateEnd}','${dayTask.title}','${dayTask.duration}','${dayTask.description}','${dayTask.type}')" 
           >
           <div class="schedule-day__task-title-wrapper">
               <h2 class="schedule-day__task-title">${dayTask.title}</h2>
@@ -231,6 +244,7 @@ async function loadPreviousTasks() {
                 title: task.name,
                 description: task.description,
                 duration: duration,
+                type: task.type,
               },
             ],
           });
@@ -269,7 +283,7 @@ async function loadPreviousTasks() {
       (dayTask) =>
         // wygenerowanie treści dla zadań w dniu
         (newInnerHtml += `
-      <div class="schedule-day__task-wrapper" onclick="showEditTaskPopup('${dayTask.id}','${task.date}','${task.dateEnd}','${dayTask.title}','${dayTask.duration}','${dayTask.description}')" >
+      <div class="schedule-day__task-wrapper" onclick="showEditTaskPopup('${dayTask.id}','${task.date}','${task.dateEnd}','${dayTask.title}','${dayTask.duration}','${dayTask.description}','${dayTask.type}')" >
           <div class="schedule-day__task-title-wrapper">
               <h2 class="schedule-day__task-title">${dayTask.title}</h2>
               <p class="schedule-day__task-duration numeric-font">
