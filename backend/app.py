@@ -122,7 +122,7 @@ def get_tasks_schedule(year, month, day, future=None):
                 if repeat.day_of_month:
                     task_date = datetime(year, month, repeat.day_of_month)
 
-                    if task_date >= min_date and task_date <= max_date and (repeat.date_end is None or task_date <= repeat.date_end):
+                    if task_date >= min_date and task_date < max_date and (repeat.date_end is None or task_date <= repeat.date_end):
                         tasks_json.append({
                             'id': task.id_task,
                             'name': task.name,
@@ -188,8 +188,9 @@ def get_tasks_schedule(year, month, day, future=None):
     
     tasks_json.sort(key = lambda x: create_date(x["start"]), reverse = False)                    
     # print(tasks_json.__len__())  
-    # print(tasks_json)       
-    return jsonify(tasks_json)    
+    print(tasks_json)       
+    return jsonify(tasks_json)
+    
 
         
 
