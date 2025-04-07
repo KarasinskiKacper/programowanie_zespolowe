@@ -1,0 +1,16 @@
+{% macro render_confirmation(id, titleText) %}
+<section id="{{id}}" class="confirmation__wrapper confirmation__wrapper--hidden">
+  <form action="/" class="confirmation__form" method="post">
+    <h1 class="confirmation__title">{{titleText}}</h1>
+    <div class="confirmation__buttons-wrapper">
+      <button id="{{id}}-cancel-button" type="reset" class="confirmation__button numeric-font">
+        Anuluj
+      </button>
+      <button type="submit" class="confirmation__button confirmation__delete-button numeric-font">
+        Usuń
+      </button>
+    </div>
+  </form>
+  <script src="./static/scripts/{{id}}.js"></script>
+</section>
+{% endmacro %}
