@@ -93,9 +93,9 @@ function showEditTaskPopup(id, dateStart, dateEnd, title, duration, description,
 /**
  * Załadowanie nowych zadań na koniec aktualnie wyświetlanych zadań. Funcja może przyjąć dowolną (również zerową) ilość dni i zadań wewnątrz dni do załadowania.
  * @param {Array.<{date: String, weekDay: String, dayTask: Array.<{title: String, description: String, duration: String}>}>} tasksToLoad Dane taksków do załadowania
- * @returns {void}
+ * @returns {Array} załadowane zadania
  */
-async function loadNextTasks() {
+async function loadNextTasks(isFirstLoad = false) {
   const tasksToLoad = await fetch(`/api/tasks/schedule/${scheduleDateEnd}/8`)
     .then((response) => response.json())
     .then((tasks) => {
@@ -157,6 +157,16 @@ async function loadNextTasks() {
       tmpDate.setDate(tmpDate.getDate() + 1);
       tmpDate = tmpDate.toISOString().split("T")[0].split("-").join("/");
       scheduleDateEnd = tmpDate;
+      if (isFirstLoad) {
+        tmpDate = new Date(tasksByDay[0].date);
+        tmpDate.setDate(tmpDate.getDate() - 1);
+        tmpDate = tmpDate.toISOString().split("T")[0].split("-").join("/");
+        scheduleDateStart = tmpDate;
+        // zabezpieczenie przed brakiem możliwości scrollowania
+        if (scheduleContainer.scrollTop === 0) {
+          loadPreviousTasks();
+        }
+      }
 
       console.log("next: ",tasksByDay);
       
@@ -196,13 +206,15 @@ async function loadNextTasks() {
     );
     // dodanie elementu na koniec kontenera
     scheduleContainer.appendChild(dayWrapper);
+
+    return tasksToLoad;
   });
 }
 
 /**
  * Załadowanie nowych zadań na początek aktualnie wyświetlanych zadań. Funcja może przyjąć dowolną (również zerową) ilość dni i zadań wewnątrz dni do załadowania.
  * @param {Array.<{date: String, weekDay: String, dayTask: Array.<{title: String, description: String, duration: String}>}>} tasksToLoad Dane taksków do załadowania
- * @returns {void}
+ * @returns {Array} załadowane zadania
  */
 async function loadPreviousTasks() {
   // zmienna przechowująca dane do wstawienia na początek kontenera
@@ -311,6 +323,7 @@ async function loadPreviousTasks() {
 
   // przesunięcie scrolla na poprawną wysokość
   scheduleContainer.scroll(0, scheduleContainer.scrollHeight - oldHeight);
+  return tasksToLoad;
 }
 
 // TODO przekazać dane zadań, które mają się załadować odrazu przy renderowaniu strony
@@ -318,15 +331,10 @@ async function loadPreviousTasks() {
 // pierwsze załadowanie zadań
 // przestawienie scrolla o 1px w dół alby umożliwić wykrycie scrollowania w górę
 async function firstLoadTasks() {
-  await loadNextTasks();
+  await loadNextTasks(true);
   scheduleContainer.scroll(0, 1);
 }
 firstLoadTasks();
-
-// zabezpieczenie przed bramiek możliwości scrollowania
-if (scheduleContainer.scrollTop === 0) {
-  loadPreviousTasks();
-}
 
 // wykrywanie scrollowania
 scheduleContainer.addEventListener("scroll", () => {
