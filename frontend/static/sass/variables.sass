@@ -8,3 +8,82 @@ $nav_bar: #0D1626
 $hover: #80ADFF
 $formBgc: #F3F6FF
 $deleteBtn: #E20000
+
+
+@mixin inputBase()
+    display: block
+    position: relative
+    height: 18px
+    font-size: 12px
+    border: 1px solid #000
+    border-radius: 10px
+    text-align: center
+    line-height: 12px
+    outline: none
+
+@mixin bigInputBase()
+    display: block
+    width: 256px
+    height: 24px
+    font-size: 16px
+    line-height: 16px
+    border: 1px solid #000
+    margin: 16px auto 0
+    outline: none
+    
+@mixin removeInputIcon()
+    &::-webkit-calendar-picker-indicator 
+        background: transparent
+        bottom: 0
+        color: transparent
+        cursor: pointer
+        height: auto
+        left: 0
+        position: absolute
+        right: 0
+        top: 0
+        width: auto
+
+@mixin popupWrapper($zindex)
+    position: fixed
+    top: 0
+    bottom: 0
+    left: 0
+    right: 0
+    z-index: $zindex
+    background-color: rgba(0, 0, 0, .5)
+    &--hidden
+        display: none
+
+@mixin popupMain($zindex)
+    position: fixed
+    top: 50%
+    left: 50%
+    transform: translate(-50%,-50%)
+    z-index: $zindex
+    background-color: $formBgc
+    border: 2px solid $nav_bar
+    border-radius: 10px
+    
+@mixin button($width, $height)
+    display: block
+    width: $width
+    height: $height
+    border: none
+    border-radius: 25px
+    background-color: $nav_bar
+    color: #fff
+    cursor: pointer
+    font-size: 16px
+    line-height: 16px
+
+@mixin popupTitle()
+    width: 100%
+    height: 24px
+    font-size: 16px
+    line-height: 16px
+    text-align: center
+    font-weight: normal
+    margin-top: 16px
+    padding-bottom: 8px
+    border-bottom: 1px solid $active

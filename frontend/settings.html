@@ -1,14 +1,15 @@
-{% from 'components/nav_bar.html' import render_nav_bar %} {% from
-'components/small_calendar.html' import render_small_calendar %} {% from
-'components/add_task.html' import render_add_task %}
+{% from 'components/nav_bar.html' import render_nav_bar %} {% from 'components/confirmation.html'
+import render_confirmation %} {% from 'components/change_username.html' import
+render_change_username %} {% from 'components/change_password.html' import render_change_password %}
+
 <!DOCTYPE html>
 <html lang="pl">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Ustawienia</title>
-    {% assets "sass_all" %} <link rel=stylesheet type=text/css href="{{
-    ASSET_URL }}"> {% endassets %}
+    {% assets "sass_all" %} <link rel=stylesheet type=text/css href="{{ ASSET_URL }}"> {% endassets
+    %}
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -55,20 +56,25 @@
       <div class="settings__wrapper">
         <h1 class="settings__title">Usunięcie wszystkich zadań</h1>
         <div class="settings__text-wrapper">
-          <button class="settings__button settings__delete-button numeric-font">
-            Usuń
-          </button>
+          <button class="settings__button settings__delete-button numeric-font">Usuń</button>
         </div>
       </div>
 
       <div class="settings__wrapper">
         <h1 class="settings__title">Usunięcie konta</h1>
         <div class="settings__text-wrapper">
-          <button class="settings__button settings__delete-button numeric-font">
-            Usuń
-          </button>
+          <button class="settings__button settings__delete-button numeric-font">Usuń</button>
         </div>
       </div>
     </main>
+
+    {{render_change_username()}}
+    <!--  -->
+    {{render_change_password()}}
+    <!--  -->
+    {{render_confirmation("delete_tasks_confirmation","Potwierdź usunięcie zadań")}}
+    <!--  -->
+    {{render_confirmation("delete_account_confirmation","Potwierdź usunięcie konta")}}
+    <script src="./static/scripts/settings_handler.js"></script>
   </body>
 </html>

@@ -1,0 +1,10 @@
+{% macro render_change_username() %}
+<section class="change-username__wrapper change-username__wrapper--hidden">
+  <form action="/" class="change-username__form" method="post">
+    <h1 class="change-username__title">Nowa nazwa użytkownika</h1>
+    <input type="text" class="change-username__input" name="username" required />
+    <button type="submit" class="change-username__button numeric-font">Zmień</button>
+  </form>
+  <script src="./static/scripts/change_username_handler.js"></script>
+</section>
+{% endmacro %}

@@ -1,50 +1,5 @@
 @import "variables.sass"
 
-@mixin inputBase()
-    display: block
-    position: relative
-    height: 18px
-    font-size: 12px
-    border: 1px solid #000
-    border-radius: 10px
-    text-align: center
-    line-height: 12px
-    outline: none
-
-@mixin removeInputIcon()
-    &::-webkit-calendar-picker-indicator
-        background: transparent
-        bottom: 0
-        color: transparent
-        cursor: pointer
-        height: auto
-        left: 0
-        position: absolute
-        right: 0
-        top: 0
-        width: auto
-
-@mixin popupWrapper($zindex)
-    position: fixed
-    top: 0
-    bottom: 0
-    left: 0
-    right: 0
-    z-index: $zindex
-    background-color: rgba(0, 0, 0, .5)
-    &--hidden
-        display: none
-
-@mixin popupMain($zindex)
-    position: fixed
-    top: 50%
-    left: 50%
-    transform: translate(-50%,-50%)
-    z-index: $zindex
-    background-color: $formBgc
-    border: 2px solid $nav_bar
-    border-radius: 10px
-
 .edit-task__wrapper
     @include popupWrapper(1)
 

@@ -27,6 +27,9 @@ sass = Bundle(
     'sass/edit_task.sass', 
     'sass/login.sass', 
     'sass/settings.sass', 
+    'sass/confirmation.sass', 
+    'sass/change_username.sass', 
+    'sass/change_password.sass', 
     filters=['libsass'], 
     output='all.css'
 )
