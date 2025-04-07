@@ -146,6 +146,7 @@ async function loadNextTasks() {
             title: task.name,
             description: task.description,
             duration: duration,
+            type: task.type,
           });
         }
         lastDay = dateStart;
@@ -156,6 +157,8 @@ async function loadNextTasks() {
       tmpDate = tmpDate.toISOString().split("T")[0].split("-").join("/");
       scheduleDateEnd = tmpDate;
 
+      console.log("next: ",tasksByDay);
+      
       return tasksByDay;
     });
 
@@ -253,6 +256,7 @@ async function loadPreviousTasks() {
             title: task.name,
             description: task.description,
             duration: duration,
+            type: task.type,
           });
         }
         lastDay = dateStart;
@@ -262,6 +266,8 @@ async function loadPreviousTasks() {
       tmpDate.setDate(tmpDate.getDate() - 1);
       tmpDate = tmpDate.toISOString().split("T")[0].split("-").join("/");
       scheduleDateStart = tmpDate;
+
+      console.log("previous: ",tasksByDay);
       return tasksByDay;
     });
 
