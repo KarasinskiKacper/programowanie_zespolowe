@@ -34,6 +34,7 @@
     border: none
     background-color: transparent
     cursor: pointer
+    color: var(--font-main-color)
 
 
 .month__main-calendar
@@ -49,7 +50,7 @@
     width: 100%
     justify-content: flex-end
     align-items: flex-start
-    border-right: 2px solid $nav_bar
+    border-right: 2px solid var(--font-main-color)
 
 .month__main-calendar-week-day-text
     height: 20px
@@ -62,7 +63,7 @@
 
 .month__main-calendar-day
     height: 118px
-    border-right: 2px solid $nav_bar
+    border-right: 2px solid var(--font-main-color)
     padding-right: 16px
 
 .month__main-calendar-days-text
@@ -70,13 +71,13 @@
     text-align: right
     cursor: pointer
     &--past
-        color: $past
+        color: var(--past)
     &--future
-        color: $future
+        color: var(--future)
     &--task
-        color: $task
+        color: var(--task)
     &--today
-        color: $active
+        color: var(--today)
     
 
 .month__main-calendar-days-task

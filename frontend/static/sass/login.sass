@@ -1,20 +1,22 @@
 @import "variables.sass"
 
-.login__login-register-choise
+.login__login-register-choice
     display: flex
     justify-content: center
     width: 100%
     margin: 48px 0
+    color: var(--font-alt-color)
 
-.login__login-register-choise-text
+.login__login-register-choice-text
     font-size: 48px
     width: 300px
     height: 64px
     text-align: center
     cursor: pointer
     transition-duration: 300ms
+    color: var(--font-main-color)
     &--active
-        color: $active
+        color: var(--today)
 
 .login__main
     width: 450px
@@ -53,7 +55,7 @@
     display: block
     width: 300px
     height: 48px
-    background-color: $nav_bar
+    background-color: var(--nav-bar)
     margin: 32px auto
     border: none
     border-radius: 25px
