@@ -50,14 +50,7 @@ let scheduleDateStart = parseURLParams(window.location.href)?.date
 let scheduleDateEnd = scheduleDateStart;
 
 // TODO dodać automatyczne ustawianie powtarzania i koloru
-function showEditTaskPopup(
-  id,
-  dateStart,
-  dateEnd,
-  title,
-  duration,
-  description
-) {
+function showEditTaskPopup(id, dateStart, dateEnd, title, duration, description) {
   currentTaskId = id;
   // przypisanie do zmiennych elementów popupa edycja zadania
   const wrapper = document.querySelector(".edit-task__wrapper");
@@ -65,9 +58,7 @@ function showEditTaskPopup(
   const checkbox = document.querySelector(".edit-task__all_day_check");
   const dateInput = document.querySelectorAll(".edit-task__input-date");
   const timeInput = document.querySelectorAll(".edit-task__input-time");
-  const disableableInputs = document.querySelectorAll(
-    ".edit-task__input--disableable"
-  );
+  const disableableInputs = document.querySelectorAll(".edit-task__input--disableable");
   const descriptionInput = document.querySelector(".edit-task__description");
 
   // pokazanie popupa i przekazanie mu danych o zadaniu
@@ -329,7 +320,6 @@ scheduleContainer.addEventListener("scroll", () => {
   }
 });
 
-
 // Usuwanie zadań
 document.addEventListener("DOMContentLoaded", () => {
   const taskForm = document.querySelector(".edit-task__form");
@@ -337,27 +327,27 @@ document.addEventListener("DOMContentLoaded", () => {
   taskForm.addEventListener("submit", async (e) => {
     e.preventDefault(); // Zapobiega przeładowaniu strony
 
-    if (e.submitter.name === "remove"){
+    if (e.submitter.name === "remove") {
+      const formData = {
+        task_id: currentTaskId,
+      };
 
-    const formData = {
-      task_id: currentTaskId
-    };
-
-    try {
-      const response = await fetch("/api/tasks/delete", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-    if (response.ok) {
-        console.log("Zadanie usunięte!");
-        taskForm.reset();
+      try {
+        const response = await fetch("/api/tasks/delete", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        });
+        if (response.ok) {
+          console.log("Zadanie usunięte!");
+          taskForm.reset();
         }
-    } catch (error) {
-      console.error("Błąd połączenia z serwerem:", error);
+      } catch (error) {
+        console.error("Błąd połączenia z serwerem:", error);
+      }
     }
-  }
-  }); 
+    window.location.reload();
+  });
 });
 
 // Edycja zadań
@@ -367,48 +357,47 @@ document.addEventListener("DOMContentLoaded", () => {
   taskForm.addEventListener("submit", async (e) => {
     e.preventDefault(); // Zapobiega przeładowaniu strony
 
-    if (e.submitter.name === "edit"){
+    if (e.submitter.name === "edit") {
+      // const formData = {
+      //   task_id: currentTaskId,
+      //   title: document.querySelector(".edit-task__title").value,
+      //   all_day: document.querySelector(".edit-task__all_day_check").checked,
+      //   start_date: document.querySelector("[name='start_date']").value,
+      //   start_hour: document.querySelector("[name='start_hour']").value,
+      //   end_date: document.querySelector("[name='end_date']").value,
+      //   end_hour: document.querySelector("[name='end_hour']").value,
+      //   repeat_type: document.querySelector(".edit-task__repeat-select").value,
+      //   color: document.querySelector(".edit-task__input-color").value,
+      //   description: document.querySelector(".edit-task__description").value,
+      // };
 
-    // const formData = {
-    //   task_id: currentTaskId,
-    //   title: document.querySelector(".edit-task__title").value,
-    //   all_day: document.querySelector(".edit-task__all_day_check").checked,
-    //   start_date: document.querySelector("[name='start_date']").value,
-    //   start_hour: document.querySelector("[name='start_hour']").value,
-    //   end_date: document.querySelector("[name='end_date']").value,
-    //   end_hour: document.querySelector("[name='end_hour']").value,
-    //   repeat_type: document.querySelector(".edit-task__repeat-select").value,
-    //   color: document.querySelector(".edit-task__input-color").value,
-    //   description: document.querySelector(".edit-task__description").value,
-    // };
+      const formData = {
+        task_id: currentTaskId,
+        title: document.querySelector(".edit-task__title").value,
+        all_day: document.querySelector(".edit-task__all_day_check").checked,
+        start_date: document.getElementsByClassName("edit-task__input-date")[0].value,
+        start_hour: document.getElementsByClassName("edit-task__input-time")[0].value,
+        end_date: document.getElementsByClassName("edit-task__input-date")[1].value,
+        end_hour: document.getElementsByClassName("edit-task__input-time")[1].value,
+        repeat_type: document.querySelector(".edit-task__repeat-select").value,
+        color: document.querySelector(".edit-task__input-color").value,
+        description: document.querySelector(".edit-task__description").value,
+      };
 
-    const formData = {
-      task_id: currentTaskId,
-      title: document.querySelector(".edit-task__title").value,
-      all_day: document.querySelector(".edit-task__all_day_check").checked,
-      start_date: document.getElementsByClassName("edit-task__input-date")[0].value,
-      start_hour: document.getElementsByClassName("edit-task__input-time")[0].value,
-      end_date: document.getElementsByClassName("edit-task__input-date")[1].value,
-      end_hour: document.getElementsByClassName("edit-task__input-time")[1].value,
-      repeat_type: document.querySelector(".edit-task__repeat-select").value,
-      color: document.querySelector(".edit-task__input-color").value,
-      description: document.querySelector(".edit-task__description").value
-    }
-
-
-    try {
-      const response = await fetch("/api/tasks/edit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-    if (response.ok) {
-        console.log("Zadanie zmienione!");
-        taskForm.reset();
+      try {
+        const response = await fetch("/api/tasks/edit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        });
+        if (response.ok) {
+          console.log("Zadanie zmienione!");
+          taskForm.reset();
         }
-    } catch (error) {
-      console.error("Błąd połączenia z serwerem:", error);
+      } catch (error) {
+        console.error("Błąd połączenia z serwerem:", error);
+      }
+      window.location.reload();
     }
-  }
-  }); 
+  });
 });
