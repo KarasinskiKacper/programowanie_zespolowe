@@ -74,7 +74,8 @@ def get_tasks_schedule(year, month, day, future=None):
                 'type': task.type,
                 'day': task.start.day
             })
-            
+    
+    task_count = tasks.count()        
     recurring_tasks = Task.query.filter(Task.type.in_([1, 2, 3])).all()
     
     for task in recurring_tasks:
@@ -83,8 +84,14 @@ def get_tasks_schedule(year, month, day, future=None):
             for repeat in weekly_repeats:
                 current_date_iter = start_date
                 if future:
-                    while current_date_iter <= max_date:
-                        if current_date_iter.weekday() == repeat.weekday and (repeat.date_start <= current_date_iter and (repeat.date_end is None or current_date_iter <= repeat.date_end)):
+                    # or task_count <= 6
+                    # current_date_iter <= max_date
+                    while (repeat.date_end is None or current_date_iter.strftime('%Y-%m-%d') <= repeat.date_end.strftime('%Y-%m-%d')) and task_count < 6:
+                        print(task_count)
+                        print(f"{current_date_iter.strftime('%Y-%m-%d')}   {repeat.date_end.strftime('%Y-%m-%d')}")
+                        if current_date_iter.weekday() == repeat.weekday and (
+                            repeat.date_start.strftime('%Y-%m-%d') <= current_date_iter.strftime('%Y-%m-%d') and 
+                            (repeat.date_end is None or current_date_iter.strftime('%Y-%m-%d') <= repeat.date_end.strftime('%Y-%m-%d'))):
                             # print (f"min: {min_date}, max: {max_date}, task: {current_date_iter.strftime('%Y-%m-%d ') + task.start.strftime('%H:%M:%S')}")
                             tasks_json.append({
                                 'id': task.id_task,
@@ -97,11 +104,13 @@ def get_tasks_schedule(year, month, day, future=None):
                                 'day': current_date_iter.day,
                                 'weekday': repeat.weekday
                             })
+                            task_count += 1
                         current_date_iter += timedelta(days=1)
                         
+                        
                 else:
-                    while current_date_iter >= min_date:
-                        if current_date_iter.weekday() == repeat.weekday and (repeat.date_start <= current_date_iter and (repeat.date_end is None or current_date_iter <= repeat.date_end)):
+                     while (repeat.date_start is None or current_date_iter >= repeat.date_start) and task_count < 6:
+                        if current_date_iter.weekday() == repeat.weekday and (repeat.date_start <= current_date_iter <= (repeat.date_end if repeat.date_end else current_date_iter)):
                             tasks_json.append({
                                 'id': task.id_task,
                                 'name': task.name,
@@ -113,6 +122,7 @@ def get_tasks_schedule(year, month, day, future=None):
                                 'day': current_date_iter.day,
                                 'weekday': repeat.weekday
                             })
+                            task_count += 1
                         current_date_iter -= timedelta(days=1)
         elif task.type == 2:     
             monthly_repeats = Monthly.query.filter_by(id_task=task.id_task).all()
@@ -164,7 +174,7 @@ def get_tasks_schedule(year, month, day, future=None):
             for repeat in yearly_repeats:
                 task_date = datetime(year, repeat.month , repeat.day)
                 # Sprawdź czy data zadania mieści się w zakresie powtarzania
-                if task_date >= min_date and task_date <= max_date and (repeat.date_end is None or task_date <= repeat.date_end):
+                if task_date >= min_date and task_date < max_date and (repeat.date_end is None or task_date <= repeat.date_end):
                     tasks_json.append({
                         'id': task.id_task,
                         'name': task.name,
@@ -188,7 +198,7 @@ def get_tasks_schedule(year, month, day, future=None):
     
     tasks_json.sort(key = lambda x: create_date(x["start"]), reverse = False)                    
     # print(tasks_json.__len__())  
-    print(tasks_json)       
+    # print(tasks_json)       
     return jsonify(tasks_json)
     
 
@@ -322,9 +332,10 @@ def delete_task():
     if task.type == 1:  # Zadanie tygodniowe
         Weekly.query.filter_by(id_task=task_id).delete()
     elif task.type == 2:  # Zadanie miesięczne
-        Monthly.query.filter_by(id_task=task_id).delete()
+        print(Monthly.query.filter_by(id_task=task_id))
     elif task.type == 3:  # Zadanie roczne
         Yearly.query.filter_by(id_task=task_id).delete()
+        
     
     
     db.session.delete(task)

@@ -143,6 +143,7 @@ async function loadNextTasks() {
           });
         } else {
           tasksByDay[tasksByDay.length - 1].dayTasks.push({
+            id: task.id,
             title: task.name,
             description: task.description,
             duration: duration,
@@ -253,6 +254,7 @@ async function loadPreviousTasks() {
           });
         } else {
           tasksByDay[tasksByDay.length - 1].dayTasks.push({
+            id: task.id,
             title: task.name,
             description: task.description,
             duration: duration,
