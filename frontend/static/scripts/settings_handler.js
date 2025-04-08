@@ -1,3 +1,4 @@
+import { changeTheme } from "./utils.js";
 // przypisanie elementów do zmiennych
 const changeUsernameButton = document.querySelectorAll(".settings__button")[0];
 const changeUsernameWrapper = document.querySelector(".change-username__wrapper");
@@ -7,6 +8,13 @@ const deleteTasksWrapper = document.getElementById("delete_tasks_confirmation");
 const deleteAccountWrapper = document.getElementById("delete_account_confirmation");
 const deleteTasksButton = document.querySelectorAll(".settings__delete-button")[0];
 const deleteAccountButton = document.querySelectorAll(".settings__delete-button")[1];
+const changeThemeSelect = document.getElementsByName("motyw")[0];
+
+
+//zmiana motywu
+changeThemeSelect.addEventListener("change", (e) => {
+ changeTheme(e.target.value);
+});
 
 // listenery pokazujące popupy
 deleteTasksButton.addEventListener("click", () => {
