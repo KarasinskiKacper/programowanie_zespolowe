@@ -15,16 +15,20 @@
     />
   </head>
   <body>
+    <script type="module">
+      import { updateTheme } from "./static/scripts/utils.js";
+      updateTheme();
+    </script>
     {{ render_nav_bar("Login", false) }}
 
     <div class="login">
-      <section class="login__login-register-choise">
+      <section class="login__login-register-choice">
         <p
-          class="login__login-register-choise-text login__login-register-choise-text--active"
+          class="login__login-register-choice-text login__login-register-choice-text--active"
         >
           Logowanie
         </p>
-        <p class="login__login-register-choise-text">Rejestracja</p>
+        <p class="login__login-register-choice-text">Rejestracja</p>
       </section>
 
       <main class="login__main">

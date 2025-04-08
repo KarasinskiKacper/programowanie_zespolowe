@@ -1,6 +1,7 @@
-{% from 'components/nav_bar.html' import render_nav_bar %} {% from 'components/confirmation.html'
-import render_confirmation %} {% from 'components/change_username.html' import
-render_change_username %} {% from 'components/change_password.html' import render_change_password %}
+{% from 'components/nav_bar.html' import render_nav_bar %} {% from
+'components/confirmation.html' import render_confirmation %} {% from
+'components/change_username.html' import render_change_username %} {% from
+'components/change_password.html' import render_change_password %}
 
 <!DOCTYPE html>
 <html lang="pl">
@@ -18,6 +19,14 @@ render_change_username %} {% from 'components/change_password.html' import rende
     />
   </head>
   <body>
+    <script type="module">
+      import { updateTheme } from "./static/scripts/utils.js";
+      updateTheme();
+      const theme = localStorage.getItem("theme")
+      if (theme !== null){
+        document.getElementsByName("motyw")[0].value = theme
+      }
+    </script>
     {{ render_nav_bar("Ustawienia", true) }}
     <main class="settings__main">
       <div class="settings__wrapper">
@@ -76,5 +85,6 @@ render_change_username %} {% from 'components/change_password.html' import rende
     <!--  -->
     {{render_confirmation("delete_account_confirmation","Potwierdź usunięcie konta")}}
     <script src="./static/scripts/settings_handler.js"></script>
+    <script type="module" src="./static/scripts/settings_handler.js"></script>
   </body>
 </html>

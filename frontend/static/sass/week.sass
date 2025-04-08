@@ -1,4 +1,4 @@
-@import "variables.sass"
+@import "mixins.sass"
     
 .current-week 
     user-select: none
@@ -59,7 +59,7 @@
             cursor: pointer
             
         &--current
-            color: $active
+            color: var(--today)
 
     &__grid-wrapper
         display: flex
@@ -73,15 +73,15 @@
         grid-template-columns: repeat(7, 1fr)
         flex-grow: 1
         margin-top: 16px 
-        border-top: 2px solid black 
-        border-right: 2px solid black
+        border-top: 2px solid var(--font-main-color) 
+        border-right: 2px solid var(--font-main-color)
 
     &__grid-cell
         min-width: 200px
         max-width: 224px
         height: 24px
-        border-left: 2px solid black
-        border-bottom: 2px solid black
+        border-left: 2px solid var(--font-main-color)
+        border-bottom: 2px solid var(--font-main-color)
 
     &__grid-hour-column
         user-select: none
@@ -101,15 +101,15 @@
         transform: translateY(-1px)
         max-width: 212px  
         min-height: 24px
-        border: 1px solid black 
+        border: 1px solid var(--font-main-color)
         margin: 0 6px
         border-radius: 10px
-        background-color: $task    
+        background-color: var(--task)  
         overflow: hidden
         cursor: pointer
 
         &:hover
-            height: fit-content !important
+            min-height: fit-content !important
             z-index: 1
             
 
@@ -118,7 +118,7 @@
         font-size: 16px
         height: 16px
         line-height: 16px
-        color: $bgc 
+        color: var(--font-alt-color)
         font-weight: 400
         text-overflow: ellipsis 
         overflow: hidden
@@ -126,7 +126,7 @@
     &__grid-task-text
         margin: 0 10px 4px
         font-size: 12px
-        color: $bgc
+        color: var(--font-alt-color)
 
         
 

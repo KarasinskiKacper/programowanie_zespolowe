@@ -1,4 +1,4 @@
-@import "variables.sass"
+@import "mixins.sass"
 
 .add-task__wrapper
     @include popupWrapper(1)
@@ -11,7 +11,7 @@
 .add-task__title-wrapper
     width: 300px
     height: 32px
-    border-bottom: 1px solid $active
+    border-bottom: 1px solid var(--today)
     margin-left: -24px
 
 .add-Task__title
@@ -20,6 +20,7 @@
     border: none
     font-size: 24px
     background-color: transparent
+    color: var(--font-main-color)
     margin: 0 24px
     outline: none
 
@@ -97,7 +98,7 @@
     font-size: 16px
     color: #fff
     margin: 16px auto 0
-    background-color: $nav_bar
+    background-color: var(--nav-bar)
     border: none
     border-radius: 25px
     cursor: pointer
@@ -121,4 +122,4 @@
     font-weight: normal
     text-align: center
     margin-left: -16px
-    border-bottom: 1px solid $active
+    border-bottom: 1px solid var(--active)

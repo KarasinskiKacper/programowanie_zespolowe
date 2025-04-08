@@ -17,6 +17,10 @@
     />
   </head>
   <body>
+    <script type="module">
+      import { updateTheme } from "./static/scripts/utils.js";
+      updateTheme();
+    </script>
     {{ render_nav_bar("Miesiąc", true) }}
     <main class="month__main">
       <aside class="month__aside">

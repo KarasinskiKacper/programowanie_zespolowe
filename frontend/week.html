@@ -16,6 +16,10 @@
     />
   </head>
   <body>
+    <script type="module">
+      import { updateTheme } from "./static/scripts/utils.js";
+      updateTheme();
+    </script>
     {{ render_nav_bar("Tydzień", true) }}
 
     <header class="current-week">
@@ -63,7 +67,7 @@
       </section>
       <div class="week-layout__grid-wrapper"></div>
     </main>
+    <script type="module" src="./static/scripts/generate_table.js"></script>
+    <script type="module" src="./static/scripts/week_date_handler.js"></script>
   </body>
-  <script type="module" src="./static/scripts/generate_table.js"></script>
-  <script type="module" src="./static/scripts/week_date_handler.js"></script>
 </html>
