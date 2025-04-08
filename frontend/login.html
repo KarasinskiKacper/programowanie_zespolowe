@@ -5,8 +5,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login</title>
-    {% assets "sass_all" %} <link rel=stylesheet type=text/css href="{{
-    ASSET_URL }}"> {% endassets %}
+    {% assets "sass_all" %} <link rel=stylesheet type=text/css href="{{ ASSET_URL }}"> {% endassets
+    %}
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -23,9 +23,7 @@
 
     <div class="login">
       <section class="login__login-register-choice">
-        <p
-          class="login__login-register-choice-text login__login-register-choice-text--active"
-        >
+        <p class="login__login-register-choice-text login__login-register-choice-text--active">
           Logowanie
         </p>
         <p class="login__login-register-choice-text">Rejestracja</p>
@@ -35,51 +33,45 @@
         <div class="login__main-wrapper">
           <form method="post" action="/" class="login__login">
             <label for="username" class="login__label">Nazwa użytkownika</label>
-            <input type="text" class="login__input" name="username" required />
+            <input id="login_username" type="text" class="login__input" name="username" required />
             <label for="password" class="login__label">Hasło</label>
-            <input
-              type="password"
-              class="login__input"
-              name="password"
-              required
-            />
+            <input id="login_password" type="password" class="login__input" name="password" required />
 
-            <input
-              type="submit"
-              value="Zaloguj"
-              class="login__submit numeric-font"
-            />
+            <input type="submit" value="Zaloguj" class="login__submit numeric-font" />
           </form>
 
-          <form class="login__register">
-            <label for="email" class="login__label">Email</label>
-            <input type="email" class="login__input" name="email" required />
+          <form action="/" method="post" class="login__register">
+            <label for="register_email" class="login__label">Email</label>
+            <input id="register_email" type="text" class="login__input" name="email" required />
 
-            <label for="phone" class="login__label"
-              >Numer telefonu (opcjonalny)</label
-            >
-            <input type="tel" class="login__input" name="phone" />
+            <label for="phone" class="login__label">Numer telefonu</label>
+            <input id="phone" type="tel" class="login__input" name="phone" />
 
-            <label for="username" class="login__label">Nazwa użytkownika</label>
-            <input type="text" class="login__input" name="username" required />
-
-            <label for="password" class="login__label">Hasło</label>
+            <label for="register_username" class="login__label">Nazwa użytkownika</label>
             <input
+              id="register_username"
+              type="text"
+              class="login__input"
+              name="username"
+              required
+            />
+
+            <label for="register_password" class="login__label">Hasło</label>
+            <input
+              id="register_password"
               type="password"
               class="login__input"
               name="password"
               required
             />
 
-            <input
-              type="submit"
-              value="Zarejestruj"
-              class="login__submit numeric-font"
-            />
+            <input type="submit" value="Zarejestruj" class="login__submit numeric-font" />
           </form>
         </div>
       </main>
-
+      <!-- biblioteka Zod do walidacji danych formularza -->
+      <script src="https://unpkg.com/zod@3.22.4/lib/index.umd.js"></script>
+      <script src="./static/scripts/user_data_validation.js"></script>
       <script src="./static/scripts/login_handler.js"></script>
     </div>
   </body>
