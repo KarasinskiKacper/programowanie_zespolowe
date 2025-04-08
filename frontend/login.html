@@ -33,14 +33,14 @@
         <div class="login__main-wrapper">
           <form method="post" action="/" class="login__login">
             <label for="username" class="login__label">Nazwa użytkownika</label>
-            <input type="text" class="login__input" name="username" required />
+            <input id="login_username" type="text" class="login__input" name="username" required />
             <label for="password" class="login__label">Hasło</label>
-            <input id="test" type="password" class="login__input" name="password" required />
+            <input id="login_password" type="password" class="login__input" name="password" required />
 
             <input type="submit" value="Zaloguj" class="login__submit numeric-font" />
           </form>
 
-          <form class="login__register">
+          <form action="/" method="post" class="login__register">
             <label for="register_email" class="login__label">Email</label>
             <input id="register_email" type="text" class="login__input" name="email" required />
 
@@ -69,7 +69,7 @@
           </form>
         </div>
       </main>
-      <!-- bibloteka Zod do walidacji danych formularza -->
+      <!-- biblioteka Zod do walidacji danych formularza -->
       <script src="https://unpkg.com/zod@3.22.4/lib/index.umd.js"></script>
       <script src="./static/scripts/user_data_validation.js"></script>
       <script src="./static/scripts/login_handler.js"></script>
