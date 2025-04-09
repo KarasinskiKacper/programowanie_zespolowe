@@ -6,6 +6,8 @@ const registerPassword = document.getElementById("register_password");
 const registerPhone = document.getElementById("phone");
 const inputElements = document.querySelectorAll("input");
 const loginPassword = document.getElementById("login_password");
+const loginUsername = document.getElementById("login_username");
+const registerUsername = document.getElementById("register_username");
 
 // walidacja dla rejestracji
 // obiekt do walidacji rejestracji
@@ -27,14 +29,42 @@ registerForm.addEventListener("submit", function (event) {
     RPassword: registerPassword.value,
     phone_num: Number(registerPhone.value),
   };
+  let isRegisterValid = false;
   try {
     registerUser.parse(formData);
-    registerForm.submit();
+    isRegisterValid = true;
   } catch (error) {
     registerForm.er;
     displayErrors(error.errors);
   }
-});
+
+  if (isRegisterValid) {
+    const registerData = {
+      email: registerEmail.value,
+      password: registerPassword.value,
+      phone: registerPhone.value,
+      username: registerUsername.value
+    };
+    fetch("/api/user/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(registerData),
+    })
+      .then(async (res) => {
+        if (res.ok) {
+          console.log("Rejestracja zakończona sukcesem!");
+        } else if (res.status === 409) {
+          console.log("Użytkownik o podanym loginie juz istnieje!");
+          
+        } else {
+          const errorData = await res.json();
+          console.error("Błąd rejestracji:", errorData.message);
+        }
+      })
+      .catch((err) => {
+        console.error("Błąd połączenia:", err);
+      });
+}});
 
 // walidacja dla logowania
 // obiekt do walidacji logowania
@@ -47,14 +77,40 @@ loginForm.addEventListener("submit", function (event) {
   const formData = {
     LPassword: loginPassword.value,
   };
-
+  let isLoginValid = false;
   try {
+    console.log(formData);
     loginUser.parse(formData);
-    loginForm.submit();
+    isLoginValid = true;
   } catch (error) {
     loginForm.er;
     displayErrors(error.errors);
   }
+  if (isLoginValid) {
+    const loginData = {
+      password: loginPassword.value,
+      username: loginUsername.value
+    }
+    
+    console.log(loginData);
+
+    fetch("/api/user/login", {
+      method: "POST",    
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(loginData),
+    })
+      .then(async (res) => {
+        if (res.ok) {
+          console.log("Logowanie zakończono sukcesem!");
+        } else {
+          const errorData = await res.json();
+          console.error("Błąd logowania:", errorData.message);
+        }
+      })
+      .catch((err) => {
+        console.error("Błąd połączenia:", err);
+      });
+    }
 });
 
 // ustawienie niestandardowych wiadomości błędów

@@ -683,16 +683,34 @@ def register_user():
     #hashowanie
     salt = bcrypt.gensalt()
     hashed = bcrypt.hashpw(password=password.encode('utf-8'), salt=salt)
-    user = User(
-        nickname=nickname,
-        email=email,
-        phone_number=phone,
-        password_date=date_register,
-        password=hashed
-    )
-    db.session.add(user)
-    db.session.commit()
-    return jsonify(status="OK"), 200
+    tmp = User.query.filter(User.email==email or User.nickname==nickname).first()
+    print(tmp)
+    if User.query.filter(User.email==email or User.nickname==nickname).first():
+        return jsonify(status="USER_EXISTS"), 409
+    else:
+        user = User(
+            nickname=nickname,
+            email=email,
+            phone_number=phone,
+            password_date=date_register,
+            password=hashed
+        )
+        #db.session.add(user)
+        #db.session.commit()
+        return jsonify(status="OK"), 200
+
+@app.route("/api/user/login", methods=["POST"])
+def login_user():
+    data = request.json # Pobranie JSON-a z formularza
+    print(data)
+    nickname = data.get('username')
+    print(nickname)
+    password = data.get('password')
+    print(password)
+    user = User.query.filter_by(nickname=nickname).first()
+    if user and bcrypt.checkpw(password.encode('utf-8'), user.password):
+        return jsonify(status="OK"), 200
+    return jsonify(status="ERROR"), 401
 
 @app.route('/', methods=['GET',"POST"])
 def home():
