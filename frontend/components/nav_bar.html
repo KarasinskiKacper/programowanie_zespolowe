@@ -32,10 +32,11 @@
       >
     </li>
     <li class="nav__li">
-      <a class="nav__a" href="/login">
-        {{"Wyloguj" if is_logged else "Zaloguj" }}
+      <a class="nav__a" href="/login" id="nav_logout" >
+        Zaloguj
       </a>
     </li>
   </ul>
+  <script src="../static/scripts/logout_handler.js"></script>
 </nav>
 {% endmacro %}

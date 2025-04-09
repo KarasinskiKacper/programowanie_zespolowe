@@ -691,7 +691,6 @@ def register_user():
     hashed = bcrypt.hashpw(password=password.encode('utf-8'), salt=salt)
     
     if User.query.filter_by(email=email).first():
-        print(email)
         return jsonify(status="USER_EXISTS"), 409
     elif User.query.filter_by(nickname=nickname).first():
         return jsonify(status="USER_EXISTS"), 419
@@ -710,18 +709,15 @@ def register_user():
 @app.route("/api/user/login", methods=["POST"])
 def login_user():
     data = request.json # Pobranie JSON-a z formularza
-    print(data)
     nickname = data.get('username')
-    print(nickname)
     password = data.get('password')
-    print(password)
     user = User.query.filter_by(nickname=nickname).first()
     if user and bcrypt.checkpw(password.encode('utf-8'), user.password):
         response = make_response(jsonify(status="OK"), 200)
         response.set_cookie("user_id", str(user.id_user))
         return response
-    
-    return jsonify(status="ERROR"), 401
+    else:
+        return jsonify(status="USER_DOESNT_EXISTS"), 409
 
 @app.route('/', methods=['GET',"POST"])
 def home():
@@ -730,7 +726,9 @@ def home():
 @app.route('/login', methods=['GET',"POST"])
 def login():
     if request.method == 'GET':
-        return render_template('login.html')
+        response = make_response(render_template('login.html'))
+        response.delete_cookie('user_id')
+        return response
     
 @app.route('/ustawienia', methods=['GET',"POST"])
 def settings():

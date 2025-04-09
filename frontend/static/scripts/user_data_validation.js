@@ -8,6 +8,7 @@ const inputElements = document.querySelectorAll("input");
 const loginPassword = document.getElementById("login_password");
 const loginUsername = document.getElementById("login_username");
 const registerUsername = document.getElementById("register_username");
+const loginSubmit = document.querySelector(".login__submit");
 
 // walidacja dla rejestracji
 // obiekt do walidacji rejestracji
@@ -50,11 +51,9 @@ registerForm.addEventListener("submit", function (event) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(registerData),
     })
-      .then(async (res) => {
-        console.log(res);
-        
+      .then(async (res) => {        
         if (res.ok) {
-          console.log("Rejestracja zakończona sukcesem!");
+          window.location.reload()
         } else if (res.status === 409) {
           registerEmail.setCustomValidity("Użytkownik o podanym emailu juz istnieje");
           registerEmail.reportValidity();
@@ -68,9 +67,6 @@ registerForm.addEventListener("submit", function (event) {
           console.error("Błąd rejestracji:", errorData.message);
         }
       })
-      .catch((err) => {
-        console.error("Błąd połączenia:", err);
-      });
 }});
 
 // walidacja dla logowania
@@ -81,12 +77,12 @@ const loginUser = Zod.object({
 // listener uruchamiający walidację dla logowania
 loginForm.addEventListener("submit", function (event) {
   event.preventDefault();
+  loginSubmit.setCustomValidity("");
   const formData = {
     LPassword: loginPassword.value,
   };
   let isLoginValid = false;
   try {
-    console.log(formData);
     loginUser.parse(formData);
     isLoginValid = true;
   } catch (error) {
@@ -98,8 +94,6 @@ loginForm.addEventListener("submit", function (event) {
       password: loginPassword.value,
       username: loginUsername.value
     }
-    
-    console.log(loginData);
 
     fetch("/api/user/login", {
       method: "POST",    
@@ -108,15 +102,14 @@ loginForm.addEventListener("submit", function (event) {
     })
       .then(async (res) => {
         if (res.ok) {
-          console.log("Logowanie zakończono sukcesem!");
+          window.location.href = '/';
+        } else if (res.status === 409) {
+          loginSubmit.setCustomValidity("Niepoprawny login lub hasło");
+          loginSubmit.reportValidity();
         } else {
           const errorData = await res.json();
-          console.error("Błąd logowania:", errorData.message);
         }
       })
-      .catch((err) => {
-        console.error("Błąd połączenia:", err);
-      });
     }
 });
 

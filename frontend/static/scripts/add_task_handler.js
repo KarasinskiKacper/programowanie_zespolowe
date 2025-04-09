@@ -5,6 +5,7 @@ const disableableInputs = document.querySelectorAll(".add-task__input--disableab
 const repeatSelect = document.querySelector(".add-task__repeat-select");
 const dateInput = document.querySelectorAll(".add-task__input-date");
 const timeInput = document.querySelectorAll(".add-task__input-time");
+const submitInput = document.querySelector(".add-task__submit");
 // TODO usunąć albo odkomentować
 // const customRepeatWrapper = document.querySelector(
 //   ".add-task__custom-repeat-wrapper"
@@ -120,13 +121,25 @@ export function setDefaultDates(date) {
 //   }
 // });
 
+function decodeCookies(){
+  let cookies = document.cookie.split(";");
+  let decodedCookies = [];
+  cookies.forEach((cookie) => {
+    let [name, value] = cookie.split("=");
+    decodedCookies.push({name : name, value : value});
+  });
+  return decodedCookies;
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   const taskForm = document.querySelector(".add-Task__form");
 
   taskForm.addEventListener("submit", async (e) => {
     e.preventDefault(); // Zapobiega przeładowaniu strony
 
-    const formData = {
+    if (decodeCookies().find((cookie) => cookie.name === "user_id")){
+      submitInput.setCustomValidity("");
+      const formData = {
       title: document.querySelector(".add-Task__title").value,
       all_day: document.querySelector(".add-task__all_day_check").checked,
       start_date: document.querySelector("[name='start_date']").value,
@@ -145,12 +158,15 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify(formData),
       });
       if (response.ok) {
-        console.log("Zadanie dodane!");
         taskForm.reset();
       }
     } catch (error) {
       console.error("Błąd połączenia z serwerem:", error);
     }
     window.location.reload();
+  } else {
+    submitInput.setCustomValidity("Nie jesteś zalogowany!");
+    submitInput.reportValidity();
+  }
   });
 });

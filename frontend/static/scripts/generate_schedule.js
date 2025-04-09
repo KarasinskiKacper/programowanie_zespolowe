@@ -167,8 +167,6 @@ async function loadNextTasks(isFirstLoad = false) {
           loadPreviousTasks();
         }
       }
-
-      console.log("next: ",tasksByDay);
       
       return tasksByDay;
     });
@@ -281,7 +279,6 @@ async function loadPreviousTasks() {
       tmpDate = tmpDate.toISOString().split("T")[0].split("-").join("/");
       scheduleDateStart = tmpDate;
 
-      console.log("previous: ",tasksByDay);
       return tasksByDay;
     });
 
@@ -369,7 +366,6 @@ document.addEventListener("DOMContentLoaded", () => {
           body: JSON.stringify(formData),
         });
         if (response.ok) {
-          console.log("Zadanie usunięte!");
           taskForm.reset();
         }
       } catch (error) {
@@ -421,7 +417,6 @@ document.addEventListener("DOMContentLoaded", () => {
           body: JSON.stringify(formData),
         });
         if (response.ok) {
-          console.log("Zadanie zmienione!");
           taskForm.reset();
         }
       } catch (error) {
