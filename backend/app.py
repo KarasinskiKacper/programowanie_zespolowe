@@ -1,9 +1,9 @@
 from flask import Flask, request, render_template, jsonify
 from flask_assets import Environment, Bundle
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from sqlalchemy import exists
 from calendar import monthrange
-
+import bcrypt
 from models import db, User, Task, Weekly, Monthly, Yearly
 import os
 import mimetypes
@@ -670,6 +670,28 @@ def add_task():
         db.session.add(yearly_task)
         db.session.commit()
 
+    return jsonify(status="OK"), 200
+
+@app.route("/api/user/register", methods=["POST"])
+def register_user():
+    data = request.json # Pobranie JSON-a z formularza
+    email = data.get('email')
+    nickname = data.get('username')
+    phone = data.get('phone')
+    date_register = date.today()
+    password = data.get('password')
+    #hashowanie
+    salt = bcrypt.gensalt()
+    hashed = bcrypt.hashpw(password=password.encode('utf-8'), salt=salt)
+    user = User(
+        nickname=nickname,
+        email=email,
+        phone_number=phone,
+        password_date=date_register,
+        password=hashed
+    )
+    db.session.add(user)
+    db.session.commit()
     return jsonify(status="OK"), 200
 
 @app.route('/', methods=['GET',"POST"])
