@@ -51,10 +51,17 @@ registerForm.addEventListener("submit", function (event) {
       body: JSON.stringify(registerData),
     })
       .then(async (res) => {
+        console.log(res);
+        
         if (res.ok) {
           console.log("Rejestracja zakończona sukcesem!");
         } else if (res.status === 409) {
-          console.log("Użytkownik o podanym loginie juz istnieje!");
+          registerEmail.setCustomValidity("Użytkownik o podanym emailu juz istnieje");
+          registerEmail.reportValidity();
+          
+        } else if (res.status === 419) {
+          registerUsername.setCustomValidity("Użytkownik o podanej nazwie użytkownika juz istnieje");
+          registerUsername.reportValidity();
           
         } else {
           const errorData = await res.json();

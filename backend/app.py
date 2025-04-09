@@ -1,7 +1,8 @@
-from flask import Flask, request, render_template, jsonify
+from flask import Flask, request, render_template, jsonify, make_response
 from flask_assets import Environment, Bundle
 from datetime import datetime, timedelta, date
 from sqlalchemy import exists
+from sqlalchemy.orm import joinedload
 from calendar import monthrange
 import bcrypt
 from models import db, User, Task, Weekly, Monthly, Yearly
@@ -52,6 +53,8 @@ def get_tasks_schedule(year, month, day, future=None):
     #  data wejściowa (bez względu na kierunek)
     start_date = datetime(year, month, day)
     tasks_json = []
+    
+    user_id = request.cookies.get('user_id')
 
     # Ustalenie horyzontu wyszukiwania
     if future:
@@ -60,7 +63,8 @@ def get_tasks_schedule(year, month, day, future=None):
         one_time_tasks = Task.query.filter(
             Task.type == 0,
             Task.start >= start_date,
-            Task.start <= end_date
+            Task.start <= end_date,
+            Task.id_user == user_id
         ).order_by(Task.start.asc()).all()
     else:
         end_date = start_date - timedelta(days=HORIZON_DAYS)
@@ -68,11 +72,12 @@ def get_tasks_schedule(year, month, day, future=None):
         one_time_tasks = Task.query.filter(
             Task.type == 0,
             Task.start <= start_date,
-            Task.start >= end_date
+            Task.start >= end_date,
+            Task.id_user == user_id
         ).order_by(Task.start.desc()).all()
 
     # Pobieranie wszystkich zadań powtarzalnych (typy 1, 2 i 3)
-    recurring_tasks = Task.query.filter(Task.type.in_([1, 2, 3])).all()
+    recurring_tasks = Task.query.filter(Task.type.in_([1, 2, 3]), Task.id_user == user_id).all()
 
     # Ustalenie formatu iteracji – przeszukiwanie dzień po dniu w obrębie horyzontu
     if future:
@@ -196,18 +201,15 @@ def get_tasks_schedule(year, month, day, future=None):
     # print(tasks_json)       
     return jsonify(tasks_json)
     
-
-        
-
 @app.route('/tasks', methods=['GET'])
 def get_tasks_week():
     # Pobranie i sparsowanie dat z query params
     start_date = datetime.fromisoformat(request.args.get('start_date'))
     end_date = datetime.fromisoformat(request.args.get('end_date')).replace(hour=23, minute=59, second=59)
-
+    user_id = request.cookies.get('user_id')
 
     # Zadania jednorazowe w przedziale
-    tasks = Task.query.filter(Task.start >= start_date, Task.end <= end_date).all()
+    tasks = Task.query.filter(Task.start >= start_date, Task.end <= end_date, Task.id_user == user_id).all()
     tasks_data = []
     i = 0
     for task in tasks:
@@ -222,7 +224,7 @@ def get_tasks_week():
             'color': str(task.color[1:]),
         })
     # weekly
-    weekly_repeats = Weekly.query.all()
+    weekly_repeats = db.session.query(Weekly).join(Task).filter(Task.id_user == user_id).all()
     for repeat in weekly_repeats:
         for i in range((end_date - start_date).days + 1):
             current_date = start_date + timedelta(days=i)
@@ -242,7 +244,7 @@ def get_tasks_week():
                         })
 
 
-    monthly_repeats = Monthly.query.all()
+    monthly_repeats = db.session.query(Monthly).join(Task).filter(Task.id_user == user_id).all()
     for repeat in monthly_repeats:
         for i in range((end_date - start_date).days + 1):
             current_date = start_date + timedelta(days=i)
@@ -290,7 +292,7 @@ def get_tasks_week():
                         'color': str(task.color[1:]),
                     })
     # Yearly
-    yearly_repeats = Yearly.query.all()
+    yearly_repeats = db.session.query(Yearly).join(Task).filter(Task.id_user == user_id).all()
     for repeat in yearly_repeats:
         for i in range((end_date - start_date).days + 1):
             current_date = start_date + timedelta(days=i)
@@ -467,17 +469,21 @@ def edit_task():
 def get_tasks(year, month):
     current_date = datetime.now()
     first_day = datetime(year, month, 1)
+    user_id = request.cookies.get('user_id')
+    
     if month == 12:
         last_day = datetime(year + 1, 1, 1) - timedelta(days=1)
     else:
         last_day = datetime(year, month + 1, 1) - timedelta(days=1)
     
     tasks = Task.query.filter(
-        ((Task.start >= first_day) & (Task.start <= last_day)) |
-        ((Task.end >= first_day) & (Task.end <= last_day))
+        (((Task.start >= first_day) & (Task.start <= last_day)) |
+        ((Task.end >= first_day) & (Task.end <= last_day))) 
+        & (Task.id_user == user_id)
     ).all()
     
-    recurring_tasks = Task.query.filter(Task.type.in_([1, 2, 3])).all()
+    
+    recurring_tasks = Task.query.filter(Task.type.in_([1, 2, 3]), Task.id_user == user_id).all()
     
     tasks_json = []
     
@@ -601,7 +607,7 @@ def add_task():
     type_task = task_type[data.get('repeat_type')]
     daily = True if data.get('repeat_type') == "daily" else False
     color = data.get('color')
-    id_user = 1
+    id_user = request.cookies.get('user_id')
 
     test_task = Task(
         name=name,
@@ -683,10 +689,12 @@ def register_user():
     #hashowanie
     salt = bcrypt.gensalt()
     hashed = bcrypt.hashpw(password=password.encode('utf-8'), salt=salt)
-    tmp = User.query.filter(User.email==email or User.nickname==nickname).first()
-    print(tmp)
-    if User.query.filter(User.email==email or User.nickname==nickname).first():
+    
+    if User.query.filter_by(email=email).first():
+        print(email)
         return jsonify(status="USER_EXISTS"), 409
+    elif User.query.filter_by(nickname=nickname).first():
+        return jsonify(status="USER_EXISTS"), 419
     else:
         user = User(
             nickname=nickname,
@@ -695,8 +703,8 @@ def register_user():
             password_date=date_register,
             password=hashed
         )
-        #db.session.add(user)
-        #db.session.commit()
+        db.session.add(user)
+        db.session.commit()
         return jsonify(status="OK"), 200
 
 @app.route("/api/user/login", methods=["POST"])
@@ -709,7 +717,10 @@ def login_user():
     print(password)
     user = User.query.filter_by(nickname=nickname).first()
     if user and bcrypt.checkpw(password.encode('utf-8'), user.password):
-        return jsonify(status="OK"), 200
+        response = make_response(jsonify(status="OK"), 200)
+        response.set_cookie("user_id", str(user.id_user))
+        return response
+    
     return jsonify(status="ERROR"), 401
 
 @app.route('/', methods=['GET',"POST"])
