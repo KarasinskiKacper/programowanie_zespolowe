@@ -384,19 +384,6 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault(); // Zapobiega przeładowaniu strony
 
     if (e.submitter.name === "edit") {
-      // const formData = {
-      //   task_id: currentTaskId,
-      //   title: document.querySelector(".edit-task__title").value,
-      //   all_day: document.querySelector(".edit-task__all_day_check").checked,
-      //   start_date: document.querySelector("[name='start_date']").value,
-      //   start_hour: document.querySelector("[name='start_hour']").value,
-      //   end_date: document.querySelector("[name='end_date']").value,
-      //   end_hour: document.querySelector("[name='end_hour']").value,
-      //   repeat_type: document.querySelector(".edit-task__repeat-select").value,
-      //   color: document.querySelector(".edit-task__input-color").value,
-      //   description: document.querySelector(".edit-task__description").value,
-      // };
-
       const formData = {
         task_id: currentTaskId,
         title: document.querySelector(".edit-task__title").value,

@@ -464,7 +464,6 @@ def edit_task():
     
     return jsonify(status="OK"), 200
     
-
 @app.route('/api/tasks/<int:year>/<int:month>', methods=['GET'])
 def get_tasks(year, month):
     current_date = datetime.now()
@@ -678,6 +677,21 @@ def add_task():
 
     return jsonify(status="OK"), 200
 
+@app.route("/api/tasks/delete_all", methods=["POST"])
+def delete_all_tasks():
+    id_user = request.cookies.get('user_id')
+    tasks = Task.query.filter_by(id_user=id_user).all()
+    for task in tasks:
+        if task.type == 1:
+            Weekly.query.filter_by(id_task=task.id_task).delete()
+        elif task.type == 2:
+            Monthly.query.filter_by(id_task=task.id_task).delete()
+        elif task.type == 3:
+            Yearly.query.filter_by(id_task=task.id_task).delete()
+        db.session.delete(task)
+    db.session.commit()
+    return jsonify(status="OK"), 200
+
 @app.route("/api/user/register", methods=["POST"])
 def register_user():
     data = request.json # Pobranie JSON-a z formularza
@@ -705,6 +719,39 @@ def register_user():
         db.session.add(user)
         db.session.commit()
         return jsonify(status="OK"), 200
+
+@app.route("/api/user/change_username", methods=["POST"])
+def change_username():
+    data = request.json
+    nickname = data.get('username')
+    id_user = request.cookies.get('user_id')
+    user = User.query.filter_by(id_user=id_user).first()
+    user.nickname = nickname
+    db.session.commit()
+    return jsonify(status="OK"), 200
+
+@app.route("/api/user/change_password", methods=["POST"])
+def change_password():
+    data = request.json
+    old_password = data.get('old_password')
+    new_password = data.get('new_password')
+    id_user = request.cookies.get('user_id')
+    user = User.query.filter_by(id_user=id_user).first()
+    if user and bcrypt.checkpw(old_password.encode('utf-8'), user.password):    
+        user.password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt())
+        user.password_date = date.today()
+        db.session.commit()    
+        return jsonify(status="OK"), 200
+    else:
+        return jsonify(status="WRONG_PASSWORD"), 409
+
+@app.route("/api/user/delete_account", methods=["POST"])
+def delete_account():
+    id_user = request.cookies.get('user_id')
+    user = User.query.filter_by(id_user=id_user).first()
+    db.session.delete(user)
+    db.session.commit()
+    return jsonify(status="OK"), 200
 
 @app.route("/api/user/login", methods=["POST"])
 def login_user():
