@@ -692,6 +692,15 @@ def delete_all_tasks():
     db.session.commit()
     return jsonify(status="OK"), 200
 
+@app.route("/api/user/get_data", methods=["POST"])
+def get_data():
+    id_user = request.cookies.get('user_id')
+    user = User.query.filter_by(id_user=id_user).first()
+    return jsonify(
+        username=user.nickname,
+        email=user.email
+    ), 200
+
 @app.route("/api/user/register", methods=["POST"])
 def register_user():
     data = request.json # Pobranie JSON-a z formularza
