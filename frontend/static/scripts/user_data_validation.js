@@ -62,6 +62,10 @@ registerForm.addEventListener("submit", function (event) {
           registerUsername.setCustomValidity("Użytkownik o podanej nazwie użytkownika juz istnieje");
           registerUsername.reportValidity();
           
+        } else if (res.status === 420) {
+          registerPassword.setCustomValidity("Hasło musi mieć przynajmniej 8 znaków");
+          registerPassword.reportValidity();
+
         } else {
           const errorData = await res.json();
           console.error("Błąd rejestracji:", errorData.message);
