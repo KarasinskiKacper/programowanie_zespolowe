@@ -5,6 +5,7 @@ from sqlalchemy import exists
 from sqlalchemy.orm import joinedload
 from calendar import monthrange
 import bcrypt
+from password_strength import PasswordPolicy
 from models import db, User, Task, Weekly, Monthly, Yearly
 import os
 import mimetypes
@@ -44,6 +45,11 @@ db.init_app(app)
 
 # Ustalony horyzont przeszukiwania (w dniach)
 HORIZON_DAYS = 60
+
+# Polityka siły haseł
+PASSWORDPOLICY = PasswordPolicy.from_names(
+    length=8
+)
 
 @app.route('/api/tasks/schedule/<int:year>/<int:month>/<int:day>/<int:future>', methods=['GET'])
 def get_tasks_schedule(year, month, day, future=None):
@@ -712,6 +718,9 @@ def register_user():
     #hashowanie
     salt = bcrypt.gensalt()
     hashed = bcrypt.hashpw(password=password.encode('utf-8'), salt=salt)
+    # Walidacja hasła
+    if PASSWORDPOLICY.test(password):
+        return jsonify(status="BAD_PASSWORD"), 420
     
     if User.query.filter_by(email=email).first():
         return jsonify(status="USER_EXISTS"), 409
