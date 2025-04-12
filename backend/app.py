@@ -227,7 +227,7 @@ def get_tasks_week():
     weekly_repeats = db.session.query(Weekly).join(Task).filter(Task.id_user == user_id).all()
     for repeat in weekly_repeats:
         for i in range((end_date - start_date).days + 1):
-            current_date = start_date + timedelta(days=i)
+            current_date = start_date + timedelta(days=i)+timedelta(1)
             # Sprawdź, czy dzień tygodnia pasuje do powtarzalności
             if current_date.weekday() == repeat.weekday:
                 task = Task.query.get(repeat.id_task)
@@ -749,7 +749,7 @@ def change_password():
     if user and bcrypt.checkpw(old_password.encode('utf-8'), user.password):    
         user.password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt())
         user.password_date = date.today()
-        db.session.commit()    
+        db.session.commit()
         return jsonify(status="OK"), 200
     else:
         return jsonify(status="WRONG_PASSWORD"), 409
