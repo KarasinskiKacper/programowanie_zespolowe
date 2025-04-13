@@ -66,7 +66,7 @@ registerForm.addEventListener("submit", function (event) {
           registerPassword.setCustomValidity("Hasło musi mieć przynajmniej 8 znaków");
           registerPassword.reportValidity();
 
-        }else if (res.status === 428) {
+        }else if (res.status === 427) {
           registerEmail.setCustomValidity("Podaj prawidłowy email");
           registerEmail.reportValidity();
           

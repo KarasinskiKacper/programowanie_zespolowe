@@ -726,7 +726,7 @@ def register_user():
     
     # Walidacja emaila
     try:
-        validate_email(email)
+        emailinfo = validate_email(email)
     except EmailNotValidError as e:
         return jsonify(status="BAD_EMAIL"), 427
     
