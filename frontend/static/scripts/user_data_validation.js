@@ -6,6 +6,9 @@ const registerPassword = document.getElementById("register_password");
 const registerPhone = document.getElementById("phone");
 const inputElements = document.querySelectorAll("input");
 const loginPassword = document.getElementById("login_password");
+const loginUsername = document.getElementById("login_username");
+const registerUsername = document.getElementById("register_username");
+const loginSubmit = document.querySelector(".login__submit");
 
 // walidacja dla rejestracji
 // obiekt do walidacji rejestracji
@@ -27,14 +30,52 @@ registerForm.addEventListener("submit", function (event) {
     RPassword: registerPassword.value,
     phone_num: Number(registerPhone.value),
   };
+  let isRegisterValid = false;
   try {
     registerUser.parse(formData);
-    registerForm.submit();
+    isRegisterValid = true;
   } catch (error) {
     registerForm.er;
     displayErrors(error.errors);
   }
-});
+
+  if (isRegisterValid) {
+    const registerData = {
+      email: registerEmail.value,
+      password: registerPassword.value,
+      phone: registerPhone.value,
+      username: registerUsername.value
+    };
+    fetch("/api/user/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(registerData),
+    })
+      .then(async (res) => {        
+        if (res.ok) {
+          window.location.reload()
+        } else if (res.status === 409) {
+          registerEmail.setCustomValidity("Użytkownik o podanym emailu juz istnieje");
+          registerEmail.reportValidity();
+          
+        } else if (res.status === 419) {
+          registerUsername.setCustomValidity("Użytkownik o podanej nazwie użytkownika juz istnieje");
+          registerUsername.reportValidity();
+          
+        } else if (res.status === 420) {
+          registerPassword.setCustomValidity("Hasło musi mieć przynajmniej 8 znaków");
+          registerPassword.reportValidity();
+
+        }else if (res.status === 427) {
+          registerEmail.setCustomValidity("Podaj prawidłowy email");
+          registerEmail.reportValidity();
+          
+        } else {
+          const errorData = await res.json();
+          console.error("Błąd rejestracji:", errorData.message);
+        }
+      })
+}});
 
 // walidacja dla logowania
 // obiekt do walidacji logowania
@@ -44,17 +85,40 @@ const loginUser = Zod.object({
 // listener uruchamiający walidację dla logowania
 loginForm.addEventListener("submit", function (event) {
   event.preventDefault();
+  loginSubmit.setCustomValidity("");
   const formData = {
     LPassword: loginPassword.value,
   };
-
+  let isLoginValid = false;
   try {
     loginUser.parse(formData);
-    loginForm.submit();
+    isLoginValid = true;
   } catch (error) {
     loginForm.er;
     displayErrors(error.errors);
   }
+  if (isLoginValid) {
+    const loginData = {
+      password: loginPassword.value,
+      username: loginUsername.value
+    }
+
+    fetch("/api/user/login", {
+      method: "POST",    
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(loginData),
+    })
+      .then(async (res) => {
+        if (res.ok) {
+          window.location.href = '/';
+        } else if (res.status === 409) {
+          loginSubmit.setCustomValidity("Niepoprawny login lub hasło");
+          loginSubmit.reportValidity();
+        } else {
+          const errorData = await res.json();
+        }
+      })
+    }
 });
 
 // ustawienie niestandardowych wiadomości błędów

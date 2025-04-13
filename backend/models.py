@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Integer, String, DateTime, ForeignKey
+from sqlalchemy import Integer, String, DateTime, ForeignKey, Date
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 # Inicjalizacja SQLAlchemy
@@ -12,6 +12,7 @@ class User(db.Model):
     nickname: Mapped[str] = mapped_column(String(30), unique=True, nullable=False)
     email: Mapped[str] = mapped_column(String(60), unique=True, nullable=False)
     password: Mapped[str] = mapped_column(String(60), nullable=False)
+    password_date: Mapped[str] = mapped_column(Date, nullable=False)
     phone_number: Mapped[int] = mapped_column(Integer, nullable=True)
 
     def __repr__(self):

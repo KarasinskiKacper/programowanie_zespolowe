@@ -167,8 +167,6 @@ async function loadNextTasks(isFirstLoad = false) {
           loadPreviousTasks();
         }
       }
-
-      console.log("next: ",tasksByDay);
       
       return tasksByDay;
     });
@@ -281,7 +279,6 @@ async function loadPreviousTasks() {
       tmpDate = tmpDate.toISOString().split("T")[0].split("-").join("/");
       scheduleDateStart = tmpDate;
 
-      console.log("previous: ",tasksByDay);
       return tasksByDay;
     });
 
@@ -369,7 +366,6 @@ document.addEventListener("DOMContentLoaded", () => {
           body: JSON.stringify(formData),
         });
         if (response.ok) {
-          console.log("Zadanie usunięte!");
           taskForm.reset();
         }
       } catch (error) {
@@ -388,19 +384,6 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault(); // Zapobiega przeładowaniu strony
 
     if (e.submitter.name === "edit") {
-      // const formData = {
-      //   task_id: currentTaskId,
-      //   title: document.querySelector(".edit-task__title").value,
-      //   all_day: document.querySelector(".edit-task__all_day_check").checked,
-      //   start_date: document.querySelector("[name='start_date']").value,
-      //   start_hour: document.querySelector("[name='start_hour']").value,
-      //   end_date: document.querySelector("[name='end_date']").value,
-      //   end_hour: document.querySelector("[name='end_hour']").value,
-      //   repeat_type: document.querySelector(".edit-task__repeat-select").value,
-      //   color: document.querySelector(".edit-task__input-color").value,
-      //   description: document.querySelector(".edit-task__description").value,
-      // };
-
       const formData = {
         task_id: currentTaskId,
         title: document.querySelector(".edit-task__title").value,
@@ -421,7 +404,6 @@ document.addEventListener("DOMContentLoaded", () => {
           body: JSON.stringify(formData),
         });
         if (response.ok) {
-          console.log("Zadanie zmienione!");
           taskForm.reset();
         }
       } catch (error) {

@@ -14,3 +14,6 @@ loginRegisterChoice[1].addEventListener("click", () => {
   loginRegisterChoice[0].classList.remove("login__login-register-choice-text--active");
   loginRegisterChoice[1].classList.add("login__login-register-choice-text--active");
 });
+
+
+
