@@ -1,0 +1,87 @@
+@import "mixins.sass"
+    
+.month__main
+    display: flex
+    justify-content: center
+    margin: 48px auto 0
+
+.month__aside
+    width: 400px
+    margin-right: 32px
+
+.month__year
+    width: 100%
+    height: 96px
+    font-size: 96px
+    text-align: center
+
+.month__change-month-wrapper
+    display: flex
+    height: 48px
+    justify-content: space-between
+    align-items: center
+    margin: 27px 0 32px
+
+.month__month
+    height: 48px
+    font-size: 48px
+    font-weight: normal
+    text-transform: capitalize
+
+.month__change-month-button
+    height: 48px
+    font-size: 48px
+    border: none
+    background-color: transparent
+    cursor: pointer
+    color: var(--font-main-color)
+
+
+.month__main-calendar
+    width: 1242px
+    
+.month__main-calendar-week-days-wrapper
+    display: grid
+    grid-template-columns: repeat(7, 1fr)
+
+.month__main-calendar-week-day
+    height: 36px
+    display: flex
+    width: 100%
+    justify-content: flex-end
+    align-items: flex-start
+    border-right: 2px solid var(--font-main-color)
+
+.month__main-calendar-week-day-text
+    height: 20px
+    font-size: 20px
+    margin-right: 16px
+
+.month__main-calendar-days-wrapper
+    display: grid
+    grid-template-columns: repeat(7, 1fr)
+
+.month__main-calendar-day
+    height: 118px
+    border-right: 2px solid var(--font-main-color)
+    padding-right: 16px
+
+.month__main-calendar-days-text
+    font-size: 64px
+    text-align: right
+    cursor: pointer
+    &--past
+        color: var(--past)
+    &--future
+        color: var(--future)
+    &--task
+        color: var(--task)
+    &--today
+        color: var(--today)
+    
+
+.month__main-calendar-days-task
+    font-size: 12px
+    text-align: right
+    text-wrap: wrap
+    cursor: pointer

@@ -1,0 +1,64 @@
+@import "mixins.sass"
+
+.login__login-register-choice
+    display: flex
+    justify-content: center
+    width: 100%
+    margin: 48px 0
+    color: var(--font-alt-color)
+
+.login__login-register-choice-text
+    font-size: 48px
+    width: 300px
+    height: 64px
+    text-align: center
+    cursor: pointer
+    transition-duration: 300ms
+    color: var(--font-main-color)
+    &--active
+        color: var(--today)
+
+.login__main
+    width: 450px
+    margin: 0 auto
+    overflow: hidden
+
+.login__main-wrapper
+    width: 100vw
+    display: flex
+    justify-content: space-between
+    transition-duration: 300ms
+    &--shift
+        transform: translate(calc(-100% + 450px),0)
+
+.login__login, .login__register
+    width: 450px
+
+.login__label
+    display: block
+    font-size: 16px
+    height: 24px
+    width: 100%
+    margin-top: 32px
+    text-align: center
+
+.login__input
+    display: block
+    width: 100%
+    height: 48px
+    font-size: 32px
+    border: 2px solid #000
+    border-radius: 25px
+    padding: 0 16px
+
+.login__submit
+    display: block
+    width: 300px
+    height: 48px
+    background-color: var(--nav-bar)
+    margin: 32px auto
+    border: none
+    border-radius: 25px
+    color: #fff
+    font-size: 32px
+    cursor: pointer

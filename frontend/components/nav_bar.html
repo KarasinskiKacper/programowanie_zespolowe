@@ -1,0 +1,42 @@
+{% macro render_nav_bar(active_page, is_logged) %}
+<nav class="nav">
+  <ul class="nav__ul">
+    <li class="nav__li">
+      <a
+        class="nav__a {{ 'nav__a--active' if active_page == 'Miesiąc'}}"
+        href="/miesiac"
+        >Miesiąc</a
+      >
+    </li>
+    <li class="nav__li">
+      <a
+        class="nav__a {{ 'nav__a--active' if active_page == 'Tydzień'}}"
+        href="/tydzien"
+        >Tydzień</a
+      >
+    </li>
+    <li class="nav__li">
+      <a
+        class="nav__a {{ 'nav__a--active' if active_page == 'Harmonogram'}}"
+        href="/harmonogram"
+        >Harmonogram</a
+      >
+    </li>
+  </ul>
+  <ul class="nav__ul">
+    <li class="nav__li">
+      <a
+        class="nav__a {{ 'nav__a--active' if active_page == 'Ustawienia'}}"
+        href="/ustawienia"
+        >Ustawienia</a
+      >
+    </li>
+    <li class="nav__li">
+      <a class="nav__a" href="/login" id="nav_logout" >
+        Zaloguj
+      </a>
+    </li>
+  </ul>
+  <script src="../static/scripts/logout_handler.js"></script>
+</nav>
+{% endmacro %}
