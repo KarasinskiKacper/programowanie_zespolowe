@@ -66,6 +66,10 @@ registerForm.addEventListener("submit", function (event) {
           registerPassword.setCustomValidity("Hasło musi mieć przynajmniej 8 znaków");
           registerPassword.reportValidity();
 
+        }else if (res.status === 428) {
+          registerEmail.setCustomValidity("Podaj prawidłowy email");
+          registerEmail.reportValidity();
+          
         } else {
           const errorData = await res.json();
           console.error("Błąd rejestracji:", errorData.message);

@@ -6,6 +6,7 @@ from sqlalchemy.orm import joinedload
 from calendar import monthrange
 import bcrypt
 from password_strength import PasswordPolicy
+from email_validator import validate_email, EmailNotValidError
 from models import db, User, Task, Weekly, Monthly, Yearly
 import os
 import mimetypes
@@ -722,6 +723,12 @@ def register_user():
     # Walidacja hasła
     if PASSWORDPOLICY.test(password):
         return jsonify(status="BAD_PASSWORD"), 420
+    
+    # Walidacja emaila
+    try:
+        validate_email(email)
+    except EmailNotValidError as e:
+        return jsonify(status="BAD_EMAIL"), 427
     
     if User.query.filter_by(email=email).first():
         return jsonify(status="USER_EXISTS"), 409
