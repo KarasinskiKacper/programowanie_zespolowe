@@ -704,7 +704,8 @@ def get_data():
     user = User.query.filter_by(id_user=id_user).first()
     return jsonify(
         username=user.nickname,
-        email=user.email
+        email=user.email,
+        password_date=user.password_date.strftime("%d.%m.%Y")
     ), 200
 
 @app.route("/api/user/register", methods=["POST"])

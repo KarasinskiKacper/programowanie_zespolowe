@@ -29,3 +29,22 @@ changeUsernameButton.addEventListener("click", () => {
 changePasswordButton.addEventListener("click", () => {
   changePasswordWrapper.classList.remove("change-password__wrapper--hidden");
 });
+
+// pobranie danych użytkownika
+fetch("/api/user/get_data", {
+  method: "POST",
+  credentials: "include"
+})
+.then(response => response.json())
+.then(data => {
+  const emailElement = document.querySelectorAll(".settings__text")[0];
+  const usernameElement = document.querySelectorAll(".settings__text")[1];
+  const passwordDateElement = document.querySelectorAll(".settings__text")[2];
+
+  emailElement.textContent = data.email;
+  usernameElement.textContent = data.username;
+  passwordDateElement.textContent = data.password_date;
+})
+.catch(error => {
+  console.error("Błąd podczas pobierania danych użytkownika:", error);
+});
