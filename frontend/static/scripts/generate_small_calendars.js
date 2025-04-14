@@ -1,9 +1,9 @@
-import { generate_calendar } from "./generate_calendar.js";
+import { generateCalendar } from "./generate_calendar.js";
 
-export function generate_small_calendars(date) {
+export function generateSmallCalendars(date) {
   // wygenerowanie html kalendarza
   function create_structure_of_calendar(date, offset) {
-    const { calendar, month } = generate_calendar(date, offset);
+    const { calendar, month } = generateCalendar(date, offset);
 
     // ustawienie nazwy miesiaca
     const small_calendar_month = document.getElementById(

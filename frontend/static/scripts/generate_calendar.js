@@ -10,7 +10,7 @@ import { mondayFirst } from "./utils.js";
  *  - {Array} calendar: Tablica 2D zawierająca numery dni w miesiacu.
  *  - {string} month: Nazwa miesiaca.
  */
-export function generate_calendar(date, offset = 0) {
+export function generateCalendar(date, offset = 0) {
   // stworzenie zmiennych przechowujących daty i zmiana daty o offset
   // smallCalendarBaseDate - zmienna przechowująca miesiąc do którego generowany jest kalendarz
   // smallCalendarDate - zmienna pomocnicza do generowania struktury kalendarza
