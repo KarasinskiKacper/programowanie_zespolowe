@@ -6,24 +6,16 @@ let currentTaskId = null;
 const todayDate = new Date(Date.now())
 todayDate.setHours(0,0,0,0)
 
-function fetchData() {
-  const res = fetch(`/api/tasks/schedule/2025/3/25/8`)
-    .then((response) => response.json())
-    .then((tasks) => {
-      // Grupuj zadania według dni
-      const tasksByDay = {};
-      tasks.forEach((task) => {
-        if (!tasksByDay[task.day]) {
-          tasksByDay[task.day] = [];
-        }
-        tasksByDay[task.day].push(task);
-      });
-    });
 
-  return res;
-}
-
-// pobranie daty z url
+/**
+ * Funkcja pobiera parametry z url
+ * @param {string} url - ulr z parametrami
+ * @returns {Object.<string, Array.<string|null>>} - obiekt z parametrami
+ * @example
+ *   var params = parseURLParams("http://example.com/?foo=bar&baz=qux&foo=bim");
+ *   console.log(params);
+ *   // { foo: ["bar", "bim"], baz: ["qux"] }
+ */
 function parseURLParams(url) {
   var queryStart = url.indexOf("?") + 1,
     queryEnd = url.indexOf("#") + 1 || url.length + 1,
@@ -47,12 +39,24 @@ function parseURLParams(url) {
   }
   return parms;
 }
+
+// zapisanie daty pobranej z url'a
 let scheduleDateStart = parseURLParams(window.location.href)?.date
   ? parseURLParams(window.location.href).date[0].split("-").join("/")
   : new Date(Date.now()).toISOString().split("T")[0].split("-").join("/");
 let scheduleDateEnd = scheduleDateStart;
 
-// TODO dodać automatyczne ustawianie powtarzania i koloru
+/**
+ * Funkcja pokazuje popup edycji zadania i przekazuje mu dane o zadaniu
+ * @param {number} id - id zadania
+ * @param {string} dateStart - data startu zadania
+ * @param {string} dateEnd - data końca zadania
+ * @param {string} title - tytuł zadania
+ * @param {string} duration - czas trwania zadania
+ * @param {string} description - opis zadania
+ * @param {string} taskType - typ zadania (0 - nie powtarzające się, 1 - tygodniowe, 2 - miesięczne, 3 - roczne, 4 - dzienne)
+ * @param {string} color - kolor zadania
+ */
 function showEditTaskPopup(id, dateStart, dateEnd, title, duration, description, taskType, color) {
   currentTaskId = id;
   // przypisanie do zmiennych elementów popupa edycja zadania
@@ -238,7 +242,7 @@ async function loadNextTasks(isFirstLoad = false) {
 }
 
 /**
- * Załadowanie nowych zadań na początek aktualnie wyświetlanych zadań. Funcja może przyjąć dowolną (również zerową) ilość dni i zadań wewnątrz dni do załadowania.
+ * Załadowanie nowych zadań na początek aktualnie wyświetlanych zadań. Funkcja może przyjąć dowolną (również zerową) ilość dni i zadań wewnątrz dni do załadowania.
  * @param {Array.<{date: String, weekDay: String, dayTask: Array.<{title: String, description: String, duration: String}>}>} tasksToLoad Dane taksków do załadowania
  * @returns {Array} załadowane zadania
  */
@@ -363,16 +367,19 @@ async function loadPreviousTasks() {
   return tasksToLoad;
 }
 
-// TODO przekazać dane zadań, które mają się załadować odrazu przy renderowaniu strony
-
 // pierwsze załadowanie zadań
-// przestawienie scrolla o 1px w dół alby umożliwić wykrycie scrollowania w górę
+// przestawienie scroll'a o 1px w dół alby umożliwić wykrycie scroll'owania w górę
+
+
+/**
+ * Funkcja ładująca pierwsze zadania na stronie.
+ */
 async function firstLoadTasks() {
   await loadNextTasks(true);
 }
 firstLoadTasks();
 
-// wykrywanie scrollowania
+// wykrywanie scroll'owania
 scheduleContainer.addEventListener("scroll", () => {
   if (
     scheduleContainer.scrollTop + scheduleContainer.clientHeight ===
