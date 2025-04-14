@@ -1,9 +1,6 @@
 from flask import Flask, request, render_template, jsonify, make_response
 from flask_assets import Environment, Bundle
 from datetime import datetime, timedelta, date
-from sqlalchemy import exists
-from sqlalchemy.orm import joinedload
-from calendar import monthrange
 import bcrypt
 from password_strength import PasswordPolicy
 from email_validator import validate_email, EmailNotValidError
@@ -11,8 +8,6 @@ from models import db, User, Task, Weekly, Monthly, Yearly
 import os
 import mimetypes
 mimetypes.init()
-
-from create_calendar import create_calendar
 
 app = Flask(__name__, template_folder = '../frontend')
 
@@ -54,6 +49,16 @@ PASSWORDPOLICY = PasswordPolicy.from_names(
 
 @app.route('/api/tasks/schedule/<int:year>/<int:month>/<int:day>/<int:future>', methods=['GET'])
 def get_tasks_schedule(year, month, day, future=None):
+    """
+    Pobiera zadania z bazy danych w zależności od kierunku (przeszłość lub przyszłość) i zakresu czasowego (horyzontu).
+    Zwraca listę zadań w formacie JSON, posortowaną według czasu startu zadań.
+    
+    Jeśli przekazany jest parametr future == 0, to funkcja zwraca zadania z przeszłości,
+    w przeciwnym razie zwraca zadania z przyszłości.
+    
+    Dla zadań jednorazowych (typ == 0) pobiera te, które mieszczą się w przedziale czasowym,
+    dla zadań powtarzalnych (typy 1, 2 i 3) pobiera te, które powtarzają się w obrębie przedziału.
+    """
     if future == 0:
         future = None
 
@@ -182,26 +187,6 @@ def get_tasks_schedule(year, month, day, future=None):
                             'day_of_month': repeat.day_of_month,
                             'color': str(task.color[1:])
                         })
-                    # Alternatywnie, powtarzanie wg tygodnia miesiąca i dnia tygodnia
-                    elif repeat.week_of_month and repeat.weekday is not None:
-                        current_week = ((current_date.day - 1) // 7) + 1
-                        if current_week == repeat.week_of_month and current_date.weekday() == repeat.weekday:
-                            new_start = datetime.combine(current_date.date(), task.start.time())
-                            new_end = datetime.combine(current_date.date(), task.end.time()) if task.end else None
-                            tasks_json.append({
-                                'id': task.id_task,
-                                'name': task.name,
-                                'start': new_start.strftime('%Y-%m-%d %H:%M:%S'),
-                                'end': new_end.strftime('%Y-%m-%d %H:%M:%S') if new_end else None,
-                                'start_repeat': repeat.date_start.strftime('%Y-%m-%d'),
-                                'end_repeat': repeat.date_end.strftime('%Y-%m-%d') if repeat.date_end else None,
-                                'description': task.description,
-                                'type': task.type,
-                                'day': current_date.day,
-                                'week_of_month': repeat.week_of_month,
-                                'weekday': repeat.weekday,
-                                'color': str(task.color[1:])
-                            })
             # Zadania roczne (type == 3)
             elif task.type == 3:
                 yearly_repeats = Yearly.query.filter_by(id_task=task.id_task).all()
@@ -237,12 +222,22 @@ def get_tasks_schedule(year, month, day, future=None):
     
         return datetime(int(year), int(month), int(day), int(hour), int(minutes), int(sec))
     
-    tasks_json.sort(key = lambda x: create_date(x["start"]), reverse = False)
-    # print(tasks_json)       
+    tasks_json.sort(key = lambda x: create_date(x["start"]), reverse = False)      
     return jsonify(tasks_json)
     
 @app.route('/tasks', methods=['GET'])
 def get_tasks_week():
+    """
+    Pobiera zadania dla bieżącego tygodnia na podstawie daty początkowej i końcowej z parametrów zapytania.
+
+    Pobiera zadania jednorazowe, tygodniowe, miesięczne i roczne, które pasują do podanego przedziału dat
+    oraz należą do użytkownika określonego w ciasteczkach.
+
+    Zwraca:
+        JSON zawierający listę zadań z ich szczegółami, w tym dzień tygodnia, czas rozpoczęcia i zakończenia,
+        tytuł, opis, identyfikator zadania oraz kolor.
+    """
+
     # Pobranie i sparsowanie dat z query params
     start_date = datetime.fromisoformat(request.args.get('start_date'))
     end_date = datetime.fromisoformat(request.args.get('end_date')).replace(hour=23, minute=59, second=59)
@@ -263,6 +258,7 @@ def get_tasks_week():
             'task_id': task.id_task,
             'color': str(task.color[1:]),
         })
+        
     # weekly
     weekly_repeats = db.session.query(Weekly).join(Task).filter(Task.id_user == user_id).all()
     for repeat in weekly_repeats:
@@ -311,26 +307,6 @@ def get_tasks_week():
                     'color': str(task.color[1:]),
                 })
 
-            # Sprawdzenie powtarzania na podstawie tygodnia miesiąca i dnia tygodnia
-            elif repeat.week_of_month and repeat.weekday:
-                # Obliczanie numeru tygodnia w miesiącu
-                first_day_of_month = current_date.replace(day=1)
-                weekday_of_first_day = first_day_of_month.weekday()
-
-                # Określenie numeru tygodnia w miesiącu
-                current_week_of_month = (current_date.day - 1) // 7 + 1
-
-                # Jeśli numer tygodnia i dzień tygodnia pasują
-                if current_week_of_month == repeat.week_of_month and current_date.weekday() == repeat.weekday:
-                    tasks_data.append({
-                        'day_of_week': current_date.weekday(),
-                        'start_time': task.start.strftime('%H:%M'),
-                        'end_time': task.end.strftime('%H:%M'),
-                        'task_title': f"{task.name}",
-                        'task_text': task.description,
-                        'task_id': f"repeat-monthly-{repeat.id}-",
-                        'color': str(task.color[1:]),
-                    })
     # Yearly
     yearly_repeats = db.session.query(Yearly).join(Task).filter(Task.id_user == user_id).all()
     for repeat in yearly_repeats:
@@ -357,6 +333,29 @@ def get_tasks_week():
 
 @app.route('/api/tasks/delete', methods=['POST'])
 def delete_task():
+    """
+    Usuwa zadanie na podstawie identyfikatora zadania przesłanego w żądaniu.
+
+    Metoda:
+    POST
+
+    Dane wejściowe:
+    - task_id: identyfikator zadania do usunięcia
+
+    Operacje:
+    1. Znajduje zadanie na podstawie `task_id`.
+    2. Jeśli zadanie nie zostanie znalezione, zwraca błąd 404.
+    3. Usuwa powiązane rekordy z tabel w zależności od typu zadania:
+       - Typ 1: Usuwa powiązania z tabeli `Weekly`.
+       - Typ 2: Usuwa powiązania z tabeli `Monthly`.
+       - Typ 3: Usuwa powiązania z tabeli `Yearly`.
+    4. Usuwa zadanie z bazy danych.
+    5. Zatwierdza zmiany w bazie danych.
+
+    Zwraca:
+    - JSON z `status="OK"` przy powodzeniu.
+    - JSON z informacją o błędzie, jeśli zadanie nie zostało znalezione.
+    """
     # Znajdź zadanie
     task_id = request.json['task_id']
     task = Task.query.get(task_id)
@@ -382,6 +381,34 @@ def delete_task():
 
 @app.route('/api/tasks/edit', methods=['POST'])
 def edit_task():
+    """
+    Edytuje zadanie na podstawie identyfikatora zadania przesłanego w żądaniu.
+
+    Metoda:
+    POST
+
+    Dane wejściowe:
+    - task_id: identyfikator zadania do edycji
+    - title: nowy tytuł zadania
+    - description: nowy opis zadania
+    - start_date: nowa data startu zadania
+    - start_hour: nowa godzina startu zadania
+    - end_date: nowa data końca zadania
+    - end_hour: nowa godzina końca zadania
+    - repeat_type: nowy typ powtarzania (daily, weekly, monthly, yearly)
+    - color: nowy kolor zadania
+
+    Operacje:
+    1. Znajduje zadanie na podstawie `task_id`.
+    2. Jeśli zadanie nie zostanie znalezione, zwraca błąd 404.
+    3. Edytuje rekord w bazie danych na podstawie otrzymanych danych.
+    4. Zatwierdza zmiany w bazie danych.
+
+    Zwraca:
+    - JSON z `status="OK"` przy powodzeniu.
+    - JSON z informacją o błędzie, jeśli zadanie nie zostało znalezione.
+    """
+    
     task_id = request.json['task_id']
     task = Task.query.get(task_id)
     if not task:
@@ -506,6 +533,15 @@ def edit_task():
     
 @app.route('/api/tasks/<int:year>/<int:month>', methods=['GET'])
 def get_tasks(year, month):
+    """
+    Pobiera listę zadań z bazy danych w zależności od miesiąca i roku.
+
+    Pobiera zadania jednorazowe, tygodniowe, miesięczne i roczne, które pasują do podanego przedziału dat
+    oraz należą do użytkownika określonego w ciasteczkach.
+
+    Zwraca:
+        JSON zawierający listę zadań z ich szczegółami, w tym tytułem, opisem, identyfikatorem zadania, typem i kolorem.
+    """
     current_date = datetime.now()
     first_day = datetime(year, month, 1)
     user_id = request.cookies.get('user_id')
@@ -578,29 +614,6 @@ def get_tasks(year, month):
                             'day_of_month': repeat.day_of_month,
                             'color': str(task.color[1:])
                         })
-
-                # Jeśli określony jest tydzień miesiąca i dzień tygodnia
-                elif repeat.week_of_month and repeat.weekday is not None:
-                    first_occurrence = first_day
-                    while first_occurrence.weekday() != repeat.weekday:
-                        first_occurrence += timedelta(days=1)
-
-                    target_date = first_occurrence + timedelta(weeks=(repeat.week_of_month - 1))
-
-                    if target_date.month == month and target_date >= current_date and (repeat.date_end is None or target_date <= repeat.date_end):
-                        tasks_json.append({
-                            'id': task.id_task,
-                            'name': task.name,
-                            'start': task.start.strftime('%Y-%m-%d %H:%M:%S'),
-                            'end': task.end.strftime('%Y-%m-%d %H:%M:%S') if task.end else None,
-                            'description': task.description,
-                            'type': task.type,
-                            'day': target_date.day,
-                            'week_of_month': repeat.week_of_month,
-                            'weekday': repeat.weekday,
-                            'color': str(task.color[1:])
-                        })
-                        current_date += timedelta(days=1)
                 
         elif task.type == 3:
             yearly_repeats = Yearly.query.filter_by(id_task=task.id_task).all()
@@ -626,6 +639,29 @@ def get_tasks(year, month):
 
 @app.route("/add-task", methods=["POST"])
 def add_task():
+    """
+    Dodaje nowe zadanie do bazy danych, zapisując je zgodnie z typem powtarzania.
+
+    Metoda:
+    POST
+
+    Dane wejściowe:
+    - title: tytuł zadania
+    - description: opis zadania
+    - start_date: data startu zadania
+    - start_hour: godzina startu zadania
+    - end_date: data końca zadania
+    - end_hour: godzina końca zadania
+    - repeat_type: typ powtarzania (daily, weekly, monthly, yearly)
+    - color: kolor zadania
+
+    Operacje:
+    1. Tworzy nowy rekord w bazie danych.
+    2. Zapisuje rekord w bazie danych.
+
+    Zwraca:
+    - JSON z `status="OK"` przy powodzeniu.
+    """
     task_type ={
     "none": 0,
     "daily": 1,
@@ -721,6 +757,27 @@ def add_task():
 
 @app.route("/api/tasks/delete_all", methods=["POST"])
 def delete_all_tasks():
+    """
+    Deletes all tasks associated with the current user.
+
+    Method:
+    POST
+
+    Operations:
+    1. Retrieves the current user's ID from cookies.
+    2. Finds all tasks associated with the user.
+    3. For each task:
+       - Deletes related records from the database based on the task type:
+         - Type 1: Deletes records from the `Weekly` table.
+         - Type 2: Deletes records from the `Monthly` table.
+         - Type 3: Deletes records from the `Yearly` table.
+       - Deletes the task from the database.
+    4. Commits all changes to the database.
+
+    Returns:
+    - JSON with `status="OK"` on successful deletion.
+    """
+
     id_user = request.cookies.get('user_id')
     tasks = Task.query.filter_by(id_user=id_user).all()
     for task in tasks:
@@ -736,6 +793,24 @@ def delete_all_tasks():
 
 @app.route("/api/user/get_data", methods=["POST"])
 def get_data():
+    """
+    Pobiera dane użytkownika zalogowanego w danym momencie.
+
+    Metoda:
+    POST
+
+    Operacje:
+    1. Pobiera ID użytkownika z ciasteczka.
+    2. Pobiera dane użytkownika z bazy danych za pomocą pobranego ID.
+    3. Zwraca JSON z danymi użytkownika.
+
+    Zwraca:
+    - JSON z danymi użytkownika:
+      - username: nazwa użytkownika,
+      - email: email użytkownika,
+      - password_date: data ostatniej zmiany hasła w formacie "dd.MM.YYYY"
+    """
+
     id_user = request.cookies.get('user_id')
     user = User.query.filter_by(id_user=id_user).first()
     return jsonify(
@@ -746,6 +821,29 @@ def get_data():
 
 @app.route("/api/user/register", methods=["POST"])
 def register_user():
+    """
+    Rejestracja nowego użytkownika.
+
+    Metoda:
+    POST
+
+    Operacje:
+    1. Pobiera dane z formularza.
+    2. Waliduje hasło za pomocą PASSWORDPOLICY.
+    3. Waliduje email za pomocą email_validator.
+    4. Sprawdza, czy użytkownik o podanym emailu/ nazwie użytkownika już istnieje.
+    5. Tworzy nowego użytkownika w bazie danych.
+    6. Zwraca JSON z statusu operacji.
+
+    Zwraca:
+    - JSON z statusu operacji:
+      - status: OK lub błąd zgodnie z poniższą tabelą
+    Błędy:
+    - 409: Użytkownik o podanym emailu już istnieje
+    - 419: Użytkownik o podanej nazwie użytkownika już istnieje
+    - 420: Podane hasło nie spełnia wymagań PASSWORDPOLICY
+    - 427: Podany email nie jest poprawny
+    """
     data = request.json # Pobranie JSON-a z formularza
     email = data.get('email')
     nickname = data.get('username')
@@ -762,7 +860,7 @@ def register_user():
     # Walidacja emaila
     try:
         emailinfo = validate_email(email)
-    except EmailNotValidError as e:
+    except EmailNotValidError:
         return jsonify(status="BAD_EMAIL"), 427
     
     if User.query.filter_by(email=email).first():
@@ -783,6 +881,23 @@ def register_user():
 
 @app.route("/api/user/change_username", methods=["POST"])
 def change_username():
+    """
+    Zmienia nazwę użytkownika zalogowanego w danym momencie.
+
+    Metoda:
+    POST
+
+    Operacje:
+    1. Pobiera nową nazwę użytkownika z JSON-a.
+    2. Pobiera ID użytkownika z ciasteczka.
+    3. Aktualizuje nazwę użytkownika w bazie danych.
+    4. Zapisuje zmiany w bazie danych.
+
+    Zwraca:
+    - JSON z `status="OK"` i kodem 200 przy powodzeniu.
+    - JSON z `status="USER_EXISTS"` i kodem 409, jeśli wystąpił błąd.
+    """
+
     data = request.json
     nickname = data.get('username')
     id_user = request.cookies.get('user_id')
@@ -794,9 +909,28 @@ def change_username():
     except Exception:
         return jsonify(status="USER_EXISTS"), 409
     
-
 @app.route("/api/user/change_password", methods=["POST"])
 def change_password():
+    """
+    Zmienia hasło użytkownika zalogowanego w danym momencie.
+
+    Metoda:
+    POST
+
+    Operacje:
+    1. Pobiera stare i nowe hasło z JSON-a.
+    2. Pobiera ID użytkownika z ciasteczka.
+    3. Weryfikuje czy nowe hasło spełnia wymagania PASSWORDPOLICY.
+    4. Weryfikuje czy stare hasło jest poprawne.
+    5. Aktualizuje hasło użytkownika w bazie danych.
+    6. Zapisuje zmiany w bazie danych.
+
+    Zwraca:
+    - JSON z `status="OK"` i kodem 200 przy powodzeniu.
+    - JSON z `status="BAD_PASSWORD"` i kodem 420, jeśli nowe hasło nie spełnia wymagań.
+    - JSON z `status="WRONG_PASSWORD"` i kodem 409, jeśli stare hasło jest niepoprawne.
+    """
+
     data = request.json
     old_password = data.get('old_password')
     new_password = data.get('new_password')
@@ -816,6 +950,29 @@ def change_password():
 
 @app.route("/api/user/delete_account", methods=["POST"])
 def delete_account():
+    """
+    Usuwa konto użytkownika zalogowanego w danym momencie.
+
+    Metoda:
+    POST
+
+    Operacje:
+    1. Pobiera ID użytkownika z ciasteczka.
+    2. Pobiera użytkownika z bazy danych za pomocą pobranego ID.
+    3. Pobiera wszystkie zadania użytkownika.
+    4. Dla każdego zadania:
+       - Usuwa powiązane rekordy z tabel w zależności od typu zadania:
+         - Typ 1: Usuwa powiązania z tabeli `Weekly`.
+         - Typ 2: Usuwa powiązania z tabeli `Monthly`.
+         - Typ 3: Usuwa powiązania z tabeli `Yearly`.
+       - Usuwa zadanie z bazy danych.
+    5. Usuwa użytkownika z bazy danych.
+    6. Zatwierdza zmiany w bazie danych.
+
+    Zwraca:
+    - JSON z `status="OK"` przy powodzeniu.
+    """
+
     id_user = request.cookies.get('user_id')
     user = User.query.filter_by(id_user=id_user).first()
     tasks = Task.query.filter_by(id_user=id_user).all()
@@ -834,6 +991,23 @@ def delete_account():
 
 @app.route("/api/user/login", methods=["POST"])
 def login_user():
+    """
+    Loguje użytkownika na podstawie podanej nazwy użytkownika i hasła.
+
+    Metoda:
+    POST
+
+    Operacje:
+    1. Pobiera nazwę użytkownika i hasło z JSON-a.
+    2. Wyszukuje użytkownika w bazie danych na podstawie podanej nazwy użytkownika.
+    3. Weryfikuje hasło użytkownika.
+    4. Ustawia ciasteczko `user_id` po pomyślnej weryfikacji.
+
+    Zwraca:
+    - JSON z `status="OK"` i kodem 200 przy powodzeniu.
+    - JSON z `status="USER_DOESNT_EXISTS"` i kodem 409, jeśli użytkownik nie istnieje lub hasło jest niepoprawne.
+    """
+
     data = request.json # Pobranie JSON-a z formularza
     nickname = data.get('username')
     password = data.get('password')
@@ -847,10 +1021,30 @@ def login_user():
 
 @app.route('/', methods=['GET',"POST"])
 def home():
+    """
+    Przekierowuje na stronę /miesiac.
+    
+    Metody:
+    GET
+    """
     return app.redirect('/miesiac')
 
 @app.route('/login', methods=['GET',"POST"])
 def login():
+    """
+    Obsługuje logowanie użytkownika.
+
+    Metody:
+    GET
+
+    Operacje:
+    1. Renderuje stronę logowania.
+    2. Usuwa ciasteczko 'user_id', jeśli istnieje.
+
+    Zwraca:
+    - Odpowiedź z wyrenderowaną stroną logowania.
+    """
+
     if request.method == 'GET':
         response = make_response(render_template('login.html'))
         response.delete_cookie('user_id')
@@ -858,6 +1052,20 @@ def login():
     
 @app.route('/ustawienia', methods=['GET',"POST"])
 def settings():
+    """
+    Obsługuje ustawienia użytkownika.
+
+    Metody:
+    GET
+
+    Operacje:
+    1. Renderuje stronę ustawień, jeśli użytkownik jest zalogowany.
+    2. Przekierowuje na stronę logowania, jeśli użytkownik nie jest zalogowany.
+
+    Zwraca:
+    - Odpowiedź z wyrenderowaną stroną ustawień.
+    - Przekierowanie na stronę logowania.
+    """
     if request.method == 'GET':
         if request.cookies.get('user_id'):
             return render_template('settings.html')
@@ -866,32 +1074,64 @@ def settings():
 
 @app.route('/miesiac', methods=['GET',"POST"])
 def month():
+    """
+    Obsługuje miesięczny widok kalendarza.
+
+    Metody:
+    GET
+
+    Operacje:
+    1. Renderuje stronę miesięcznego widoku kalendarza.
+    2. Dodaje typy MIME dla plików .js, .css i .svg.
+
+    Zwraca:
+    - Odpowiedź z wyrenderowaną stroną miesięcznego widoku kalendarza.
+    """
     if request.method == 'GET':
-        date = datetime.now()
         mimetypes.add_type('application/javascript', '.js')
         mimetypes.add_type('text/css', '.css')
         mimetypes.add_type('image/svg+xml', '.svg')
         context = {"request": request}
-        return render_template('month.html', date = date, create_calendar=create_calendar, offset = 0,context = context, media_type='text/html')
+        return render_template('month.html', context = context, media_type='text/html')
     
 @app.route('/tydzien', methods=['GET',"POST"])
 def week():
+    """
+    Obsługuje tygodniowy widok kalendarza.
+
+    Metody:
+    GET
+
+    Operacje:
+    1. Renderuje stronę tygodniowego widoku kalendarza.
+
+    Zwraca:
+    - Odpowiedź z wyrenderowaną stroną tygodniowego widoku kalendarza.
+    """
     if request.method == 'GET':
-        test = ['test1', 'test2', 'test3']
-        return render_template('week.html', test=test)
+        return render_template('week.html')
     
 @app.route('/harmonogram', methods=['GET',"POST"])
 def schedule():
+    """
+    Obsługuje widok harmonogramu kalendarza.
+
+    Metody:
+    GET
+
+    Operacje:
+    1. Renderuje stronę harmonogramu kalendarza z aktualną datą.
+
+    Zwraca:
+    - Odpowiedź z wyrenderowaną stroną harmonogramu kalendarza.
+    """
     if request.method == 'GET':        
         date = datetime.now()
         return render_template('schedule.html', date = date)
     
 with app.app_context():
     db.create_all()
-    # get_tasks_schedule(2025,3,25)
-# odkomentuj aby dodać testowego użytkownika lub zadanie
-    # add_test_user()
-    # add_test_task()
+    
 if __name__ == '__main__':
     app.run(debug = True)
     
