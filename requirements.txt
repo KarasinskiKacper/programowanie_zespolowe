@@ -2,6 +2,6 @@ Flask==3.1.0
 Flask-SQLAlchemy==3.1.1
 flask_assets==2.1.0
 libsass==0.23.0
-bcrypt==4.30
-password-strength==0.0.3
+bcrypt==4.3.0
+password-strength==0.0.3.post2
 email-validator==2.2.0

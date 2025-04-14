@@ -1,4 +1,5 @@
 {% from 'components/nav_bar.html' import render_nav_bar %}
+{% from 'components/add_task.html' import render_add_task %}
 
 <!DOCTYPE html>
 <html lang="pl">
@@ -67,6 +68,9 @@
       </section>
       <div class="week-layout__grid-wrapper"></div>
     </main>
+
+    {{ render_add_task() }}
+    
     <script type="module" src="./static/scripts/generate_table.js"></script>
     <script type="module" src="./static/scripts/week_date_handler.js"></script>
   </body>

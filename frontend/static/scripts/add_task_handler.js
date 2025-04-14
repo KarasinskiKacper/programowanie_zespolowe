@@ -6,33 +6,14 @@ const repeatSelect = document.querySelector(".add-task__repeat-select");
 const dateInput = document.querySelectorAll(".add-task__input-date");
 const timeInput = document.querySelectorAll(".add-task__input-time");
 const submitInput = document.querySelector(".add-task__submit");
-// TODO usunąć albo odkomentować
-// const customRepeatWrapper = document.querySelector(
-//   ".add-task__custom-repeat-wrapper"
-// );
 
 // listenery chowające popup po kliknięciu poza jego obszar
 // listener ogólny
 addTaksWrapper.addEventListener("click", (e) => {
   if (e.target.className === "add-task__wrapper") {
-    // TODO usunąć albo odkomentować
-    // if (customRepeatWrapper.classList.contains("add-task__custom-repeat-wrapper--hidden")) {
     addTaksWrapper.classList.add("add-task__wrapper--hidden");
-    // TODO usunąć albo odkomentować
-    // } else {
-    //   customRepeatWrapper.classList.add("add-task__custom-repeat-wrapper--hidden");
-    // }
   }
 });
-// TODO usunąć albo odkomentować
-// listener tylko dla popupa niestandardowego powtarzania
-// customRepeatWrapper.addEventListener("click", (e) => {
-//   if (e.target.className === "add-task__custom-repeat-wrapper") {
-//     customRepeatWrapper.classList.add(
-//       "add-task__custom-repeat-wrapper--hidden"
-//     );
-//   }
-// });
 
 // listener przełączający inputy po kliknięciu checkboxa
 allDayCheckbox.addEventListener("change", () => {
@@ -47,6 +28,7 @@ allDayCheckbox.addEventListener("change", () => {
     disableableInputs.forEach((input) => (input.disabled = false));
   }
 });
+
 // wyłączenie disabled dla daty końcowej po ustawieniu zadania na powtarzające się
 repeatSelect.addEventListener("change", () => {
   if (repeatSelect.value !== "none") {
@@ -73,7 +55,7 @@ timeInput[1].value = timeDateValues[1].split(":")[0] + ":" + timeDateValues[1].s
 
 // zabezpieczenie przed ustawieniem daty końcowej wcześniejszej niż początkowej dla dat
 dateInput[1].min = dateInput[0].value;
-dateInput[0].addEventListener("change", () => {
+dateInput[0].addEventListener("input", () => {
   dateInput[1].min = dateInput[0].value;
   if (dateInput[0].value === dateInput[1].value) {
     timeInput[1].min = timeInput[0].value;
@@ -105,21 +87,8 @@ dateInput[1].addEventListener("change", () => {
 export function setDefaultDates(date) {
   dateInput[0].value = date.toISOString().split("T")[0];
   dateInput[1].value = date.toISOString().split("T")[0];
+  dateInput[1].min = date.toISOString().split("T")[0];
 }
-
-// TODO usunąć albo odkomentować
-// listener włączający popup niestandardowego powtarzania po wybraniu opcji "Niestandardowe"
-// let isCustom = false;
-// repeatSelect.addEventListener("click", () => {
-//   if (repeatSelect.value === "custom" && !isCustom) {
-//     document
-//       .querySelector(".add-task__custom-repeat-wrapper")
-//       .classList.remove("add-task__custom-repeat-wrapper--hidden");
-//     isCustom = true;
-//   } else {
-//     isCustom = false;
-//   }
-// });
 
 function decodeCookies(){
   let cookies = document.cookie.split(";");

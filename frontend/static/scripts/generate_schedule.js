@@ -2,6 +2,9 @@
 const scheduleContainer = document.querySelector(".schedule__main");
 // zmienna przechowująca id klikniętego zadania
 let currentTaskId = null;
+// zmienna przechowująca dzisiejszą datę (bez godziny)
+const todayDate = new Date(Date.now())
+todayDate.setHours(0,0,0,0)
 
 function fetchData() {
   const res = fetch(`/api/tasks/schedule/2025/3/25/8`)
@@ -50,7 +53,7 @@ let scheduleDateStart = parseURLParams(window.location.href)?.date
 let scheduleDateEnd = scheduleDateStart;
 
 // TODO dodać automatyczne ustawianie powtarzania i koloru
-function showEditTaskPopup(id, dateStart, dateEnd, title, duration, description, taskType) {
+function showEditTaskPopup(id, dateStart, dateEnd, title, duration, description, taskType, color) {
   currentTaskId = id;
   // przypisanie do zmiennych elementów popupa edycja zadania
   const wrapper = document.querySelector(".edit-task__wrapper");
@@ -61,6 +64,8 @@ function showEditTaskPopup(id, dateStart, dateEnd, title, duration, description,
   const disableableInputs = document.querySelectorAll(".edit-task__input--disableable");
   const descriptionInput = document.querySelector(".edit-task__description");
   const repeatSelect = document.querySelector(".edit-task__repeat-select");
+  const colorInput = document.querySelector(".edit-task__input-color");
+  console.log(dateStart, dateEnd);
 
   // pokazanie popupa i przekazanie mu danych o zadaniu
   wrapper.classList.remove("edit-task__wrapper--hidden");
@@ -72,6 +77,8 @@ function showEditTaskPopup(id, dateStart, dateEnd, title, duration, description,
     timeInput[0].value = "00:00";
     timeInput[1].value = "23:59";
   } else {
+    checkbox.checked = false;
+    disableableInputs.forEach((input) => (input.disabled = false));
     timeInput[0].value = duration.split(" - ")[0];
     timeInput[1].value = duration.split(" - ")[1];
   }
@@ -87,7 +94,12 @@ function showEditTaskPopup(id, dateStart, dateEnd, title, duration, description,
     repeatSelect.value = "monthly";
   } else if (taskType === "3") {
     repeatSelect.value = "yearly";
+  } else if (taskType === "4") {
+    repeatSelect.value = "daily";
   }
+
+  // ustawienie automatycznego koloru
+  colorInput.value = "#" + color;
 }
 
 /**
@@ -138,6 +150,9 @@ async function loadNextTasks(isFirstLoad = false) {
                 description: task.description,
                 duration: duration,
                 type: task.type,
+                startRepeat: task.start_repeat ? task.start_repeat : dateStart,
+                endRepeat: task.end_repeat ? task.end_repeat : dateEnd,
+                color: task.color,
               },
             ],
           });
@@ -148,26 +163,29 @@ async function loadNextTasks(isFirstLoad = false) {
             description: task.description,
             duration: duration,
             type: task.type,
+            startRepeat: task.start_repeat ? task.start_repeat : dateStart,
+            endRepeat: task.end_repeat ? task.end_repeat : dateEnd,
+            color: task.color,
           });
         }
         lastDay = dateStart;
       });
 
-      let tmpDate = new Date(tasksByDay[tasksByDay.length - 1].date);
-      tmpDate.setDate(tmpDate.getDate() + 1);
-      tmpDate = tmpDate.toISOString().split("T")[0].split("-").join("/");
-      scheduleDateEnd = tmpDate;
-      if (isFirstLoad) {
-        tmpDate = new Date(tasksByDay[0].date);
-        tmpDate.setDate(tmpDate.getDate() - 1);
+      // ustawianie dat dla kolejnych pobrań zadań z bazy danych
+      if (tasksByDay.length > 0) {
+        let tmpDate = new Date(tasksByDay[tasksByDay.length - 1].date);
+        tmpDate.setDate(tmpDate.getDate() + 1);
         tmpDate = tmpDate.toISOString().split("T")[0].split("-").join("/");
-        scheduleDateStart = tmpDate;
-        // zabezpieczenie przed brakiem możliwości scrollowania
-        if (scheduleContainer.scrollTop === 0) {
-          loadPreviousTasks();
+        scheduleDateEnd = tmpDate;
+
+        if (isFirstLoad) {
+          tmpDate = new Date(tasksByDay[0].date);
+          tmpDate.setDate(tmpDate.getDate() - 1);
+          tmpDate = tmpDate.toISOString().split("T")[0].split("-").join("/");
+          scheduleDateStart = tmpDate;
         }
       }
-      
+
       return tasksByDay;
     });
 
@@ -177,10 +195,14 @@ async function loadNextTasks(isFirstLoad = false) {
     const dayWrapper = document.createElement("div");
     dayWrapper.className = "schedule-day";
 
+    // zapisanie daty zadania
+    const taskDate = new Date(task.date)
+    taskDate.setHours(0,0,0,0)
+
     // wypełnienie elementu treścią
-    // wygenerowanie treści dla dnia
+    // wygenerowanie treści dla dnia    
     dayWrapper.innerHTML += `
-    <h1 class="schedule-day__date">
+    <h1 class="schedule-day__date ${taskDate.getTime() > todayDate.getTime() ? '' : taskDate.getTime() === todayDate.getTime() ? 'schedule-day__date--today':'schedule-day__date--past'}">
         <span class="numeric-font">${task.date}</span> ${task.weekDay}
     </h1>`;
 
@@ -190,7 +212,7 @@ async function loadNextTasks(isFirstLoad = false) {
         // wygenerowanie treści dla zadań w dniu
         // onclick powoduje wykoczenie popupu edycji zadania
         (dayWrapper.innerHTML += `<div class="schedule-day__task-wrapper" 
-          onclick="showEditTaskPopup('${dayTask.id}','${task.date}','${task.dateEnd}','${dayTask.title}','${dayTask.duration}','${dayTask.description}','${dayTask.type}')" 
+          onclick="showEditTaskPopup('${dayTask.id}','${dayTask.startRepeat}','${dayTask.endRepeat}','${dayTask.title}','${dayTask.duration}','${dayTask.description}','${dayTask.type}','${dayTask.color}')" 
           >
           <div class="schedule-day__task-title-wrapper">
               <h2 class="schedule-day__task-title">${dayTask.title}</h2>
@@ -204,9 +226,15 @@ async function loadNextTasks(isFirstLoad = false) {
     );
     // dodanie elementu na koniec kontenera
     scheduleContainer.appendChild(dayWrapper);
-
-    return tasksToLoad;
   });
+
+  if (isFirstLoad) {
+    // zabezpieczenie przed brakiem możliwości scrollowania
+    scheduleContainer.scroll(0, 1);
+    if (scheduleContainer.scrollTop === 0) {
+      loadPreviousTasks();
+    }
+  }
 }
 
 /**
@@ -259,6 +287,9 @@ async function loadPreviousTasks() {
                 description: task.description,
                 duration: duration,
                 type: task.type,
+                startRepeat: task.start_repeat ? task.start_repeat : dateStart,
+                endRepeat: task.end_repeat ? task.end_repeat : dateEnd,
+                color: task.color,
               },
             ],
           });
@@ -269,15 +300,20 @@ async function loadPreviousTasks() {
             description: task.description,
             duration: duration,
             type: task.type,
+            startRepeat: task.start_repeat ? task.start_repeat : dateStart,
+            endRepeat: task.end_repeat ? task.end_repeat : dateEnd,
+            color: task.color,
           });
         }
         lastDay = dateStart;
       });
 
-      let tmpDate = new Date(tasksByDay[0].date);
-      tmpDate.setDate(tmpDate.getDate() - 1);
-      tmpDate = tmpDate.toISOString().split("T")[0].split("-").join("/");
-      scheduleDateStart = tmpDate;
+      if (tasksByDay.length > 0) {
+        let tmpDate = new Date(tasksByDay[0].date);
+        tmpDate.setDate(tmpDate.getDate() - 1);
+        tmpDate = tmpDate.toISOString().split("T")[0].split("-").join("/");
+        scheduleDateStart = tmpDate;
+      }
 
       return tasksByDay;
     });
@@ -288,10 +324,14 @@ async function loadPreviousTasks() {
     const dayWrapper = document.createElement("div");
     dayWrapper.className = "schedule-day";
 
+    // zapisanie daty zadania
+    const taskDate = new Date(task.date)
+    taskDate.setHours(0,0,0,0)
+
     // wypełnienie elementu treścią
     // wygenerowanie treści dla dnia
     newInnerHtml += `
-    <h1 class="schedule-day__date">
+    <h1 class="schedule-day__date ${taskDate.getTime() > todayDate.getTime() ? '' : taskDate.getTime() === todayDate.getTime() ? 'schedule-day__date--today':'schedule-day__date--past'}">
         <span class="numeric-font">${task.date}</span> ${task.weekDay}
     </h1>`;
 
@@ -300,7 +340,7 @@ async function loadPreviousTasks() {
       (dayTask) =>
         // wygenerowanie treści dla zadań w dniu
         (newInnerHtml += `
-      <div class="schedule-day__task-wrapper" onclick="showEditTaskPopup('${dayTask.id}','${task.date}','${task.dateEnd}','${dayTask.title}','${dayTask.duration}','${dayTask.description}','${dayTask.type}')" >
+      <div class="schedule-day__task-wrapper" onclick="showEditTaskPopup('${dayTask.id}','${task.date}','${task.dateEnd}','${dayTask.title}','${dayTask.duration}','${dayTask.description}','${dayTask.type}','${dayTask.color}')" >
           <div class="schedule-day__task-title-wrapper">
               <h2 class="schedule-day__task-title">${dayTask.title}</h2>
               <p class="schedule-day__task-duration numeric-font">
@@ -329,7 +369,6 @@ async function loadPreviousTasks() {
 // przestawienie scrolla o 1px w dół alby umożliwić wykrycie scrollowania w górę
 async function firstLoadTasks() {
   await loadNextTasks(true);
-  scheduleContainer.scroll(0, 1);
 }
 firstLoadTasks();
 
@@ -339,10 +378,8 @@ scheduleContainer.addEventListener("scroll", () => {
     scheduleContainer.scrollTop + scheduleContainer.clientHeight ===
     scheduleContainer.scrollHeight
   ) {
-    // TODO przekazać dane zadań które mają się załadować gdy użytkownik dotarł do końca aktualnie wyświetlanych zadań (zadania z przyszłości)
     loadNextTasks();
   } else if (scheduleContainer.scrollTop === 0) {
-    // TODO przekazać dane zadań które mają się załadować gdy użytkownik dotarł do początku aktualnie wyświetlanych zadań (zadania z przeszłości)
     loadPreviousTasks();
   }
 });
