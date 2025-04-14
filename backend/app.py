@@ -108,7 +108,8 @@ def get_tasks_schedule(year, month, day, future=None):
                     'end': task.end.strftime('%Y-%m-%d %H:%M:%S') if task.end else None,
                     'description': task.description,
                     'type': task.type,
-                    'day': task.start.day
+                    'day': task.start.day,
+                    'color': str(task.color[1:])
                 })
                 one_time_tasks.remove(task)  # usuwanie żeby nie sprawdzać ponownie
 
@@ -138,7 +139,8 @@ def get_tasks_schedule(year, month, day, future=None):
                                     'description': task.description,
                                     'type': 4,
                                     'day': current_date.day,
-                                    'weekday': repeat.weekday
+                                    'weekday': repeat.weekday,
+                                    'color': str(task.color[1:])
                                 })
                             else:
                                 tasks_json.append({
@@ -151,7 +153,8 @@ def get_tasks_schedule(year, month, day, future=None):
                                     'description': task.description,
                                     'type': task.type,
                                     'day': current_date.day,
-                                    'weekday': repeat.weekday
+                                    'weekday': repeat.weekday,
+                                    'color': str(task.color[1:])
                                 })
                                 
             # Zadania miesięczne (type == 2)
@@ -176,7 +179,8 @@ def get_tasks_schedule(year, month, day, future=None):
                             'description': task.description,
                             'type': task.type,
                             'day': current_date.day,
-                            'day_of_month': repeat.day_of_month
+                            'day_of_month': repeat.day_of_month,
+                            'color': str(task.color[1:])
                         })
                     # Alternatywnie, powtarzanie wg tygodnia miesiąca i dnia tygodnia
                     elif repeat.week_of_month and repeat.weekday is not None:
@@ -195,7 +199,8 @@ def get_tasks_schedule(year, month, day, future=None):
                                 'type': task.type,
                                 'day': current_date.day,
                                 'week_of_month': repeat.week_of_month,
-                                'weekday': repeat.weekday
+                                'weekday': repeat.weekday,
+                                'color': str(task.color[1:])
                             })
             # Zadania roczne (type == 3)
             elif task.type == 3:
@@ -217,7 +222,8 @@ def get_tasks_schedule(year, month, day, future=None):
                             'description': task.description,
                             'type': task.type,
                             'day': current_date.day,
-                            'month': repeat.month
+                            'month': repeat.month,
+                            'color': str(task.color[1:])
                         })
         current_date += delta
 
@@ -529,7 +535,8 @@ def get_tasks(year, month):
                 'end': task.end.strftime('%Y-%m-%d %H:%M:%S') if task.end else None,
                 'description': task.description,
                 'type': task.type,
-                'day': task.start.day
+                'day': task.start.day,
+                'color': str(task.color[1:])
             })
     
     for task in recurring_tasks:
@@ -548,7 +555,8 @@ def get_tasks(year, month):
                             'description': task.description,
                             'type': task.type,
                             'day': current_date_iter.day,
-                            'weekday': repeat.weekday
+                            'weekday': repeat.weekday,
+                            'color': str(task.color[1:])
                         })
                     current_date_iter += timedelta(days=1)
     
@@ -568,7 +576,8 @@ def get_tasks(year, month):
                             'description': task.description,
                             'type': task.type,
                             'day': repeat.day_of_month,
-                            'day_of_month': repeat.day_of_month
+                            'day_of_month': repeat.day_of_month,
+                            'color': str(task.color[1:])
                         })
 
                 # Jeśli określony jest tydzień miesiąca i dzień tygodnia
@@ -589,7 +598,8 @@ def get_tasks(year, month):
                             'type': task.type,
                             'day': target_date.day,
                             'week_of_month': repeat.week_of_month,
-                            'weekday': repeat.weekday
+                            'weekday': repeat.weekday,
+                            'color': str(task.color[1:])
                         })
                         current_date += timedelta(days=1)
                 
@@ -609,7 +619,8 @@ def get_tasks(year, month):
                             'description': task.description,
                             'type': task.type,
                             'day': repeat.day,
-                            'month': repeat.month
+                            'month': repeat.month,
+                            'color': str(task.color[1:])
                         })
     
     return jsonify(tasks_json)
