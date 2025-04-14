@@ -1,0 +1,125 @@
+@import "mixins.sass"
+
+.add-task__wrapper
+    @include popupWrapper(1)
+
+.add-Task__form
+    @include popupMain(2)
+    width: 304px
+    padding: 16px 24px
+
+.add-task__title-wrapper
+    width: 300px
+    height: 32px
+    border-bottom: 1px solid var(--today)
+    margin-left: -24px
+
+.add-Task__title
+    width: calc( 100% - 48px )
+    height: 100%
+    border: none
+    font-size: 24px
+    background-color: transparent
+    color: var(--font-main-color)
+    margin: 0 24px
+    outline: none
+
+.add-task__check-wrapper
+    display: flex
+    align-items: center
+    margin: 16px 0
+    & .add-task__label
+        margin: 0
+
+.add-task__label
+    display: block
+    height: 16px
+    font-size: 16px
+    margin: 16px 0 8px
+    line-height: 16px
+    
+
+.add-task__all_day_check
+    display: block
+    width: 16px
+    height: 16px
+    border: 1px solid #000
+    border-radius: 0
+    margin-left: 8px
+
+.add-task__time_wrapper
+    width: 100%
+    display: flex
+    justify-content: space-between
+
+.add-task__input-date
+    width: 190px
+    @include inputBase()
+    @include removeInputIcon()
+    
+
+
+.add-task__input-time
+    width: 50px
+    @include inputBase()
+    @include removeInputIcon()
+
+.add-task__repeat-select
+    width: 190px
+    @include inputBase()
+    text-align: left
+    padding-left: 4px
+
+.add-task__input-color
+    width: 16px
+    height: 16px
+    border: 1px solid #000
+    border-radius: 50%
+    &::-moz-color-swatch 
+        border: none
+    &::-webkit-color-swatch-wrapper 
+        padding: 0
+        border-radius: 0
+    &::-webkit-color-swatch 
+        border: none
+
+.add-task__description
+    width: 100%
+    height: 80px
+    font-size: 12px
+    border: 1px solid #000
+    outline: none
+    resize: none
+
+.add-task__submit
+    display: block
+    width: 100px
+    height: 24px
+    font-size: 16px
+    color: #fff
+    margin: 16px auto 0
+    background-color: var(--nav-bar)
+    border: none
+    border-radius: 25px
+    cursor: pointer
+
+.add-task__input-date-dash
+    margin-top: -1px
+
+.add-task__custom-repeat-wrapper
+    @include popupWrapper(3)
+    
+
+.add-task__custom-repeat
+    @include popupMain(4)
+    width: 272px
+    padding: 12px 16px
+
+.add-task__custom-repeat-header
+    width: 268px
+    height: 24px
+    font-size: 16px
+    font-weight: normal
+    text-align: center
+    margin-left: -16px
+    border-bottom: 1px solid var(--active)

@@ -1,0 +1,24 @@
+@import "mixins.sass"
+    
+.confirmation__wrapper
+    @include popupWrapper(1)
+
+.confirmation__form
+    @include popupMain(2)
+    width: 304px
+    height: 96px
+
+.confirmation__title
+    @include popupTitle()
+
+.confirmation__buttons-wrapper
+    display: flex
+    justify-content: space-between
+    width: 232px
+    margin: 16px auto 0
+
+.confirmation__button
+    @include button(100px, 24px)
+    
+.confirmation__delete-button
+    background-color: var(--delete-btn)

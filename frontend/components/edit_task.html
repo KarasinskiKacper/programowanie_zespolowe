@@ -1,0 +1,96 @@
+{% macro render_edit_task() %}
+<section class="edit-task__wrapper edit-task__wrapper--hidden">
+  <form action="/harmonogram" method="post" class="edit-task__form">
+    <div class="edit-task__title-wrapper">
+      <input
+        class="edit-task__title"
+        type="text"
+        name="title"
+        placeholder="Wstaw tytuł"
+      />
+    </div>
+
+    <div class="edit-task__check-wrapper">
+      <label class="edit-task__label" for="all_day_check">Cały dzień</label>
+      <input
+        class="edit-task__all_day_check"
+        type="checkbox"
+        name="all_day_check"
+      />
+    </div>
+
+    <label class="edit-task__label" for="start_date">Start</label>
+    <div class="edit-task__time_wrapper">
+      <input class="edit-task__input-date" type="date" name="start_date" />
+      <span class="edit-task__input-date-dash">-</span>
+      <input
+        class="edit-task__input-time edit-task__input--disableable"
+        type="time"
+        name="start_hour"
+      />
+    </div>
+
+    <label class="edit-task__label" for="end_date">Koniec</label>
+    <div class="edit-task__time_wrapper">
+      <input
+        class="edit-task__input-date edit-task__input--disableable"
+        type="date"
+        name="end_date"
+      />
+      <span class="edit-task__input-date-dash">-</span>
+      <input
+        class="edit-task__input-time edit-task__input--disableable"
+        type="time"
+        name="end_hour"
+      />
+    </div>
+
+    <label class="edit-task__label" for="repeat_type">Powtarzanie</label>
+    <select name="repeat_type" class="edit-task__repeat-select">
+      <option class="edit-task__repeat-option" value="none">Nie</option>
+      <option class="edit-task__repeat-option" value="daily">Codziennie</option>
+      <option class="edit-task__repeat-option" value="weekly">
+        Tygodniowo
+      </option>
+      <option class="edit-task__repeat-option" value="monthly">
+        Miesięcznie
+      </option>
+      <option class="edit-task__repeat-option" value="yearly">Rocznie</option>
+    </select>
+
+    <label class="edit-task__label" for="color">Kolor</label>
+    <input
+      class="edit-task__input-color"
+      type="color"
+      name="color"
+      value="#29A423"
+    />
+
+    <label class="edit-task__label" for="description">Opis</label>
+    <textarea
+      class="edit-task__description"
+      name="description"
+      maxlength="500"
+      cols="30"
+    ></textarea>
+
+    <div class="edit-task__submit-wrapper">
+
+      <input
+        class="edit-task__remove numeric-font"
+        name="remove"
+        type="submit"
+        value="Usuń"
+      />
+      <input
+        class="edit-task__submit numeric-font"
+        name="edit"
+        type="submit"
+        value="Edytuj"
+      />
+
+    </div>
+  </form>
+</section>
+<script src="../static/scripts/edit_task_handler.js"></script>
+{% endmacro %}

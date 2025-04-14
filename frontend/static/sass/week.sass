@@ -1,0 +1,131 @@
+@import "mixins.sass"
+    
+.current-week 
+    user-select: none
+    display: flex
+    justify-content: center
+    align-items: center
+    height: 48px
+    gap: 16px
+    margin: 48px auto 32px
+
+    &__text
+        display: inline-block
+        font-size: 48px
+        font-weight: 400
+        width: 470px
+
+        &:first-of-type
+            text-align: right
+
+        &--separator
+            width: 20px 
+    
+    &__arrow
+        font-size: 48px
+        display: inline-block
+        cursor: pointer
+
+.week-layout
+    margin: 0 auto
+
+    &__days-container
+        user-select: none
+        display: flex
+        justify-content: center
+        padding: 0 64px
+        height: 88px    
+        margin: 0 auto
+
+    &__day
+        display: inline-block   
+        min-width: 200px
+        max-width: 224px
+        flex-grow: 1
+        text-align: center
+        font-size: 24px
+        text-transform: uppercase
+    
+        &--name
+            font-size: 1em
+            font-weight: 400
+            height: 24px
+        
+        &--date
+            font-size: 2em
+            margin-top: 16px
+            height: 48px
+            cursor: pointer
+            
+        &--current
+            color: var(--today)
+
+    &__grid-wrapper
+        display: flex
+        justify-content: center
+        margin: 0 auto
+
+    &__grid
+        display: grid
+        max-width: 1568px
+        grid-template-rows: repeat(24, 1fr)
+        grid-template-columns: repeat(7, 1fr)
+        flex-grow: 1
+        margin-top: 16px 
+        border-top: 2px solid var(--font-main-color) 
+        border-right: 2px solid var(--font-main-color)
+
+    &__grid-cell
+        min-width: 200px
+        max-width: 224px
+        height: 24px
+        border-left: 2px solid var(--font-main-color)
+        border-bottom: 2px solid var(--font-main-color)
+
+    &__grid-hour-column
+        user-select: none
+        padding-top: 32px
+
+        &:last-of-type
+            text-align: right
+
+    &__grid-hour
+        height: 16px
+        width: 64px
+        margin-bottom: 8px
+        font-size: 16px
+
+    &__grid-task
+        position: relative
+        transform: translateY(-1px)
+        max-width: 212px  
+        min-height: 24px
+        border: 1px solid var(--font-main-color)
+        margin: 0 6px
+        border-radius: 10px
+        background-color: var(--task)  
+        overflow: hidden
+        cursor: pointer
+
+        &:hover
+            min-height: fit-content !important
+            z-index: 1
+            
+
+    &__grid-task-title    
+        margin: 4px 10px 8px
+        font-size: 16px
+        height: 16px
+        line-height: 16px
+        color: var(--font-alt-color)
+        font-weight: 400
+        text-overflow: ellipsis 
+        overflow: hidden
+
+    &__grid-task-text
+        margin: 0 10px 4px
+        font-size: 12px
+        color: var(--font-alt-color)
+
+        
+
