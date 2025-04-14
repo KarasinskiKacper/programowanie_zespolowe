@@ -566,7 +566,7 @@ def get_tasks(year, month):
                 last_day_of_month = last_day.day
                 if repeat.day_of_month and repeat.day_of_month <= last_day_of_month:
                     task_date = datetime(year, month, repeat.day_of_month)
-                    if repeat.day_of_month <= last_day_of_month and (repeat.date_end is None or task_date <= repeat.date_end) and repeat.date_start <= task_date:
+                    if repeat.day_of_month <= last_day_of_month and (repeat.date_end is None or task_date <= repeat.date_end) and repeat.date_start.date() <= task_date.date():
                         tasks_json.append({
                             'id': task.id_task,
                             'name': task.name,
