@@ -1,47 +1,55 @@
-import { monday_first } from "./utils.js";
+import { mondayFirst } from "./utils.js";
 
+/**
+ * Generuje kalendarz miesiaca na podstawie podanej daty.
+ *
+ * @param {Date} date - Bazowa data do generowania kalendarza.
+ * @param {number} [offset=0] - Przesunięcie (w miesiącach) względem obecnie ustawionej daty.
+ *
+ * @returns {Object} Obiekt zawierający::
+ *  - {Array} calendar: Tablica 2D zawierająca numery dni w miesiacu.
+ *  - {string} month: Nazwa miesiaca.
+ */
 export function generate_calendar(date, offset = 0) {
   // stworzenie zmiennych przechowujących daty i zmiana daty o offset
-  // small_calendar_base_date - zmienna przechowująca miesiąc do którego generowany jest kalendarz
-  // small_calendar_date - zmienna pomocnicza do generowania struktury kalendarza
-  let small_calendar_base_date = new Date(date);
-  let small_calendar_date = new Date(date);
-  small_calendar_base_date.setMonth(
-    small_calendar_base_date.getMonth() + offset
-  );
-  small_calendar_date.setMonth(small_calendar_date.getMonth() + offset);
-  small_calendar_date.setDate(1);
+  // smallCalendarBaseDate - zmienna przechowująca miesiąc do którego generowany jest kalendarz
+  // smallCalendarDate - zmienna pomocnicza do generowania struktury kalendarza
+  let smallCalendarBaseDate = new Date(date);
+  let smallCalendarDate = new Date(date);
+  smallCalendarBaseDate.setMonth(smallCalendarBaseDate.getMonth() + offset);
+  smallCalendarDate.setMonth(smallCalendarDate.getMonth() + offset);
+  smallCalendarDate.setDate(1);
 
-  if (monday_first(small_calendar_date.getDay()) != 0) {
-    small_calendar_date.setDate(0);
-    small_calendar_date.setDate(
-      small_calendar_date.getDate() - monday_first(small_calendar_date.getDay())
+  if (mondayFirst(smallCalendarDate.getDay()) != 0) {
+    smallCalendarDate.setDate(0);
+    smallCalendarDate.setDate(
+      smallCalendarDate.getDate() - mondayFirst(smallCalendarDate.getDay())
     );
   }
 
   // generowanie nazwy miesiaca
-  const month = small_calendar_base_date.toLocaleString("pl-PL", {
+  const month = smallCalendarBaseDate.toLocaleString("pl-PL", {
     month: "long",
   });
 
   // generowanie dat
-  let is_past_month = true;
+  let isPastMonth = true;
   let calendar = [];
   let week = [];
   while (
-    small_calendar_date.getMonth() == small_calendar_base_date.getMonth() ||
+    smallCalendarDate.getMonth() == smallCalendarBaseDate.getMonth() ||
     week.length != 0 ||
-    is_past_month
+    isPastMonth
   ) {
-    week.push(small_calendar_date.getDate());
+    week.push(smallCalendarDate.getDate());
     if (week.length == 7) {
       calendar.push(week);
       week = [];
     }
-    small_calendar_date.setDate(small_calendar_date.getDate() + 1);
+    smallCalendarDate.setDate(smallCalendarDate.getDate() + 1);
 
-    if (small_calendar_date.getMonth() == small_calendar_base_date.getMonth()) {
-      is_past_month = false;
+    if (smallCalendarDate.getMonth() == smallCalendarBaseDate.getMonth()) {
+      isPastMonth = false;
     }
   }
 
