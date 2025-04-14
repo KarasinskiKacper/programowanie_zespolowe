@@ -511,16 +511,15 @@ def get_tasks(year, month):
     user_id = request.cookies.get('user_id')
     
     if month == 12:
-        last_day = datetime(year + 1, 1, 1) - timedelta(days=1)
+        last_day = datetime(year + 1, 1, 1)
     else:
-        last_day = datetime(year, month + 1, 1) - timedelta(days=1)
-    
+        last_day = datetime(year, month + 1, 1)
+        
     tasks = Task.query.filter(
         (((Task.start >= first_day) & (Task.start <= last_day)) |
         ((Task.end >= first_day) & (Task.end <= last_day))) 
         & (Task.id_user == user_id)
     ).all()
-    
     
     recurring_tasks = Task.query.filter(Task.type.in_([1, 2, 3]), Task.id_user == user_id).all()
     
