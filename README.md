@@ -8,8 +8,8 @@ Projekt składa się z następujących części:
 
 * `backend`: zawiera kod serwera aplikacji, napisany w Pythonie z użyciem frameworka Flask.
 * `frontend`: zawiera kod klienta aplikacji, napisany w JavaScript.
-* `db`: zawiera plik bazy danych
-.
+* `db`: zawiera plik bazy danych.
+
 ## Wymagania
 
 Aby uruchomić aplikację, potrzebne są następujące narzędzia:
