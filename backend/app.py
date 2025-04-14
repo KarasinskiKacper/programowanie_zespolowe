@@ -859,7 +859,10 @@ def login():
 @app.route('/ustawienia', methods=['GET',"POST"])
 def settings():
     if request.method == 'GET':
-        return render_template('settings.html')
+        if request.cookies.get('user_id'):
+            return render_template('settings.html')
+        else:
+            return app.redirect('/login')
 
 @app.route('/miesiac', methods=['GET',"POST"])
 def month():
