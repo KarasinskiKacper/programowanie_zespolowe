@@ -1,42 +1,57 @@
 import { generateCalendar } from "./generate_calendar.js";
 
+/**
+ * Funkcja generująca małe kalendarze na stronie miesiąca.
+ *
+ * @param {Date} date - Data do generowania kalendarzy.
+ *
+ * @returns {void}
+ */
 export function generateSmallCalendars(date) {
-  // wygenerowanie html kalendarza
-  function create_structure_of_calendar(date, offset) {
+  
+/**
+ * Funkcja generująca strukture małego kalendarza na stronie miesiąca.
+ *
+ * @param {Date} date - Data bazowa od której generuje się struktura kalendarza.
+ * @param {number} offset - Przesunięcie (w miesiacach) od bazowej daty.
+ * 
+ * @returns {void}
+ */
+  function createStructureOfCalendar(date, offset) {
     const { calendar, month } = generateCalendar(date, offset);
 
     // ustawienie nazwy miesiaca
-    const small_calendar_month = document.getElementById(
+    const smallCalendarMonth = document.getElementById(
       `small-calendar__month-${offset == -1 ? "past" : "future"}`
     );
-    small_calendar_month.innerHTML = month;
+    smallCalendarMonth.innerHTML = month;
 
     // ustawienie dni kalendarza
-    const small_calendar__days_wrapper = document.getElementById(
+    const smallCalendarDaysWrapper = document.getElementById(
       `small-calendar__days-wrapper-${offset == -1 ? "past" : "future"}`
     );
-    let new_innerhtml = "";
+    let newInnerhtml = "";
     let counter = 1;
     calendar.forEach((week) => {
       week.forEach((day) => {
         if (day === counter) {
-          new_innerhtml += `<p class="small-calendar__days numeric-font">${day}</p>`;
+          newInnerhtml += `<p class="small-calendar__days numeric-font">${day}</p>`;
           counter++;
         } else {
-          new_innerhtml += `<p class="small-calendar__days numeric-font"></p>`;
+          newInnerhtml += `<p class="small-calendar__days numeric-font"></p>`;
         }
       });
     });
     for (let i = calendar.length; i < 7; i++) {
       for (let j = 0; j < 7; j++) {
-        new_innerhtml += `<p class="small-calendar__days numeric-font"></p>`;
+        newInnerhtml += `<p class="small-calendar__days numeric-font"></p>`;
       }
     }
-    small_calendar__days_wrapper.innerHTML = new_innerhtml;
+    smallCalendarDaysWrapper.innerHTML = newInnerhtml;
   }
 
   // wywołanie dla kalendarza z poprzedniego miesiąca
-  create_structure_of_calendar(date, -1);
+  createStructureOfCalendar(date, -1);
   // wywołanie dla kalendarza z następnego miesiąca
-  create_structure_of_calendar(date, 1);
+  createStructureOfCalendar(date, 1);
 }
