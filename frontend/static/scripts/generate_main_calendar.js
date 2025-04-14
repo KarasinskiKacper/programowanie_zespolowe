@@ -36,21 +36,25 @@ export function generate_main_calendar(date) {
           if (day === counter) {
             // Sprawdź, czy dla tego dnia są zadania
             const dayTasks = tasksByDay[day] || [];
-            const tasksHtml = dayTasks
-              .map(
-                (task) =>
-                  `<p class="month__main-calendar-days-task">${task.name}</p>`
-              )
-              .join("");
+            let tasksHtml = "";
+            // Przygotowanie tytułów zadań do wypisania w kalendarzu
+            if (dayTasks.length <= 2) {
+              tasksHtml = dayTasks
+                .map((task) => `<p class="month__main-calendar-days-task">${task.name}</p>`)
+                .join("");
+            } else {
+              tasksHtml = `<p class="month__main-calendar-days-task">${dayTasks[0].name}</p>`;
+              tasksHtml += `<p class="month__main-calendar-days-task">+ ${
+                dayTasks.length - 1
+              } Więcej</p>`;
+            }
             new_innerhtml += `<div class="month__main-calendar-day">
                       <p
                         class="month__main-calendar-days-text ${
                           is_current_month &&
                           day === current_date.getDate() &&
                           "month__main-calendar-days-text--today"
-                        } ${
-              dayTasks.length > 0 && "month__main-calendar-days-text--task"
-            }"
+                        } ${dayTasks.length > 0 && "month__main-calendar-days-text--task"}"
                       >
                         ${day}
                       </p>
@@ -84,12 +88,16 @@ export function generate_main_calendar(date) {
         });
         // dodanie listenera zmieniającego stronę na /harmonogram dla zadań
         if (day.children.length > 1 && day.children[1].innerText) {
-          day.children[1].addEventListener("click", (e) => {
-            let tmpDate = new Date(date);
-            tmpDate.setDate(day.children[0].innerHTML.trim());
-            tmpDate = tmpDate.toISOString().split("T")[0];
+          Array.from(day.children).forEach((task, index) => {
+            if (index > 0) {
+              task.addEventListener("click", (e) => {
+                let tmpDate = new Date(date);
+                tmpDate.setDate(day.children[0].innerHTML.trim());
+                tmpDate = tmpDate.toISOString().split("T")[0];
 
-            document.location.href = `/harmonogram?date=${tmpDate}`;
+                document.location.href = `/harmonogram?date=${tmpDate}`;
+              });
+            }
           });
         }
       });

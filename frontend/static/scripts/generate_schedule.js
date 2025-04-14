@@ -61,6 +61,7 @@ function showEditTaskPopup(id, dateStart, dateEnd, title, duration, description,
   const disableableInputs = document.querySelectorAll(".edit-task__input--disableable");
   const descriptionInput = document.querySelector(".edit-task__description");
   const repeatSelect = document.querySelector(".edit-task__repeat-select");
+  console.log(dateStart, dateEnd);
 
   // pokazanie popupa i przekazanie mu danych o zadaniu
   wrapper.classList.remove("edit-task__wrapper--hidden");
@@ -87,6 +88,8 @@ function showEditTaskPopup(id, dateStart, dateEnd, title, duration, description,
     repeatSelect.value = "monthly";
   } else if (taskType === "3") {
     repeatSelect.value = "yearly";
+  } else if (taskType === "4") {
+    repeatSelect.value = "daily";
   }
 }
 
@@ -138,6 +141,8 @@ async function loadNextTasks(isFirstLoad = false) {
                 description: task.description,
                 duration: duration,
                 type: task.type,
+                startRepeat: task.start_repeat ? task.startRepeat : dateStart,
+                endRepeat: task.end_repeat ? task.endRepeat : dateEnd,
               },
             ],
           });
@@ -148,6 +153,8 @@ async function loadNextTasks(isFirstLoad = false) {
             description: task.description,
             duration: duration,
             type: task.type,
+            startRepeat: task.start_repeat ? task.startRepeat : dateStart,
+            endRepeat: task.end_repeat ? task.endRepeat : dateEnd,
           });
         }
         lastDay = dateStart;
@@ -163,11 +170,12 @@ async function loadNextTasks(isFirstLoad = false) {
         tmpDate = tmpDate.toISOString().split("T")[0].split("-").join("/");
         scheduleDateStart = tmpDate;
         // zabezpieczenie przed brakiem możliwości scrollowania
+        scheduleContainer.scroll(0, 1);
         if (scheduleContainer.scrollTop === 0) {
           loadPreviousTasks();
         }
       }
-      
+
       return tasksByDay;
     });
 
@@ -190,7 +198,7 @@ async function loadNextTasks(isFirstLoad = false) {
         // wygenerowanie treści dla zadań w dniu
         // onclick powoduje wykoczenie popupu edycji zadania
         (dayWrapper.innerHTML += `<div class="schedule-day__task-wrapper" 
-          onclick="showEditTaskPopup('${dayTask.id}','${task.date}','${task.dateEnd}','${dayTask.title}','${dayTask.duration}','${dayTask.description}','${dayTask.type}')" 
+          onclick="showEditTaskPopup('${dayTask.id}','${dayTask.startRepeat}','${dayTask.endRepeat}','${dayTask.title}','${dayTask.duration}','${dayTask.description}','${dayTask.type}')" 
           >
           <div class="schedule-day__task-title-wrapper">
               <h2 class="schedule-day__task-title">${dayTask.title}</h2>
