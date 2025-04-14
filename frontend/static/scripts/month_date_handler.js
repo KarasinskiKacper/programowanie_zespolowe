@@ -6,7 +6,12 @@ const h2_month = document.querySelector(".month__month");
 
 let date = new Date(Date.now());
 
-// funkcja ustawiająca miesiąc i rok na stronie
+
+/**
+ * Funkcja rerenderująca kalendarze.
+ * @returns {void}
+ */
+
 function updateDate() {
   h1_year.innerHTML = date.getFullYear();
   h2_month.innerHTML = date.toLocaleString("pl-PL", {
@@ -16,7 +21,13 @@ function updateDate() {
   generateMainCalendar(date);
 }
 
-// obsługa przycisków
+/**
+ * Funkcja zmieniająca aktualny miesiąc.
+ *
+ * @param {number} offset - [-1, 1] przesunięcie w miesiacach
+ * @returns {void}
+ */
+
 function changeMonth(offset) {
   date.setMonth(date.getMonth() + offset);
   updateDate(date);
