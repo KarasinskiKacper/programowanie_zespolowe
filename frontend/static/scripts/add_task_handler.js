@@ -40,14 +40,14 @@ repeatSelect.addEventListener("change", () => {
 
 // ustawienie domyślych wartości dla dat i godzin
 let timeDate = new Date(Date.now());
-let tzoffset = new Date().getTimezoneOffset() * 60000; //offset in milliseconds
+let tzoffset = new Date().getTimezoneOffset() * 60000; //offset w milisekundach
 let timeDateValues = new Date(timeDate - tzoffset).toISOString().split("T");
 
 dateInput[0].value = timeDateValues[0];
 timeInput[0].value = timeDateValues[1].split(":")[0] + ":" + timeDateValues[1].split(":")[1];
 
 timeDate.setHours(timeDate.getHours() + 1);
-tzoffset = timeDate.getTimezoneOffset() * 60000; //offset in milliseconds
+tzoffset = timeDate.getTimezoneOffset() * 60000; //offset w milisekundach
 timeDateValues = new Date(timeDate - tzoffset).toISOString().split("T");
 
 dateInput[1].value = timeDateValues[0];
@@ -90,6 +90,11 @@ export function setDefaultDates(date) {
   dateInput[1].min = date.toISOString().split("T")[0];
 }
 
+
+/**
+ * Dekoduje ciasteczka do tablicy obiektów
+ * @returns {Array.<{name: String, value: String}>} tablica obiektów zdekodowanych ciasteczek
+ */
 function decodeCookies(){
   let cookies = document.cookie.split(";");
   let decodedCookies = [];
