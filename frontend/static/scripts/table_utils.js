@@ -72,7 +72,6 @@ function insertTask(
   );
 }
 
-//TODO implementacja populateTable
 /**
  * Funkcja która ma wypełniać tabele z zadaniami.
  * @abstract Funkcja abstrakcyjna do zaimplementowania.
