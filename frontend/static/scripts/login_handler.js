@@ -4,6 +4,7 @@ const registerWrapper = document.querySelector(".login__register");
 const mainWrapper = document.querySelector(".login__main-wrapper");
 const loginRegisterChoice = document.querySelectorAll(".login__login-register-choice-text");
 
+// listenery przesuwające formularze logowania i rejestracji
 loginRegisterChoice[0].addEventListener("click", () => {
   mainWrapper.classList.remove("login__main-wrapper--shift");
   loginRegisterChoice[0].classList.add("login__login-register-choice-text--active");
