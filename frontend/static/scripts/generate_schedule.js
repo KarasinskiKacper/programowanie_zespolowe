@@ -2,6 +2,9 @@
 const scheduleContainer = document.querySelector(".schedule__main");
 // zmienna przechowująca id klikniętego zadania
 let currentTaskId = null;
+// zmienna przechowująca dzisiejszą datę (bez godziny)
+const todayDate = new Date(Date.now())
+todayDate.setHours(0,0,0,0)
 
 function fetchData() {
   const res = fetch(`/api/tasks/schedule/2025/3/25/8`)
@@ -74,6 +77,8 @@ function showEditTaskPopup(id, dateStart, dateEnd, title, duration, description,
     timeInput[0].value = "00:00";
     timeInput[1].value = "23:59";
   } else {
+    checkbox.checked = false;
+    disableableInputs.forEach((input) => (input.disabled = false));
     timeInput[0].value = duration.split(" - ")[0];
     timeInput[1].value = duration.split(" - ")[1];
   }
@@ -190,10 +195,14 @@ async function loadNextTasks(isFirstLoad = false) {
     const dayWrapper = document.createElement("div");
     dayWrapper.className = "schedule-day";
 
+    // zapisanie daty zadania
+    const taskDate = new Date(task.date)
+    taskDate.setHours(0,0,0,0)
+
     // wypełnienie elementu treścią
-    // wygenerowanie treści dla dnia
+    // wygenerowanie treści dla dnia    
     dayWrapper.innerHTML += `
-    <h1 class="schedule-day__date">
+    <h1 class="schedule-day__date ${taskDate.getTime() > todayDate.getTime() ? '' : taskDate.getTime() === todayDate.getTime() ? 'schedule-day__date--today':'schedule-day__date--past'}">
         <span class="numeric-font">${task.date}</span> ${task.weekDay}
     </h1>`;
 
@@ -315,10 +324,14 @@ async function loadPreviousTasks() {
     const dayWrapper = document.createElement("div");
     dayWrapper.className = "schedule-day";
 
+    // zapisanie daty zadania
+    const taskDate = new Date(task.date)
+    taskDate.setHours(0,0,0,0)
+
     // wypełnienie elementu treścią
     // wygenerowanie treści dla dnia
     newInnerHtml += `
-    <h1 class="schedule-day__date">
+    <h1 class="schedule-day__date ${taskDate.getTime() > todayDate.getTime() ? '' : taskDate.getTime() === todayDate.getTime() ? 'schedule-day__date--today':'schedule-day__date--past'}">
         <span class="numeric-font">${task.date}</span> ${task.weekDay}
     </h1>`;
 
