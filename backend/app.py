@@ -117,6 +117,8 @@ def get_tasks_schedule(year, month, day, future=None):
             # Zadania tygodniowe (type == 1)
             if task.type == 1:
                 weekly_repeats = Weekly.query.filter_by(id_task=task.id_task).all()
+                if weekly_repeats.count() > 1:
+                    print('to daily')
                 for repeat in weekly_repeats:
                     if current_date.date() >= repeat.date_start.date() and \
                        (repeat.date_end is None or current_date.date() <= repeat.date_end.date()):
@@ -541,17 +543,16 @@ def get_tasks(year, month):
                     last_day_of_month = last_day.day
                     task_date = datetime(year, month, repeat.day_of_month)
                     if repeat.day_of_month <= last_day_of_month and (repeat.date_end is None or task_date <= repeat.date_end):
-                        if task_date >= current_date:
-                            tasks_json.append({
-                                'id': task.id_task,
-                                'name': task.name,
-                                'start': task.start.strftime('%Y-%m-%d %H:%M:%S'),
-                                'end': task.end.strftime('%Y-%m-%d %H:%M:%S') if task.end else None,
-                                'description': task.description,
-                                'type': task.type,
-                                'day': repeat.day_of_month,
-                                'day_of_month': repeat.day_of_month
-                            })
+                        tasks_json.append({
+                            'id': task.id_task,
+                            'name': task.name,
+                            'start': task.start.strftime('%Y-%m-%d %H:%M:%S'),
+                            'end': task.end.strftime('%Y-%m-%d %H:%M:%S') if task.end else None,
+                            'description': task.description,
+                            'type': task.type,
+                            'day': repeat.day_of_month,
+                            'day_of_month': repeat.day_of_month
+                        })
 
                 # Jeśli określony jest tydzień miesiąca i dzień tygodnia
                 elif repeat.week_of_month and repeat.weekday is not None:
@@ -581,7 +582,6 @@ def get_tasks(year, month):
                 # Sprawdź czy zadanie przypada w wybranym miesiącu i roku
                 if repeat.month == month:
                     task_date = datetime(year, repeat.month, repeat.day)
-                    print(task_date)
                     # Sprawdź czy data zadania mieści się w zakresie powtarzania
                     if (repeat.date_end is None or task_date <= repeat.date_end):
                         tasks_json.append({
