@@ -145,8 +145,8 @@ async function loadNextTasks(isFirstLoad = false) {
                 description: task.description,
                 duration: duration,
                 type: task.type,
-                startRepeat: task.start_repeat ? task.startRepeat : dateStart,
-                endRepeat: task.end_repeat ? task.endRepeat : dateEnd,
+                startRepeat: task.start_repeat ? task.start_repeat : dateStart,
+                endRepeat: task.end_repeat ? task.end_repeat : dateEnd,
                 color: task.color,
               },
             ],
@@ -158,29 +158,26 @@ async function loadNextTasks(isFirstLoad = false) {
             description: task.description,
             duration: duration,
             type: task.type,
-            startRepeat: task.start_repeat ? task.startRepeat : dateStart,
-            endRepeat: task.end_repeat ? task.endRepeat : dateEnd,
+            startRepeat: task.start_repeat ? task.start_repeat : dateStart,
+            endRepeat: task.end_repeat ? task.end_repeat : dateEnd,
             color: task.color,
           });
         }
         lastDay = dateStart;
       });
 
+      // ustawianie dat dla kolejnych pobrań zadań z bazy danych
       if (tasksByDay.length > 0) {
         let tmpDate = new Date(tasksByDay[tasksByDay.length - 1].date);
         tmpDate.setDate(tmpDate.getDate() + 1);
         tmpDate = tmpDate.toISOString().split("T")[0].split("-").join("/");
         scheduleDateEnd = tmpDate;
+
         if (isFirstLoad) {
           tmpDate = new Date(tasksByDay[0].date);
           tmpDate.setDate(tmpDate.getDate() - 1);
           tmpDate = tmpDate.toISOString().split("T")[0].split("-").join("/");
           scheduleDateStart = tmpDate;
-          // zabezpieczenie przed brakiem możliwości scrollowania
-          scheduleContainer.scroll(0, 1);
-          if (scheduleContainer.scrollTop === 0) {
-            loadPreviousTasks();
-          }
         }
       }
 
@@ -220,9 +217,15 @@ async function loadNextTasks(isFirstLoad = false) {
     );
     // dodanie elementu na koniec kontenera
     scheduleContainer.appendChild(dayWrapper);
-
-    return tasksToLoad;
   });
+
+  if (isFirstLoad) {
+    // zabezpieczenie przed brakiem możliwości scrollowania
+    scheduleContainer.scroll(0, 1);
+    if (scheduleContainer.scrollTop === 0) {
+      loadPreviousTasks();
+    }
+  }
 }
 
 /**
@@ -275,8 +278,8 @@ async function loadPreviousTasks() {
                 description: task.description,
                 duration: duration,
                 type: task.type,
-                startRepeat: task.start_repeat ? task.startRepeat : dateStart,
-                endRepeat: task.end_repeat ? task.endRepeat : dateEnd,
+                startRepeat: task.start_repeat ? task.start_repeat : dateStart,
+                endRepeat: task.end_repeat ? task.end_repeat : dateEnd,
                 color: task.color,
               },
             ],
@@ -288,8 +291,8 @@ async function loadPreviousTasks() {
             description: task.description,
             duration: duration,
             type: task.type,
-            startRepeat: task.start_repeat ? task.startRepeat : dateStart,
-            endRepeat: task.end_repeat ? task.endRepeat : dateEnd,
+            startRepeat: task.start_repeat ? task.start_repeat : dateStart,
+            endRepeat: task.end_repeat ? task.end_repeat : dateEnd,
             color: task.color,
           });
         }
@@ -353,7 +356,6 @@ async function loadPreviousTasks() {
 // przestawienie scrolla o 1px w dół alby umożliwić wykrycie scrollowania w górę
 async function firstLoadTasks() {
   await loadNextTasks(true);
-  scheduleContainer.scroll(0, 1);
 }
 firstLoadTasks();
 
@@ -363,10 +365,8 @@ scheduleContainer.addEventListener("scroll", () => {
     scheduleContainer.scrollTop + scheduleContainer.clientHeight ===
     scheduleContainer.scrollHeight
   ) {
-    // TODO przekazać dane zadań które mają się załadować gdy użytkownik dotarł do końca aktualnie wyświetlanych zadań (zadania z przyszłości)
     loadNextTasks();
   } else if (scheduleContainer.scrollTop === 0) {
-    // TODO przekazać dane zadań które mają się załadować gdy użytkownik dotarł do początku aktualnie wyświetlanych zadań (zadania z przeszłości)
     loadPreviousTasks();
   }
 });
