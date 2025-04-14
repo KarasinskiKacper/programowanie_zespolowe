@@ -1,12 +1,12 @@
+// przypisanie elementów do zmiennych
 const editTaksWrapper = document.querySelector(".edit-task__wrapper");
 const allDayCheckbox = document.querySelector(".edit-task__all_day_check");
 const repeatSelect = document.querySelector(".edit-task__repeat-select");
-const disableableInputs = document.querySelectorAll(
-  ".edit-task__input--disableable"
-);
+const disableableInputs = document.querySelectorAll(".edit-task__input--disableable");
 const dateInput = document.querySelectorAll(".edit-task__input-date");
 const timeInput = document.querySelectorAll(".edit-task__input-time");
 
+// listenery chowające popup po kliknięciu poza jego obszar
 editTaksWrapper.addEventListener("click", (e) => {
   if (e.target.className === "edit-task__wrapper") {
     editTaksWrapper.classList.add("edit-task__wrapper--hidden");
@@ -26,6 +26,7 @@ allDayCheckbox.addEventListener("change", () => {
     disableableInputs.forEach((input) => (input.disabled = false));
   }
 });
+
 // wyłączenie disabled dla daty końcowej po ustawieniu zadania na powtarzające się
 repeatSelect.addEventListener("change", () => {
   if (repeatSelect.value !== "none") {
