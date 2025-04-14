@@ -1,12 +1,14 @@
 {% from 'components/nav_bar.html' import render_nav_bar %}
+
 <!DOCTYPE html>
 <html lang="pl">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login</title>
-    {% assets "sass_all" %} <link rel=stylesheet type=text/css href="{{ ASSET_URL }}"> {% endassets
-    %}
+    {% assets "sass_all" %} 
+    <link rel=stylesheet type=text/css href="{{ ASSET_URL }}"> 
+    {% endassets%}
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -69,8 +71,9 @@
           </form>
         </div>
       </main>
-      <!-- biblioteka Zod do walidacji danych formularza -->
+      <!-- biblioteka "Zod" do walidacji danych formularza -->
       <script src="https://unpkg.com/zod@3.22.4/lib/index.umd.js"></script>
+      
       <script src="./static/scripts/user_data_validation.js"></script>
       <script src="./static/scripts/login_handler.js"></script>
     </div>

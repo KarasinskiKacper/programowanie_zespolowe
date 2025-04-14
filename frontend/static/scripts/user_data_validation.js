@@ -121,7 +121,12 @@ loginForm.addEventListener("submit", function (event) {
     }
 });
 
-// ustawienie niestandardowych wiadomości błędów
+
+/**
+ * Wyświetla błędy walidacji
+ * @param {Array<object>} errors - tablica błędów walidacji
+ * @returns {void}
+ */
 function displayErrors(errors) {
   // Wyczyść poprzednie błędy
   const errorElements = document.querySelectorAll(".error-message");

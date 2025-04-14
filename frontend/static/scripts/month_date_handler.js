@@ -1,34 +1,42 @@
-import { generate_small_calendars } from "./generate_small_calendars.js";
-import { generate_main_calendar } from "./generate_main_calendar.js";
+import { generateSmallCalendars } from "./generate_small_calendars.js";
+import { generateMainCalendar } from "./generate_main_calendar.js";
 
-const h1_year = document.querySelector(".month__year");
-const h2_month = document.querySelector(".month__month");
+const h1Year = document.querySelector(".month__year");
+const h2Month = document.querySelector(".month__month");
 
 let date = new Date(Date.now());
 
-// funkcja ustawiająca miesiąc i rok na stronie
+/**
+ * Funkcja rerenderująca kalendarze.
+ * @returns {void}
+ */
+
 function updateDate() {
-  h1_year.innerHTML = date.getFullYear();
-  h2_month.innerHTML = date.toLocaleString("pl-PL", {
+  h1Year.innerHTML = date.getFullYear();
+  h2Month.innerHTML = date.toLocaleString("pl-PL", {
     month: "long",
   });
-  generate_small_calendars(date);
-  generate_main_calendar(date);
+  generateSmallCalendars(date);
+  generateMainCalendar(date);
 }
 
-// obsługa przycisków
+/**
+ * Funkcja zmieniająca aktualny miesiąc.
+ *
+ * @param {number} offset - [-1, 1] przesunięcie w miesiacach
+ * @returns {void}
+ */
+
 function changeMonth(offset) {
   date.setMonth(date.getMonth() + offset);
   updateDate(date);
 }
-const back_button = document.getElementById("month__change-month-button-back");
-const forward_button = document.getElementById(
-  "month__change-month-button-forward"
-);
-back_button.addEventListener("click", () => changeMonth(-1));
-forward_button.addEventListener("click", () => changeMonth(1));
+const backButton = document.getElementById("month__change-month-button-back");
+const forwardButton = document.getElementById("month__change-month-button-forward");
+backButton.addEventListener("click", () => changeMonth(-1));
+forwardButton.addEventListener("click", () => changeMonth(1));
 
 // wywołanie funkcji przy generowaniu strony
 updateDate();
-generate_small_calendars(date);
-generate_main_calendar(date);
+generateSmallCalendars(date);
+generateMainCalendar(date);

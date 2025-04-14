@@ -1,14 +1,16 @@
-{% from 'components/nav_bar.html' import render_nav_bar %} {% from
-'components/small_calendar.html' import render_small_calendar %} {% from
-'components/add_task.html' import render_add_task %}
+{% from 'components/nav_bar.html' import render_nav_bar %} 
+{% from 'components/small_calendar.html' import render_small_calendar %} 
+{% from 'components/add_task.html' import render_add_task %}
+
 <!DOCTYPE html>
 <html lang="pl">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Miesiac</title>
-    {% assets "sass_all" %} <link rel=stylesheet type=text/css href="{{
-    ASSET_URL }}"> {% endassets %}
+    {% assets "sass_all" %} 
+    <link rel=stylesheet type=text/css href="{{ ASSET_URL }}"> 
+    {% endassets %}
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link

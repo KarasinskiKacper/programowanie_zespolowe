@@ -1,18 +1,23 @@
-import { generate_calendar } from "./generate_calendar.js";
+import { generateCalendar } from "./generate_calendar.js";
 import { monthAddTask } from "./month_add_taks_handler.js";
 
-export function generate_main_calendar(date) {
-  const current_date = new Date(Date.now());
-  const is_current_month = current_date.getMonth() === date.getMonth();
+/**
+ * Generuje html dla głównego kalendarza wraz z zadaniami
+ *
+ * @param {Date} date - data do wygenerowania kalendarza
+ *
+ * @returns {void}
+ */
+export function generateMainCalendar(date) {
+  // zapisanie aktualnej daty
+  const currentDate = new Date(Date.now());
+  // Sprawdzenie, czy miesiąc jest aktualny
+  const isCurrentMonth = currentDate.getMonth() === date.getMonth();
 
-  const { calendar, month } = generate_calendar(date);
-  const main_calendar = document.querySelector(
-    ".month__main-calendar-days-wrapper"
-  );
+  const { calendar, month } = generateCalendar(date);
+  const mainCalendar = document.querySelector(".month__main-calendar-days-wrapper");
 
-  let new_innerhtml = "";
-  let counter = 1;
-  let is_past_month = true;
+  let newInnerhtml = "";
 
   // Pobierz zadania z API
   fetch(`/api/tasks/${date.getFullYear()}/${date.getMonth() + 1}`)
@@ -28,9 +33,9 @@ export function generate_main_calendar(date) {
       });
 
       // pętla generująca html dla głównego kalendarza z zadaniami
-      let new_innerhtml = "";
+      let newInnerhtml = "";
       let counter = 1;
-      let is_past_month = true;
+      let isPastMonth = true;
       calendar.forEach((week) => {
         week.forEach((day) => {
           if (day === counter) {
@@ -48,15 +53,15 @@ export function generate_main_calendar(date) {
                 dayTasks.length - 1
               } Więcej</p>`;
             }
-            new_innerhtml += `<div class="month__main-calendar-day">
+            newInnerhtml += `<div class="month__main-calendar-day">
                       <p
                         class="month__main-calendar-days-text ${
-                          is_current_month &&
-                          day === current_date.getDate() &&
+                          isCurrentMonth &&
+                          day === currentDate.getDate() &&
                           "month__main-calendar-days-text--today"
                         } ${dayTasks.length > 0 && "month__main-calendar-days-text--task"}"
                         ${
-                          !(is_current_month && day === current_date.getDate()) &&
+                          !(isCurrentMonth && day === currentDate.getDate()) &&
                           `style="color: #${dayTasks[0]?.color}"`
                         }
                       >
@@ -65,12 +70,12 @@ export function generate_main_calendar(date) {
                       ${tasksHtml}
                     </div>`;
             counter++;
-            is_past_month = false;
+            isPastMonth = false;
           } else {
-            new_innerhtml += `<div class="month__main-calendar-day">
+            newInnerhtml += `<div class="month__main-calendar-day">
                 <p
                   class="month__main-calendar-days-text month__main-calendar-days-text--${
-                    is_past_month ? "past" : "future"
+                    isPastMonth ? "past" : "future"
                   }"
                 >
                   ${day}
@@ -80,7 +85,7 @@ export function generate_main_calendar(date) {
           }
         });
       });
-      main_calendar.innerHTML = new_innerhtml;
+      mainCalendar.innerHTML = newInnerhtml;
 
       // dodanie listenera pokazującego popup dla dni głównego kalendarza
       const days = document.querySelectorAll(".month__main-calendar-day");
@@ -107,5 +112,5 @@ export function generate_main_calendar(date) {
       });
     });
 
-  main_calendar.innerHTML = new_innerhtml;
+  mainCalendar.innerHTML = newInnerhtml;
 }

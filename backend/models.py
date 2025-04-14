@@ -1,6 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Integer, String, DateTime, ForeignKey, Date
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column
 
 # Inicjalizacja SQLAlchemy
 db = SQLAlchemy()
@@ -52,8 +52,6 @@ class Monthly(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     id_task: Mapped[int] = mapped_column(Integer, ForeignKey('Task.id_task'), nullable=False)
     day_of_month: Mapped[int] = mapped_column(Integer, nullable=True)
-    week_of_month: Mapped[int] = mapped_column(Integer, nullable=True)
-    weekday: Mapped[int] = mapped_column(Integer, nullable=True)
     date_start: Mapped[str] = mapped_column(DateTime, nullable=False)
     date_end: Mapped[str] = mapped_column(DateTime, nullable=True)
 
