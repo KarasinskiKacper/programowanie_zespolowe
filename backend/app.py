@@ -511,13 +511,13 @@ def get_tasks(year, month):
     user_id = request.cookies.get('user_id')
     
     if month == 12:
-        last_day = datetime(year + 1, 1, 1)
+        last_day = datetime(year + 1, 1, 1) - timedelta(days=1)
     else:
-        last_day = datetime(year, month + 1, 1)
+        last_day = datetime(year, month + 1, 1) - timedelta(days=1)
         
     tasks = Task.query.filter(
-        (((Task.start >= first_day) & (Task.start <= last_day)) |
-        ((Task.end >= first_day) & (Task.end <= last_day))) 
+        (((Task.start >= first_day) & (Task.start <= last_day + timedelta(days=1))) |
+        ((Task.end >= first_day) & (Task.end <= last_day + timedelta(days=1)))) 
         & (Task.id_user == user_id)
     ).all()
     
@@ -563,10 +563,10 @@ def get_tasks(year, month):
             monthly_repeats = Monthly.query.filter_by(id_task=task.id_task).all()
             for repeat in monthly_repeats:
                 # Jeśli określony jest konkretny dzień miesiąca
-                if repeat.day_of_month:
-                    last_day_of_month = last_day.day
+                last_day_of_month = last_day.day
+                if repeat.day_of_month and repeat.day_of_month <= last_day_of_month:
                     task_date = datetime(year, month, repeat.day_of_month)
-                    if repeat.day_of_month <= last_day_of_month and (repeat.date_end is None or task_date <= repeat.date_end):
+                    if repeat.day_of_month <= last_day_of_month and (repeat.date_end is None or task_date <= repeat.date_end) and repeat.date_start <= task_date:
                         tasks_json.append({
                             'id': task.id_task,
                             'name': task.name,
@@ -609,7 +609,7 @@ def get_tasks(year, month):
                 if repeat.month == month:
                     task_date = datetime(year, repeat.month, repeat.day)
                     # Sprawdź czy data zadania mieści się w zakresie powtarzania
-                    if (repeat.date_end is None or task_date <= repeat.date_end):
+                    if (repeat.date_end is None or task_date <= repeat.date_end) and repeat.date_start <= task_date:
                         tasks_json.append({
                             'id': task.id_task,
                             'name': task.name,
