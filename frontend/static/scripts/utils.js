@@ -4,10 +4,14 @@
  * @param {number} day
  * @returns {number} odpowiedni dzień tygodnia dla poniedziałku = 0
  */
-export function monday_first(day) {
+export function mondayFirst(day) {
   return (day + 6) % 7;
 }
 
+/**
+ *  Funkcja nadająca klase dark-theme do body w zależności od ustawienia w localstorage.
+ *
+ */
 export function updateTheme() {
   const theme = localStorage.getItem("theme");
   if (theme === "dark") {
@@ -15,6 +19,11 @@ export function updateTheme() {
   }
 }
 
+/**
+ *  Funkcja zmieniająca motyw w localstorage na podstawie parametru.
+ *
+ * @param {string} theme
+ */
 export function changeTheme(theme) {
   localStorage.setItem("theme", theme);
   location.reload();

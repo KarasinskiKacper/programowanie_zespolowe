@@ -1,7 +1,7 @@
-{% from 'components/nav_bar.html' import render_nav_bar %} {% from
-'components/confirmation.html' import render_confirmation %} {% from
-'components/change_username.html' import render_change_username %} {% from
-'components/change_password.html' import render_change_password %}
+{% from 'components/nav_bar.html' import render_nav_bar %} 
+{% from 'components/confirmation.html' import render_confirmation %} 
+{% from 'components/change_username.html' import render_change_username %} 
+{% from 'components/change_password.html' import render_change_password %}
 
 <!DOCTYPE html>
 <html lang="pl">
@@ -79,11 +79,8 @@
     </main>
 
     {{render_change_username()}}
-    <!--  -->
     {{render_change_password()}}
-    <!--  -->
     {{render_confirmation("delete_tasks_confirmation","Potwierdź usunięcie zadań")}}
-    <!--  -->
     {{render_confirmation("delete_account_confirmation","Potwierdź usunięcie konta")}}
     <script src="./static/scripts/settings_handler.js"></script>
     <script type="module" src="./static/scripts/settings_handler.js"></script>

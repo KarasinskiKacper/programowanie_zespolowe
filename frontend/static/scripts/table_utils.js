@@ -4,69 +4,68 @@
  * @returns {void}
  */
 export function resetTable() {
-  let table_cells = document.getElementsByClassName("week-layout__grid-cell");
-  let index = table_cells.length;
+  let tableCells = document.getElementsByClassName("week-layout__grid-cell");
+  let index = tableCells.length;
   while (index--) {
-    table_cells[index].innerHTML = "";
+    tableCells[index].innerHTML = "";
   }
 }
 
 /**
  * Funkcja wstawiająca zadanie do komórki w tabeli.
  *
- * @param {number} day_of_week Numer dnia tygodnia (0-6)
- * @param {string} start_time Początkowa godzina zadania (HH:MM)
- * @param {string} end_time Końcowa godzina zadania (HH:MM)
- * @param {string} task_title Tytuł zadania
- * @param {string} task_text Treść tekstowa zadania
- * @param {number} task_id Unikalne id zadania
- * @param {Date} start_date date początku tygodnia
+ * @param {number} dayOfWeek Numer dnia tygodnia (0-6)
+ * @param {string} startTime Początkowa godzina zadania (HH:MM)
+ * @param {string} endTime Końcowa godzina zadania (HH:MM)
+ * @param {string} taskTitle Tytuł zadania
+ * @param {string} taskText Treść tekstowa zadania
+ * @param {number} taskId Unikalne id zadania
+ * @param {Date} startDate date początku tygodnia
  * @param {string} color Kolor zadania (wartość szesnastkowa)
  * @returns {void}
  */
 function insertTask(
-  day_of_week,
-  start_time,
-  end_time,
-  task_title,
-  task_text,
-  task_id,
-  start_date,
+  dayOfWeek,
+  startTime,
+  endTime,
+  taskTitle,
+  taskText,
+  taskId,
+  startDate,
   color
 ) {
   // Konwersja godzin do liczbowych wartości
-  let [start_hour, start_minutes] = start_time.split(":");
-  start_hour = parseInt(start_hour);
-  start_minutes = parseInt(start_minutes);
+  let [startHour, startMinutes] = startTime.split(":");
+  startHour = parseInt(startHour);
+  startMinutes = parseInt(startMinutes);
 
-  let [end_hour, end_minutes] = end_time ? end_time.split(":") : null;
-  end_hour = parseInt(end_hour);
-  end_minutes = parseInt(end_minutes);
+  let [endHour, endMinutes] = endTime ? endTime.split(":") : null;
+  endHour = parseInt(endHour);
+  endMinutes = parseInt(endMinutes);
 
   // Pobranie komórek tabeli
-  let table_cells = document.getElementsByClassName(`week-layout__grid-cell`);
+  let tableCells = document.getElementsByClassName(`week-layout__grid-cell`);
 
   // Wstawienie zadania do komórki
-  table_cells[day_of_week + start_hour * 7].innerHTML = `
+  tableCells[dayOfWeek + startHour * 7].innerHTML = `
   <div  style='
-              transform: translateY(${-1 + start_minutes * 0.4}px);
+              transform: translateY(${-1 + startMinutes * 0.4}px);
               height: ${
-                ((end_hour - start_hour) * 60 + (end_minutes - start_minutes)) *
-                0.4
+                ((endHour - startHour) * 60 + (endMinutes - startMinutes)) * 0.4
               }px;
               background-color: #${color}' 
-        id='week-layout__grid-task-${task_id}' 
+        id='week-layout__grid-task-${taskId}' 
         class='week-layout__grid-task'>
-    <h1 class='week-layout__grid-task-title'>${task_title}</h1>
-    <p class='week-layout__grid-task-text'>${task_text}</p>
+    <h1 class='week-layout__grid-task-title'>${taskTitle}</h1>
+    <p class='week-layout__grid-task-text'>${taskText}</p>
   </div>`;
 
   // dodanie listenera zmieniającego stronę na /harmonogram dla zadań
-  table_cells[day_of_week + start_hour * 7].children[0].addEventListener(
+  tableCells[dayOfWeek + startHour * 7].children[0].addEventListener(
     "click",
     () => {
-      let tmpDate = new Date(start_date);
-      tmpDate.setDate(tmpDate.getDate() + day_of_week);
+      let tmpDate = new Date(startDate);
+      tmpDate.setDate(tmpDate.getDate() + dayOfWeek);
       tmpDate = tmpDate.toISOString().split("T")[0];
       document.location.href = `/harmonogram?date=${tmpDate}`;
     }
@@ -78,37 +77,37 @@ function insertTask(
  * Funkcja która ma wypełniać tabele z zadaniami.
  * @abstract Funkcja abstrakcyjna do zaimplementowania.
  *
- * @param {Date} start_date data pierwszego dnia w tabeli
- * @param {Date} end_date data ostatniego dnia w tabeli
+ * @param {Date} startDate data pierwszego dnia w tabeli
+ * @param {Date} endDate data ostatniego dnia w tabeli
  * @returns {void}
  */
-export function populateTable(start_date, end_date) {
-  const start_date_iso = start_date.toISOString();
-  const end_date_iso = end_date.toISOString();
-  fetch(`/tasks?start_date=${start_date_iso}&end_date=${end_date_iso}`)
+export function populateTable(startDate, endDate) {
+  const startDateIso = startDate.toISOString();
+  const endDateIso = endDate.toISOString();
+  fetch(`/tasks?start_date=${startDateIso}&end_date=${endDateIso}`)
     .then((response) => response.json()) // Parsowanie odpowiedzi jako JSON
     .then((tasks) => {
       // Wstawienie zadań do tabeli
       tasks.forEach((task) => {
         const {
-          day_of_week,
-          start_time,
-          end_time,
-          task_title,
-          task_text,
-          task_id,
+          day_of_week: dayOfWeek,
+          start_time: startTime,
+          end_time: endTime,
+          task_title: taskTitle,
+          task_text: taskText,
+          task_id: taskId,
           color,
         } = task;
 
         // Wstawianie zadania do odpowiedniej komórki
         insertTask(
-          day_of_week,
-          start_time,
-          end_time,
-          task_title,
-          task_text,
-          task_id,
-          start_date,
+          dayOfWeek,
+          startTime,
+          endTime,
+          taskTitle,
+          taskText,
+          taskId,
+          startDate,
           color
         );
       });

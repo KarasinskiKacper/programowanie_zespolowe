@@ -1,13 +1,13 @@
-import { monday_first } from "./utils.js";
+import { mondayFirst } from "./utils.js";
 import { resetTable, populateTable } from "./table_utils.js";
 import { setDefaultDates } from "./add_task_handler.js";
 
 // stałe
-const ms_in_day = 86400000;
-const current_date = new Date(Date.now());
+const msInDay = 86400000;
+const currentDate = new Date(Date.now());
 
 // definicja date z domyślnym ustawieniem obecnej daty
-let date = current_date;
+let date = currentDate;
 // tablica z datami aktualnego tygodnia
 let daysOfCurrentWeek = [null, null, null, null, null, null, null];
 
@@ -19,10 +19,10 @@ let daysOfCurrentWeek = [null, null, null, null, null, null, null];
  */
 function changeWeek(offset = 0) {
   // ustawienie daty na podstawie offsetu
-  let day_of_week = monday_first(date.getDay());
+  let dayOfWeek = mondayFirst(date.getDay());
   let time = date.getTime();
-  const start_date = new Date(time - day_of_week * ms_in_day + ms_in_day * 7 * offset);
-  date = new Date(start_date);
+  const startDate = new Date(time - dayOfWeek * msInDay + msInDay * 7 * offset);
+  date = new Date(startDate);
 
   // ustawienie tekstu z datą początku tygodnia
   document.getElementById(
@@ -45,29 +45,35 @@ function changeWeek(offset = 0) {
     dayArray[index].innerHTML = `${date.getDate()}`;
     // sprawdzenie czy data jest dniem dzisiejszym i dodanie/usunięcie klasy dnia dzisiejszego
     if (
-      current_date.getDate() === date.getDate() &&
-      current_date.getMonth() === date.getMonth() &&
-      current_date.getFullYear() === date.getFullYear()
+      currentDate.getDate() === date.getDate() &&
+      currentDate.getMonth() === date.getMonth() &&
+      currentDate.getFullYear() === date.getFullYear()
     ) {
       dayArray[index].parentElement.classList.add("week-layout__day--current");
     } else {
-      dayArray[index].parentElement.classList.remove("week-layout__day--current");
+      dayArray[index].parentElement.classList.remove(
+        "week-layout__day--current"
+      );
     }
     // dodanie listenera wyświetlającego add task popup
     dayArray[index].addEventListener("click", () => {
       setDefaultDates(daysOfCurrentWeek[index]);
-      document.querySelector(".add-task__wrapper").classList.remove("add-task__wrapper--hidden");
+      document
+        .querySelector(".add-task__wrapper")
+        .classList.remove("add-task__wrapper--hidden");
     });
 
     // przesunięcie daty o jeden dzień
-    date.setTime(date.getTime() + ms_in_day);
+    date.setTime(date.getTime() + msInDay);
   }
 
   // ustawienie tekstu z datą końca tygodnia
-  date.setTime(date.getTime() - ms_in_day);
-  const end_date = new Date(date);
+  date.setTime(date.getTime() - msInDay);
+  const endDate = new Date(date);
 
-  document.getElementById("current-week__text--end").innerHTML = `<span class="numeric-font">${date
+  document.getElementById(
+    "current-week__text--end"
+  ).innerHTML = `<span class="numeric-font">${date
     .getDate()
     .toString()
     .padStart(2, "0")}</span> ${date.toLocaleString("pl-PL", {
@@ -76,14 +82,14 @@ function changeWeek(offset = 0) {
 
   // Wyczyszczenie tabeli ze starych zadań i wstawienie zadań z wybranego tygodnia
   resetTable();
-  populateTable(start_date, end_date);
+  populateTable(startDate, endDate);
 }
 
 // Wygenerowanie obecnego tygodnia
 changeWeek(0);
 
 // Obsługa przycisków do zmiany wyświetlanego tygodnia
-const backward_button = document.getElementById("current-week__arrow--backward");
-const forward_button = document.getElementById("current-week__arrow--forward");
-backward_button.addEventListener("click", () => changeWeek(-1));
-forward_button.addEventListener("click", () => changeWeek(1));
+const backwardButton = document.getElementById("current-week__arrow--backward");
+const forwardButton = document.getElementById("current-week__arrow--forward");
+backwardButton.addEventListener("click", () => changeWeek(-1));
+forwardButton.addEventListener("click", () => changeWeek(1));
