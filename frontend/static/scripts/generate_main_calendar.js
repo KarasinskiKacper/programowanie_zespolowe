@@ -55,6 +55,10 @@ export function generate_main_calendar(date) {
                           day === current_date.getDate() &&
                           "month__main-calendar-days-text--today"
                         } ${dayTasks.length > 0 && "month__main-calendar-days-text--task"}"
+                        ${
+                          !(is_current_month && day === current_date.getDate()) &&
+                          `style="color: #${dayTasks[0]?.color}"`
+                        }
                       >
                         ${day}
                       </p>
