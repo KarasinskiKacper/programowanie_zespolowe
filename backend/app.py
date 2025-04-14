@@ -787,9 +787,13 @@ def change_username():
     nickname = data.get('username')
     id_user = request.cookies.get('user_id')
     user = User.query.filter_by(id_user=id_user).first()
-    user.nickname = nickname
-    db.session.commit()
-    return jsonify(status="OK"), 200
+    try:
+        user.nickname = nickname
+        db.session.commit()
+        return jsonify(status="OK"), 200
+    except Exception:
+        return jsonify(status="USER_EXISTS"), 409
+    
 
 @app.route("/api/user/change_password", methods=["POST"])
 def change_password():
@@ -798,6 +802,10 @@ def change_password():
     new_password = data.get('new_password')
     id_user = request.cookies.get('user_id')
     user = User.query.filter_by(id_user=id_user).first()
+    
+    if PASSWORDPOLICY.test(new_password):
+        return jsonify(status="BAD_PASSWORD"), 420
+    
     if user and bcrypt.checkpw(old_password.encode('utf-8'), user.password):    
         user.password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt())
         user.password_date = date.today()

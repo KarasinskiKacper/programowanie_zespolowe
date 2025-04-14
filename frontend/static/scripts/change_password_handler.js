@@ -1,5 +1,6 @@
 // przypisanie elementów do zmiennych
 const changePasswordFormWrapper = document.querySelector(".change-password__wrapper");
+const newPassword = document.getElementsByName("newPassword")[0]
 
 // listener chowający popup
 changePasswordFormWrapper.addEventListener("click", (e) => {
@@ -17,6 +18,9 @@ changePasswordForm.addEventListener("submit", function (event) {
   const old_password = oldPasswordInput.value;
   const new_password = newPasswordInput.value
 
+  newPassword.setCustomValidity("");
+  newPassword.reportValidity();
+
   fetch("/api/user/change_password", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -28,6 +32,9 @@ changePasswordForm.addEventListener("submit", function (event) {
   .then(async (res) => {
     if (res.ok) {
       window.location.reload();
+    } else {
+      newPassword.setCustomValidity("Podaj prawidłowe hasło");
+      newPassword.reportValidity();
     }
   });
 });

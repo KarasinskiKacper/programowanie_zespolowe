@@ -1,5 +1,6 @@
 // przypisanie elementów do zmiennych
 const changeUsernameFormWrapper = document.querySelector(".change-username__wrapper");
+const newUsername = document.querySelector(".change-username__input")
 
 // listener chowający popup
 changeUsernameFormWrapper.addEventListener("click", (e) => {
@@ -16,6 +17,9 @@ changeUsernameForm.addEventListener("submit", function (event) {
   const usernameInput = changeUsernameForm.querySelector(".change-username__input");
   const username = usernameInput.value;
 
+  newUsername.setCustomValidity("");
+  newUsername.reportValidity();
+
   fetch("/api/user/change_username", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -24,6 +28,9 @@ changeUsernameForm.addEventListener("submit", function (event) {
   .then(async (res) => {
     if (res.ok) {
       window.location.reload();
+    } else {
+      newUsername.setCustomValidity("Użytkownik o podanej nazwie użytkownika juz istnieje");
+      newUsername.reportValidity();
     }
   });
 });
